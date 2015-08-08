@@ -26,7 +26,8 @@
     "multi-master-merge": "2.x.x",
     "level": "1.x.x",
     "level-sublevel": "6.4.x",
-    "mkdirp": "0.5.x"
+    "mkdirp": "0.5.x", 
+    "parallel-multistream": "1.x.x"
   },
   "homepage": "https://github.com/Ivshti/multipass-torrent"
 }
