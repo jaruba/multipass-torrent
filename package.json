@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "minimist": "1.x.x",
-    "multi-master-merge": "2.x.x"
+    "multi-master-merge": "2.x.x",
+    "level": "1.x.x"
   },
   "homepage": "https://github.com/Ivshti/multipass-torrent"
 }
