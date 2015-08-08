@@ -1,0 +1,25 @@
+{
+  "name": "multipass-torrent",
+  "version": "0.0.0",
+  "description": "Crawls torrents from various sources (dump, RSS, HTML pages) and associates the video files within with IMDB ID",
+  "main": "cli/mp-crawl",
+  "scripts": {
+    "test": "mocha --reporter spec --timeout 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Ivshti/multipass-torrent"
+  },
+  "keywords": [
+    "torrent",
+    "crawling",
+    "scraping",
+    "indexing"
+  ],
+  "author": "Ivo Georgiev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ivshti/multipass-torrent/issues"
+  },
+  "homepage": "https://github.com/Ivshti/multipass-torrent"
+}
