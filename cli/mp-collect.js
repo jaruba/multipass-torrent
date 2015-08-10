@@ -4,15 +4,23 @@ var argv = require("minimist")(process.argv.slice(2));
 var url = require("url");
 var net = require("net");
 var _ = require("lodash");
+var hat = require("hat");
 
 module.dbPath = argv["db-path"] || "./db";
+module.dbId = argv["db-identifier"];
+module.dbId = (module.dbId && module.dbId.length==40 && parseInt(module.dbId, 16)) ? module.dbId : hat(160,16);
 
 var db = require("../lib/db");
-db.listenReplications();
+
+db.listenReplications(module.dbId); // start our replication server
+db.findReplications(module.dbId); // replicate to other instances
+
+/*
 if (argv.replicate) { 
 	var c = net.connect(url.parse(argv.replicate).port);
 	c.on("connect", function() { c.pipe(db.getSyncStream()).pipe(c) });
 };
+*/
 
 
 /*

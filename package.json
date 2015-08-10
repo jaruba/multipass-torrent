@@ -27,7 +27,9 @@
     "level": "1.x.x",
     "level-sublevel": "6.4.x",
     "mkdirp": "0.5.x", 
-    "lodash": "3.10.x"
+    "lodash": "3.10.x",
+    "bittorrent-dht": "3.x.x",
+    "hat": "0.0.x"
   },
   "homepage": "https://github.com/Ivshti/multipass-torrent"
 }
