@@ -7,7 +7,7 @@ var _ = require("lodash");
 var hat = require("hat");
 
 module.dbPath = argv["db-path"] || "./db";
-module.dbId = argv["db-identifier"];
+module.dbId = argv["db-identifier"] || argv["db-id"] || argv["id"]; // use minimist alias
 module.dbId = (module.dbId && module.dbId.length==40 && parseInt(module.dbId, 16)) ? module.dbId : hat(160,16);
 
 var db = require("../lib/db");
