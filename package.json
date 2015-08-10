@@ -29,7 +29,8 @@
     "mkdirp": "0.5.x", 
     "lodash": "3.10.x",
     "bittorrent-dht": "3.x.x",
-    "hat": "0.0.x"
+    "hat": "0.0.x",
+    "node-ssdp": "2.5.x"
   },
   "homepage": "https://github.com/Ivshti/multipass-torrent"
 }
