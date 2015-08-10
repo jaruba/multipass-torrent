@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "minimist": "1.x.x",
+    "async": "0.2.9",
     "multi-master-merge": "2.x.x",
     "level": "1.x.x",
     "level-sublevel": "6.4.x",
@@ -30,7 +31,18 @@
     "lodash": "3.10.x",
     "bittorrent-dht": "3.x.x",
     "hat": "0.0.x",
-    "node-ssdp": "2.5.x"
+    "node-ssdp": "2.5.x",
+    "byline": "4.2.x",
+
+    "feedparser": "0.19.x",
+    "unzip": ">=0.1.9",
+    "xml-stream": ">=0.4.4",
+
+    "pause-queue": "git://github.com/Ivshti/pause-queue",
+    "peer-search": "git://github.com/Ivshti/peer-search",
+
+    "stremio-service": "Ivshti/stremio-service"
+
   },
   "homepage": "https://github.com/Ivshti/multipass-torrent"
 }
