@@ -11,6 +11,7 @@ module.dbId = argv["db-identifier"];
 module.dbId = (module.dbId && module.dbId.length==40 && parseInt(module.dbId, 16)) ? module.dbId : hat(160,16);
 
 var db = require("../lib/db");
+var indexer = require("../lib/indexer");
 
 db.listenReplications(module.dbId); // start our replication server
 db.findReplications(module.dbId); // replicate to other instances
@@ -34,5 +35,5 @@ setTimeout(function() {
 // WARNING we'll need to iterate through the whole dataset on intro in any case to generate query index
 setInterval(function() {
 	var count = 0;
-	db.torrents.createReadStream().on("data",function(d){count++}).on("end", function() { console.log("We have "+count+" torrents") })
+	db.torrents.createReadStream().on("data",function(d){ count++ }).on("end", function() { console.log("We have "+count+" torrents") })
 }, 3000);
