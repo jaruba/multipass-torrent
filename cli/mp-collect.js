@@ -9,9 +9,23 @@ module.dbPath = argv["db-path"] || "./db";
 
 var db = require("../lib/db");
 db.listenReplications();
-if (argv.replicate) db.getSyncStream().pipe(net.connect(url.parse(argv.replicate).port));
+if (argv.replicate) { 
+	var c = net.connect(url.parse(argv.replicate).port);
+	c.on("connect", function() { db.getSyncStream().pipe(c) });
+};
+
 
 /*
-db.torrents.put("xxxxx", "test");
-db.torrents.put("testy test", "foo");
-db.torrents.put("another key", "is testing");*/
+setTimeout(function() {
+	db.torrents.put("xxxxx "+Math.random(), "test");
+	db.torrents.put("testy test"+Math.random(), "foo");
+	db.torrents.put("another key", "is testing");
+}, 500);
+
+
+// WARNING we'll need to iterate through the whole dataset on intro in any case to generate query index
+setInterval(function() {
+	var count = 0;
+	db.torrents.createReadStream().on("data",function(d){count++}).on("end", function() { console.log("We have "+count+" torrents") })
+}, 3000);
+*/
