@@ -24,7 +24,7 @@ module.exports = function(stream, source)
             if (source.category && item.categories && item.categories[0]
                 && !source.category.filter(function(cat) { return item.categories[0].match(cat) }).length
                 ) return;
-
+            
 			// For now, skip porn - to avoid false positives when finding movies
             if (item.categories && item.categories[0] && item.categories[0].match("porn")) 
                 return;
