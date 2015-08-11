@@ -36,6 +36,7 @@ var importQueue = async.queue(function(source, next) {
 
 // temporary, to test
 importQueue.push({ url: "https://torrentz.eu/feed_verified?q=" }); 
+//importQueue.push({ url: "https://torrentproject.se/verifieddailydump.txt.gz" }); // too big, not suitable
 
 
 /* Process & index infoHashes
