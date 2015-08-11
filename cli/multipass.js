@@ -49,7 +49,7 @@ var processQueue = async.queue(function(task, next) {
  */
 setInterval(function() {
 	var count = 0;
-	db.torrents.createKeyStream()
+	db.createKeyStream()
 		.on("data",function(d) { count++ })
 		.on("end", function() { log.important("We have "+count+" torrents") });
 }, 5000);
