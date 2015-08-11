@@ -4,9 +4,9 @@ var log = require("../lib/log");
 
 // This should emit results up through an EventEmitter or a pipe, not use collect directly
 
-module.export = function(stream, source, cb)
+module.exports = function(stream, source)
 {
-    stream.pipe(new FeedParser())
+    return stream.pipe(new FeedParser())
     .on("error", function (error) { log.error("xml-rss", error, source) })
     .on("readable", function(meta)
     {
@@ -42,8 +42,5 @@ module.export = function(stream, source, cb)
 
             stream.emit("infoHash", hash, addon);
         }
-    })
-    .on("end", cb);
-
-    return stream;
+    });
 }

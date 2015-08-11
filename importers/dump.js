@@ -2,11 +2,9 @@ var byline = require("byline");
 
 var log = require("../lib/log");
 
-module.export = function(stream, source, cb)
+module.exports = function(stream, source)
 {
-    var i = 0;
-
-    stream.pipe(byline.createStream())
+    return stream.pipe(byline.createStream())
     .on("data", function(line)
     {
         var parts = line.toString().split("|"),
@@ -19,8 +17,5 @@ module.export = function(stream, source, cb)
             stream.emit("infoHash", infoHash, source.addon);
         };
     })
-    .on("error", function(err) { log.error("dump", err) })
-    .on("end", cb);
-
-    return stream;
+    .on("error", function(err) { log.error("dump", err) });
 }

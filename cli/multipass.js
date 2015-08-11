@@ -26,14 +26,14 @@ var importQueue = async.queue(function(source, next) {
 	log.important("importing from "+source.url);
 	importer.collect(source, function(err, status) {
 		if (err) log.error(err);
-		else log.important("importing finished from "+source.url+", found "+status.found+" infoHashes, "+status.imported+" of them new");
+		else log.important("importing finished from "+source.url+", found "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
 
 		if (source.interval) setTimeout(function() { importQueue.push(source) }, source.interval); // repeat at interval - re-push
 	});
 }, 1);
 
-// test
-importQueue.push({ url: "https://torrentz.eu/feed_verified?q=" });
+// temporary, to test
+importQueue.push({ url: "https://torrentz.eu/feed_verified?q=" }); 
 
 
 /* Process & index infoHashes
