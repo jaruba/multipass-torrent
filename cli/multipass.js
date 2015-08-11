@@ -42,8 +42,11 @@ importQueue.push({ url: "https://torrentz.eu/feed_verified?q=", category: ["tv",
 /* Process & index infoHashes
  */
 var processQueue = async.queue(function(task, next) {
+	// TODO: seed/leech count update
 	indexer.index(task, { }, function(err, torrent) {
-		console.log(torrent);
+		torrent.uninteresting = !torrent.files.length;
+		db.put(torrent.infoHash, torrent, function() { });
+		//console.log(torrent);
 		next();
 	});
 }, 5);

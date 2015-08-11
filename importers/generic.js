@@ -6,8 +6,6 @@ module.exports = function(stream, source)
     {
         /* Cut the string into RegEx. this is my last resort. */
         var hashes = line.toString().match(new RegExp("([0-9A-Fa-f]){40}", "g"));
-        if (hashes) hashes.forEach(function(hash) { 
-        	stream.emit("infoHash", hash, source.addon);
-        });
+        if (hashes) hashes.forEach(function(hash) { stream.emit("infoHash", hash, source.addon) });
     });
 };
