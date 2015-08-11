@@ -42,7 +42,10 @@ importQueue.push({ url: "https://torrentz.eu/feed_verified?q=", category: ["tv",
 /* Process & index infoHashes
  */
 var processQueue = async.queue(function(task, next) {
-	indexer.index(task, { }, next);
+	indexer.index(task, { }, function(err, torrent) {
+		console.log(torrent);
+		next();
+	});
 }, 5);
 
 /* Log number of torrents we have
