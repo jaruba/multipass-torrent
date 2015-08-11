@@ -50,7 +50,7 @@
     "parse-torrent": "5.x.x",
 
     "pause-queue": "git://github.com/Ivshti/pause-queue",
-    "peer-search": "git://github.com/Ivshti/peer-search",
+    "peer-search": "git://github.com/Ivshti/peer-search"
 
   },
   "homepage": "https://github.com/Ivshti/multipass-torrent"
