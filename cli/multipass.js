@@ -26,9 +26,11 @@ var importQueue = async.queue(function(source, next) {
 	log.important("importing from "+source.url);
 	importer.collect(source, function(err, status) {
 		if (err) log.error(err);
-		else log.important("importing finished from "+source.url+", found "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
+		else log.important("importing finished from "+source.url+", "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
 
 		if (source.interval) setTimeout(function() { importQueue.push(source) }, source.interval); // repeat at interval - re-push
+	}, function(hash, extra) {
+		processQueue.push({ infoHash: hash, extra: extra });
 	});
 }, 1);
 
@@ -38,8 +40,8 @@ importQueue.push({ url: "https://torrentz.eu/feed_verified?q=" });
 
 /* Process & index infoHashes
  */
-var processQueue = async.queue(function(hash, next) {
-
+var processQueue = async.queue(function(task, next) {
+	console.log(task)
 }, 5);
 
 /* Log number of torrents we have

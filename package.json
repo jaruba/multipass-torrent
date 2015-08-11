@@ -38,6 +38,8 @@
     "byline": "4.2.x",
     "node-ssdp": "2.5.x",
 
+    "stremio-service": "Ivshti/stremio-service",
+
     "needle": "0.10.x",
     "gunzip-maybe": "1.2.x",
     
@@ -45,10 +47,10 @@
     "unzip": ">=0.1.9",
     "xml-stream": ">=0.4.4",
 
+    "parse-torrent": "5.x.x",
+
     "pause-queue": "git://github.com/Ivshti/pause-queue",
     "peer-search": "git://github.com/Ivshti/peer-search",
-
-    "stremio-service": "Ivshti/stremio-service"
 
   },
   "homepage": "https://github.com/Ivshti/multipass-torrent"
