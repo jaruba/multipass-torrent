@@ -36,6 +36,7 @@
     "hat": "0.0.x",
     "ip": "^0.3.0",    
     "byline": "4.2.x",
+    "node-ssdp": "2.5.x",
 
     "stremio-service": "Ivshti/stremio-service",
 
