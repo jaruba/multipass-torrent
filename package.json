@@ -34,10 +34,13 @@
     "lodash": "3.10.x",
     "bittorrent-dht": "3.x.x",
     "hat": "0.0.x",
-    "node-ssdp": "2.5.x",
     "ip": "^0.3.0",    
     "byline": "4.2.x",
+    "node-ssdp": "2.5.x",
 
+    "needle": "0.10.x",
+    "gunzip-maybe": "1.2.x",
+    
     "feedparser": "0.19.x",
     "unzip": ">=0.1.9",
     "xml-stream": ">=0.4.4",

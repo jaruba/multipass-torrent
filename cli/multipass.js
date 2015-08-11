@@ -14,7 +14,7 @@ module.dbId = (module.dbId && module.dbId.length==40 && parseInt(module.dbId, 16
 var db = require("../lib/db");
 var log = require("../lib/log");
 var indexer = require("../lib/indexer");
-//var importer = require("../lib/importer");
+var importer = require("../lib/importer");
 
 db.listenReplications(module.dbId); // start our replication server
 db.findReplications(module.dbId); // replicate to other instances
@@ -22,8 +22,18 @@ db.findReplications(module.dbId); // replicate to other instances
 /* Collect infoHashes from source
  */
 var importQueue = async.queue(function(source, next) {
+	source = typeof(source) == "string" ? { url: source } : source;
+	log.important("importing from "+source.url);
+	importer.collect(source, function(err, status) {
+		if (err) log.error(err);
+		else log.important("importing finished from "+source.url+", found "+status.found+" infoHashes, "+status.imported+" of them new");
 
+		if (source.interval) setTimeout(function() { importQueue.push(source) }, source.interval); // repeat at interval - re-push
+	});
 }, 1);
+
+// test
+importQueue.push({ url: "https://torrentz.eu/feed_verified?q=" });
 
 
 /* Process & index infoHashes

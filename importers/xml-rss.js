@@ -38,9 +38,12 @@ module.export = function(stream, source, cb)
             addon.verified = source.verified || addon.verified; // the source can be assumed verified
             
             // TODO: read seeds via regex matching from description (like from http://torrentz.eu/feed?q=)
-            // TODO: read from rss:desccription for torrentproject - http://torrentproject.com/rss/tv/
-            collect(hash, source, addon);
+            // TODO: read from rss:description for torrentproject - http://torrentproject.com/rss/tv/
+
+            stream.emit("infoHash", hash, addon);
         }
     })
     .on("end", cb);
+
+    return stream;
 }
