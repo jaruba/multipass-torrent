@@ -5,35 +5,38 @@ var url = require("url");
 var net = require("net");
 var _ = require("lodash");
 var hat = require("hat");
+var async = require("async");
 
 module.dbPath = argv["db-path"] || "./db";
 module.dbId = argv["db-identifier"] || argv["db-id"] || argv["id"]; // use minimist alias
 module.dbId = (module.dbId && module.dbId.length==40 && parseInt(module.dbId, 16)) ? module.dbId : hat(160,16);
 
 var db = require("../lib/db");
+var log = require("../lib/log");
 var indexer = require("../lib/indexer");
+//var importer = require("../lib/importer");
 
 db.listenReplications(module.dbId); // start our replication server
 db.findReplications(module.dbId); // replicate to other instances
 
-/*
-if (argv.replicate) { 
-	var c = net.connect(url.parse(argv.replicate).port);
-	c.on("connect", function() { c.pipe(db.getSyncStream()).pipe(c) });
-};
-*/
+/* Collect infoHashes from source
+ */
+var importQueue = async.queue(function(source, next) {
+
+}, 1);
 
 
-/*
-setTimeout(function() {
-	db.torrents.put("xxxxx "+Math.random(), "test");
-	db.torrents.put("testy test"+Math.random(), "foo");
-	db.torrents.put("another key", "is testing");
-}, 500);
-*/
+/* Process & index infoHashes
+ */
+var processQueue = async.queue(function(hash, next) {
 
-// WARNING we'll need to iterate through the whole dataset on intro in any case to generate query index
+}, 5);
+
+/* Log number of torrents we have
+ */
 setInterval(function() {
 	var count = 0;
-	db.torrents.createReadStream().on("data",function(d){ count++ }).on("end", function() { console.log("We have "+count+" torrents") })
-}, 3000);
+	db.torrents.createKeyStream()
+		.on("data",function(d) { count++ })
+		.on("end", function() { log.important("We have "+count+" torrents") });
+}, 5000);
