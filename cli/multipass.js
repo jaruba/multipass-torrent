@@ -43,11 +43,19 @@ if (argv.source) importQueue.push({ url: argv.source, category: ["tv", "movies"]
  */
 var processQueue = async.queue(function(task, next) {
 	// TODO: seed/leech count update
-	indexer.index(task, { }, function(err, torrent) {
-		torrent.uninteresting = !torrent.files.length;
-		db.put(torrent.infoHash, torrent, function() { });
-		//console.log(torrent);
-		next();
+	db.get(task.infoHash, function(err, res) {
+		// TODO: merge torrent objects - torrent.merge(res.concat([torrent]))
+		if (err) return next(err);
+		var tor = res && res[0] && res[0].value;
+		if (tor && (tor.files || tor.uninteresting)) return next();
+
+		// TOOD: use existing torrent object to keep the data; torrent library -> merge, update
+		indexer.index(task, { }, function(err, torrent) {
+			torrent.uninteresting = !torrent.files.length;
+			db.put(torrent.infoHash, torrent, function() { });
+			//console.log(torrent);
+			next();
+		});
 	});
 }, 5);
 
