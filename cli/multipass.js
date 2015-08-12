@@ -53,9 +53,9 @@ var processQueue = async.queue(function(task, next) {
 
 /* Log number of torrents we have
  */
-setInterval(function() {
+async.forever(function(next) {
 	var count = 0;
 	db.createKeyStream()
 		.on("data",function(d) { count++ })
-		.on("end", function() { log.important("We have "+count+" torrents") });
-}, 5000);
+		.on("end", function() { log.important("We have "+count+" torrents"); setTimeout(next, 5000) });
+});
