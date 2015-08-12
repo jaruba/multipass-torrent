@@ -18,7 +18,8 @@ Now you can run the same command on another computer (or terminal) to see the re
 ```bash
 node cli/multipass --db-id=ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6 --db-path=/tmp/test-2
 ```
-output:
+
+Output from first command:
 ```
 ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6: finding other instances to replicate with
 DB replication server listening at 50962
@@ -35,8 +36,7 @@ We have 83 torrents
 We have 96 torrents
 We have 96 torrents
 ```
-
-output:
+Output from second command:
 ```
 ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6: finding other instances to replicate with
 DB replication server listening at 51192
