@@ -38,6 +38,9 @@
     "byline": "4.2.x",
     "node-ssdp": "2.5.x",
 
+    "entry": "git://github.com/Ivshti/entry",
+    "nat-pmp": "0.0.x",
+    
     "stremio-service": "Ivshti/stremio-service",
 
     "needle": "0.9.x",
