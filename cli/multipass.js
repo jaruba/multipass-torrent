@@ -30,7 +30,7 @@ var importQueue = async.queue(function(source, next) {
 
 		if (source.interval) setTimeout(function() { importQueue.push(source) }, source.interval); // repeat at interval - re-push
 	}, function(hash, extra) {
-		processQueue.push({ infoHash: hash, extra: extra });
+		processQueue.push({ infoHash: hash, extra: extra, source: source });
 	});
 }, 1);
 
@@ -47,7 +47,7 @@ var processQueue = async.queue(function(task, next) {
 		// TODO: merge torrent objects - torrent.merge(res.concat([torrent]))
 		if (err) return next(err);
 		var tor = res && res[0] && res[0].value;
-		if (tor && (tor.files || tor.uninteresting)) return next();
+		if (tor && (tor.files || tor.uninteresting) && tor.sources[task.source.url]) return next(); // Skip if - torrent is crawled, files is filled/uninteresting, and we have marked this source
 
 		// TOOD: use existing torrent object to keep the data; torrent library -> merge, update
 		indexer.index(task, { }, function(err, torrent) {
