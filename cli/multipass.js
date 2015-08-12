@@ -43,19 +43,15 @@ if (argv.source) importQueue.push({ url: argv.source, category: ["tv", "movies"]
 /* Process & index infoHashes
  */
 var processQueue = async.queue(function(task, next) {
-	// TODO: seed/leech count update
 	db.get(task.infoHash, function(err, res) {
 		if (err) return next(err);
-		var torrent = res && res.length && indexer.merge(res.sort(function(a, b) { return a.seq - b.seq }).map(function(x) { return x.value }));
-		// Skip if - torrent is crawled, files is filled/uninteresting, and we have marked this source
-		// TODO: move skipping logic to .index; we want to skip retrieving the torrent completely if we only have to update .sources
-		if (torrent && (torrent.files || torrent.uninteresting) && torrent.sources[task.source.url]) return next();
+		
+		// Pass a merge of existing torrent objects as a base for indexing		
+		task.torrent = res && res.length && indexer.merge(res.sort(function(a, b) { return a.seq - b.seq }).map(function(x) { return x.value }));
 
-		// TOOD: use existing torrent object to keep the data
 		indexer.index(task, { }, function(err, torrent) {
-			//db.put(torrent.infoHash, torrent, function() { });
+			// TODO: seed/leech count update
 			db.merge(torrent.infoHash, res, torrent); 
-			//console.log(torrent);
 			next();
 		});
 	});
