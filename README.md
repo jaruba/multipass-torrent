@@ -14,6 +14,36 @@ It also has a Stremio Addon front-end, allowing for the content you scraped to b
 node cli/multipass --db-id=ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6 --source="https://torrentz.eu/feed_verified?q=" --db-path=/tmp/test
 ```
 
+Now you can run the same command on another computer (or terminal) to see the replication. Run it without ``--source`` so you see the replication instead of importing the same source again
+```bash
+node cli/multipass --db-id=ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6 --db-path=/tmp/test-2
+```
+output:
+```
+ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6: finding other instances to replicate with
+DB replication server listening at 50962
+importing from https://torrentz.eu/feed_verified?q=
+We have 0 torrents
+importing finished from https://torrentz.eu/feed_verified?q=, 96 infoHashes, undefined of them new, through xmlRss importer (380ms)
+We have 11 torrents
+We have 23 torrents
+We have 34 torrents
+We have 48 torrents
+We have 60 torrents
+We have 73 torrents
+We have 83 torrents
+We have 96 torrents
+We have 96 torrents
+```
+
+output:
+```
+ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6: finding other instances to replicate with
+DB replication server listening at 51192
+We have 0 torrents
+connected to peer 192.168.0.103:50962
+We have 96 torrents
+```
 
 # why multipass?
 [For anything else there's multipass](https://www.pinterest.com/pin/83738874291404469/)
