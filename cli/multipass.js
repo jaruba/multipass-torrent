@@ -59,3 +59,12 @@ async.forever(function(next) {
 		.on("data",function(d) { count++ })
 		.on("end", function() { log.important("We have "+count+" torrents"); setTimeout(next, 5000) });
 });
+
+/* Simple dump
+ */
+if (argv["db-dump"]) db.createReadStream()
+	.on("data", function(d) { 
+		d.value.files.forEach(function(f) {
+			console.log([d.value.infoHash, f.path, f.imdb_id, f.season, f.episode].filter(function(x) { return x }).join(" / "))
+		});
+	});

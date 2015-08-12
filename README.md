@@ -45,5 +45,11 @@ connected to peer 192.168.0.103:50962
 We have 96 torrents
 ```
 
+# Querying
+Now that the data is in the DB, how to make use of it? Currently, no querying mechanism is implmeneted (that will change very soon), but you can see a simple dump by running:
+```bash
+node cli/multipass --db-id=ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6 --db-path=/tmp/test-2 --db-dump
+```
+
 # why multipass?
 [For anything else there's multipass](https://www.pinterest.com/pin/83738874291404469/)
