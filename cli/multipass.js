@@ -6,6 +6,7 @@ var net = require("net");
 var _ = require("lodash");
 var hat = require("hat");
 var async = require("async");
+var Tracker = require("peer-search/tracker");
 
 module.dbPath = argv["db-path"] || "./db";
 module.dbId = argv["db-identifier"] || argv["db-id"] || argv["id"]; // use minimist alias
@@ -52,7 +53,6 @@ var processQueue = async.queue(function(task, next) {
 
 		// TOOD: use existing torrent object to keep the data; torrent library -> merge, update
 		indexer.index(task, { }, function(err, torrent) {
-			torrent.uninteresting = !torrent.files.length;
 			db.put(torrent.infoHash, torrent, function() { });
 			//console.log(torrent);
 			next();
