@@ -2,7 +2,7 @@
 
 Collects torrents from various sources (dump, RSS, HTML pages) and associates the **video files** within with IMDB ID using Stremio's index.get Addon API.
 
-Runs on a multi-master replicated LevelDB, thanks to [mafintosh/multi-master-merge](http://github.com/mafintosh/multi-master-merge). The peers to replicate with are discovered via database ID, passed via ``-db-id=<16 byte hex string>``, discovered through DHT and SSDP.
+Runs on a multi-master replicated LevelDB, thanks to [mafintosh/multi-master-merge](http://github.com/mafintosh/multi-master-merge). The peers to replicate with are discovered via database ID, passed via ``--db-id=<16 byte hex string>``, discovered through DHT and SSDP.
 
 This means the system is **distributed** and you can run several instances with their own DB copy. This is useful for creating redundancy and even crawling from several machines to distribute the load. 
 
@@ -46,7 +46,9 @@ We have 96 torrents
 ```
 
 # Querying
-Now that the data is in the DB, how to make use of it? Currently, no querying mechanism is implmeneted (that will change very soon), but you can see a simple dump by running (after you've populated DB at /tmp/test by one of the prev commands):
+Now that the data is in the DB, how to make use of it? 
+
+Currently, no querying mechanism is implmeneted (that will change very soon), but you can see a simple dump by running (after you've populated DB at /tmp/test by one of the previous commands):
 ```bash
 node cli/multipass --db-dump --db-id=ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6 --db-path=/tmp/test
 ```
