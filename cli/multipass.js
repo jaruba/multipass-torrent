@@ -47,7 +47,7 @@ var processQueue = async.queue(function(task, next) {
 		// TODO: merge torrent objects - torrent.merge(res.concat([torrent]))
 		if (err) return next(err);
 		var tor = res && res[0] && res[0].value;
-		if (tor && (tor.files || tor.uninteresting)) return next();
+		if (tor && (tor.files || tor.uninteresting)) return next(); // WARNING: TODO: we shoud still update the object and re-save it
 
 		// TOOD: use existing torrent object to keep the data; torrent library -> merge, update
 		indexer.index(task, { }, function(err, torrent) {
