@@ -50,6 +50,7 @@ var processQueue = async.queue(function(task, next) {
 		task.torrent = res && res.length && indexer.merge(res.sort(function(a, b) { return a.seq - b.seq }).map(function(x) { return x.value }));
 
 		indexer.index(task, { }, function(err, torrent) {
+			if (err) console.error(err);
 			// TODO: seed/leech count update
 			// TODO: think of what's the case where we don't call merge here - e.g. res contains only one doc, and .index did not update anything
 			db.merge(torrent.infoHash, res, torrent); 
