@@ -55,7 +55,7 @@ var processQueue = async.queue(function(task, next) {
 			next();
 		});
 	});
-}, 5);
+}, 6);
 
 /* Log number of torrents we have
  */
