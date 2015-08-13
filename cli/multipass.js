@@ -53,7 +53,7 @@ var processQueue = async.queue(function(task, next) {
 			if (err) console.error(err);
 			// TODO: seed/leech count update
 			// TODO: think of what's the case where we don't call merge here - e.g. res contains only one doc, and .index did not update anything
-			db.merge(torrent.infoHash, res, torrent); 
+			db.merge(torrent.infoHash, res, torrent);
 			next();
 		});
 	});
