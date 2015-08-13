@@ -49,11 +49,13 @@ var processQueue = async.queue(function(task, next) {
 		// Pass a merge of existing torrent objects as a base for indexing		
 		task.torrent = res && res.length && indexer.merge(res.sort(function(a, b) { return a.seq - b.seq }).map(function(x) { return x.value }));
 
-		indexer.index(task, { }, function(err, torrent) {
+		async.parallel([
+			function(cb) { indexer.index(task, { }, cb) },
+			function(cb) { indexer.seedleech(task.infoHash, cb) }
+		], function(err, res) {
 			if (err) console.error(err);
-			// TODO: seed/leech count update
-			// TODO: think of what's the case where we don't call merge here - e.g. res contains only one doc, and .index did not update anything
-			db.merge(torrent.infoHash, res, torrent);
+			var torrent = _.merge(res[0], { popularity: res[1] });
+			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
 			next();
 		});
 	});
