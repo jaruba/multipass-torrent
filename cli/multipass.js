@@ -51,6 +51,7 @@ var processQueue = async.queue(function(task, next) {
 
 		indexer.index(task, { }, function(err, torrent) {
 			// TODO: seed/leech count update
+			// TODO: think of what's the case where we don't call merge here - e.g. res contains only one doc, and .index did not update anything
 			db.merge(torrent.infoHash, res, torrent); 
 			next();
 		});
@@ -63,7 +64,7 @@ async.forever(function(next) {
 	var count = 0;
 	db.createKeyStream()
 		.on("data",function(d) { count++ })
-		.on("end", function() { log.important("We have "+count+" torrents"); setTimeout(next, 5000) });
+		.on("end", function() { log.important("We have "+count+" torrents, "+processQueue.length()+" queued"); setTimeout(next, 5000) });
 });
 
 /* Simple dump
