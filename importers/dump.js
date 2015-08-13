@@ -4,7 +4,7 @@ var log = require("../lib/log");
 
 module.exports = function(stream, source)
 {
-    return stream.pipe(byline.createStream())
+    return stream = stream.pipe(byline.createStream())
     .on("data", function(line)
     {
         var parts = line.toString().split("|"),

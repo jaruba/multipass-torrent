@@ -6,7 +6,7 @@ var log = require("../lib/log");
 
 module.exports = function(stream, source)
 {
-    return stream.pipe(new FeedParser())
+    return stream = stream.pipe(new FeedParser())
     .on("error", function (error) { log.error("xml-rss", error, source) })
     .on("readable", function(meta)
     {
