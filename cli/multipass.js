@@ -54,7 +54,7 @@ var processQueue = async.queue(function(task, next) {
 			function(cb) { indexer.seedleech(task.infoHash, cb) }
 		], function(err, indexing) {
 			if (err) console.error(err);
-			var torrent = _.merge(indexing[0], { popularity: indexing[1] });
+			var torrent = _.merge(indexing[0], { popularity: indexing[1], popularityUpdated: Date.now() });
 			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
 			next();
 		});
