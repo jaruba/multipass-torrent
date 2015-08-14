@@ -78,8 +78,12 @@ async.forever(function(next) {
 /* Simple dump
  */
 if (argv["db-dump"]) db.createReadStream()
-	.on("data", function(d) { 
-		d.value.files.forEach(function(f) {
-			console.log([d.value.infoHash, f.path, f.imdb_id, f.season, f.episode].filter(function(x) { return x }).join(" / "))
-		});
+.on("data", function(d) { 
+	d.value.files.forEach(function(f) {
+		console.log([d.value.infoHash, f.path, f.imdb_id, f.season, f.episode].filter(function(x) { return x }).join(" / "))
 	});
+});
+
+/* Stremio Addon interface
+ */
+if (argv["stremio-addon"]) require("../stremio-addon/index")(argv["stremio-addon"]);
