@@ -31,6 +31,7 @@ var importQueue = async.queue(function(source, next) {
 
 		if (source.interval) setTimeout(function() { importQueue.push(source) }, source.interval); // repeat at interval - re-push
 	}, function(hash, extra) {
+		log.hash(hash, "collect");
 		processQueue.push({ infoHash: hash, extra: extra, source: source });
 	});
 }, 1);
@@ -43,6 +44,8 @@ if (argv.source) importQueue.push({ url: argv.source, category: ["tv", "movies"]
 /* Process & index infoHashes
  */
 var processQueue = async.queue(function(task, next) {
+	log.hash(task.infoHash, "processing");
+
 	db.get(task.infoHash, function(err, res) {
 		if (err) return next(err);
 		
@@ -57,6 +60,8 @@ var processQueue = async.queue(function(task, next) {
 			var torrent = _.merge(indexing[0], { popularity: indexing[1], popularityUpdated: Date.now() });
 			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
 			next();
+
+			log.hash(task.infoHash, "processed");
 		});
 	});
 }, 6);
