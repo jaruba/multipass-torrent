@@ -30,6 +30,7 @@
     "multi-master-merge": "Ivshti/multi-master-merge",
     "level": "1.x.x",
     "level-sublevel": "6.4.x",
+    "binary-search-tree": "0.2.x",
     "mkdirp": "0.5.x", 
     "lodash": "3.10.x",
     "bittorrent-dht": "3.x.x",
