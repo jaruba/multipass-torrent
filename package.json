@@ -28,6 +28,7 @@
     "minimist": "1.x.x",
     "async": "0.2.9",
     "multi-master-merge": "Ivshti/multi-master-merge",
+    "es6-map": "0.1.x",
     "level": "1.x.x",
     "level-sublevel": "6.4.x",
     "binary-search-tree": "0.2.x",
