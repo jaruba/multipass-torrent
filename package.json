@@ -27,7 +27,7 @@
   "dependencies": {
     "minimist": "1.x.x",
     "async": "0.2.9",
-    "multi-master-merge": "2.x.x",
+    "multi-master-merge": "Ivshti/multi-master-merge",
     "level": "1.x.x",
     "level-sublevel": "6.4.x",
     "mkdirp": "0.5.x", 
