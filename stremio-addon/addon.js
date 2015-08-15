@@ -43,6 +43,7 @@ function query(args, callback) {
     })(function(err, torrent, file) {
         // if (! torrent)
 
+        // TODO link to stremio documentation, documenting those props
         // Properties we have to provide
         // "infoHash", "uploaders", "downloaders", "map", "mapIdx", "pieces", "pieceLength", "tag", "availability" sources runtime/time        
     });
