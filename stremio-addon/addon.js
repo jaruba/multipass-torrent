@@ -10,8 +10,26 @@ function validate(args) {
     if (! (args.query || args.infoHash)) return { code: 0, message: "query/infoHash requried" };
     if (meta && !meta.imdb_id) return { code: 1, message: "imdb_id required" };
     if (meta && (meta.type == "series" && !(meta.hasOwnProperty("episode") && meta.hasOwnProperty("season"))))
-        return { code: 2, message: "season and episode required for type=series" };
+        return { code: 2, message: "season and episode required for series type" };
     return false;
+};
+
+function availability(torrent) {
+    var maxSeeders = Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[0] }));
+
+    if (maxSeeders >= 300) return 4;
+    if (maxSeeders >= 90) return 3;
+    if (maxSeeders >= 15) return 2;
+    if (maxSeeders > 0) return 1; 
+    return 0;
+};
+
+function query(args, callback) {
+    if (args.infoHash) {
+
+    } else if (args.query) {
+
+    } else return callback(new Error("must specify query or infoHash"));
 };
 
 var service = new Stremio.Server({
@@ -19,13 +37,18 @@ var service = new Stremio.Server({
 		var error = validate(args);
 		if (error) return callback(error);
 
-        
+
         // Properties we have to provide
         // "infoHash", "uploaders", "downloaders", "map", "mapIdx", "pieces", "pieceLength", "tag", "availability" sources runtime/time
         //callback(null, { });
 	},
     "stream.find": function(args, callback, user) {
-        if (!args.items) return callback({code: 10, message: "please provide args.items"});
+        if (!( args.items && Array.isArray(args.items))) return callback({code: 10, message: "please provide args.items which is an array"});
+        var error = null;
+        args.items.forEach(function(x) { error = error || validate(x) });
+        if (error) return callback(error);
+
+        
         // TODO
     },
     //"stats.get":  // TODO
