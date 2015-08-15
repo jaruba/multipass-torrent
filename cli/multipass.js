@@ -54,6 +54,7 @@ var processQueue = async.queue(function(task, next) {
 			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
 			next();
 
+			if (torrent.uninteresting) log.warning(torrent.infoHash+" / "+torrent.name+" is non-interesting, no files indexed");
 			log.hash(task.infoHash, "processed");
 		});
 	});
