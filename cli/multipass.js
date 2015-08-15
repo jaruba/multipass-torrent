@@ -1,23 +1,13 @@
 #!/usr/bin/env node
 
-var argv = require("minimist")(process.argv.slice(2));
 var url = require("url");
 var net = require("net");
 var _ = require("lodash");
-var hat = require("hat");
 var async = require("async");
 var Tracker = require("peer-search/tracker");
+
+var cfg = require("../lib/cfg");
 var log = require("../lib/log");
-
-var cfg = module.cfg = {};
-
-cfg.dbPath = argv["db-path"] || argv["path"] || "./db";
-cfg.dbId = argv["db-identifier"] || argv["db-id"] || argv["id"]; // use minimist alias
-cfg.dbId = (cfg.dbId && cfg.dbId.length==40 && parseInt(cfg.dbId, 16)) ? cfg.dbId : hat(160,16);
-
-log.important("reading default config from defaults.json");
-_.merge(cfg, require("../defaults"));
-
 var db = require("../lib/db");
 var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
@@ -40,11 +30,7 @@ var importQueue = async.queue(function(source, next) {
 		processQueue.push({ infoHash: hash, extra: extra, source: source });
 	});
 }, 1);
-
-// temporary, to test
-//importQueue.push({ url: "https://torrentz.eu/feed_verified?q=", category: ["tv","movies"] }); 
-//importQueue.push({ url: "https://torrentproject.se/verifieddailydump.txt.gz" }); // too big, not suitable
-if (argv.source) importQueue.push({ url: argv.source, category: ["tv", "movies"] });
+if (cfg.sources) cfg.sources.forEach(importQueue.push);
 
 /* Process & index infoHashes
  */
@@ -82,6 +68,7 @@ async.forever(function(next) {
 
 /* Simple dump
  */
+var argv = require("minimist")(process.argv.slice(2));
 if (argv["db-dump"]) db.createReadStream()
 .on("data", function(d) { 
 	d.value.files.forEach(function(f) {

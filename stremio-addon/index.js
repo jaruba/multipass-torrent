@@ -28,7 +28,7 @@ var service = new Stremio.Server({
         // TODO
     },
     //"stats.get":  // TODO
-}, { allow: [CENTRAL], secret: SECRET }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
+}, { allow: [CENTRAL], secret: SECRET }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "")));
 
 var server = http.createServer(function (req, res) {
     service.middleware(req, res, function() { res.end() });
