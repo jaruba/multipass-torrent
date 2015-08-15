@@ -30,23 +30,29 @@ function query(args, callback) {
     (function(next) { 
         if (args.infoHash) db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
         else if (args.query) db.find(args.query, 3, function(err, torrents) {
+            if (err) return next(err);
+            for (var i=0; i!=torrents.length; i++) {
+                var tor = torrents[i];
 
+                var file = _.findWhere(tor.files, args.query); // this won't work, episode is an array in files
+                if (file.tags.concat(/* TAGS */).some(function(tag) { return blacklisted[tag] })) continue; // blacklisted tag
+                next(null, tor, file);
+            };
         });
         else return callback(new Error("must specify query or infoHash"));
-    })(function(err, torrent) {
+    })(function(err, torrent, file) {
         // if (! torrent)
-    });
 
+        // Properties we have to provide
+        // "infoHash", "uploaders", "downloaders", "map", "mapIdx", "pieces", "pieceLength", "tag", "availability" sources runtime/time        
+    });
 };
 
 var service = new Stremio.Server({
 	"stream.get": function(args, callback, user) {
 		var error = validate(args);
 		if (error) return callback(error);
-
-        // Properties we have to provide
-        // "infoHash", "uploaders", "downloaders", "map", "mapIdx", "pieces", "pieceLength", "tag", "availability" sources runtime/time
-        //callback(null, { });
+        query(args, callback);
 	},
     "stream.find": function(args, callback, user) {
         if (!( args.items && Array.isArray(args.items))) return callback({code: 10, message: "please provide args.items which is an array"});
