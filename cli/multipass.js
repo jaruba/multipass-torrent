@@ -25,6 +25,8 @@ var importQueue = async.queue(function(source, next) {
 		else log.important("importing finished from "+source.url+", "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
 
 		if (source.interval) setTimeout(function() { importQueue.push(source) }, source.interval); // repeat at interval - re-push
+
+		next();
 	}, function(hash, extra) {
 		log.hash(hash, "collect");
 		processQueue.push({ infoHash: hash, extra: extra, source: source });
