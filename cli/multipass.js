@@ -7,18 +7,23 @@ var _ = require("lodash");
 var hat = require("hat");
 var async = require("async");
 var Tracker = require("peer-search/tracker");
+var log = require("../lib/log");
 
-module.dbPath = argv["db-path"] || argv["path"] || "./db";
-module.dbId = argv["db-identifier"] || argv["db-id"] || argv["id"]; // use minimist alias
-module.dbId = (module.dbId && module.dbId.length==40 && parseInt(module.dbId, 16)) ? module.dbId : hat(160,16);
+var cfg = module.cfg = {};
+
+cfg.dbPath = argv["db-path"] || argv["path"] || "./db";
+cfg.dbId = argv["db-identifier"] || argv["db-id"] || argv["id"]; // use minimist alias
+cfg.dbId = (cfg.dbId && cfg.dbId.length==40 && parseInt(cfg.dbId, 16)) ? cfg.dbId : hat(160,16);
+
+log.important("reading default config from defaults.json");
+_.merge(cfg, require("../defaults"));
 
 var db = require("../lib/db");
-var log = require("../lib/log");
 var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 
-db.listenReplications(module.dbId); // start our replication server
-db.findReplications(module.dbId); // replicate to other instances
+db.listenReplications(cfg.dbId); // start our replication server
+db.findReplications(cfg.dbId); // replicate to other instances
 
 /* Collect infoHashes from source
  */
