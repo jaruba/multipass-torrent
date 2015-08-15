@@ -53,5 +53,10 @@ Currently, no querying mechanism is implmeneted (that will change very soon), bu
 node cli/multipass --db-dump --db-id=ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6 --db-path=/tmp/test
 ```
 
+# Command-line args
+* ``--source`` - provide an URL to source to crawl - this can be in .txt.gz dump, RSS feed or simply an HTML page containing info hashes; you can use multiple ``--source`` arguments
+* ``--id`` or ``--db-id`` - the DB ID (16 bit hex string) to use for replication; instances with the same DB ID will replicate the DB among them
+* ``--db-path`` - the filesystem path of the LevelDB database
+
 # why multipass?
 [For anything else there's multipass](https://www.pinterest.com/pin/83738874291404469/)
