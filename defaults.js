@@ -8,5 +8,8 @@ module.exports = {
 	},
 	"minSeedToIndex": 4,
 
+	"matchFiles": /.mp4$|.avi$|.mkv$/i,
+	"excludeFiles": /^RARBG|^Sample/i,
+
 	"cinemeta": "http://stremio-cinemeta.herokuapp.com"
 };
