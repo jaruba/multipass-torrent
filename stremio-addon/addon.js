@@ -5,6 +5,8 @@ var _ = require("lodash");
 var CENTRAL = "http://api8.linvo.me";
 var SECRET = "8417fe936f0374fbd16a699668e8f3c4aa405d9f";
 
+var db = require("../lib/db");
+
 function validate(args) {
     var meta = args.query;
     if (! (args.query || args.infoHash)) return { code: 0, message: "query/infoHash requried" };
@@ -25,18 +27,22 @@ function availability(torrent) {
 };
 
 function query(args, callback) {
-    if (args.infoHash) {
+    (function(next) { 
+        if (args.infoHash) db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
+        else if (args.query) db.find(args.query, 3, function(err, torrents) {
 
-    } else if (args.query) {
+        });
+        else return callback(new Error("must specify query or infoHash"));
+    })(function(err, torrent) {
+        // if (! torrent)
+    });
 
-    } else return callback(new Error("must specify query or infoHash"));
 };
 
 var service = new Stremio.Server({
 	"stream.get": function(args, callback, user) {
 		var error = validate(args);
 		if (error) return callback(error);
-
 
         // Properties we have to provide
         // "infoHash", "uploaders", "downloaders", "map", "mapIdx", "pieces", "pieceLength", "tag", "availability" sources runtime/time
@@ -48,11 +54,11 @@ var service = new Stremio.Server({
         args.items.forEach(function(x) { error = error || validate(x) });
         if (error) return callback(error);
 
-        
+
         // TODO
     },
     //"stats.get":  // TODO
-}, { allow: [CENTRAL], secret: SECRET }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "")));
+}, { allow: [CENTRAL], secret: SECRET }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
 
 var server = http.createServer(function (req, res) {
     service.middleware(req, res, function() { res.end() });
