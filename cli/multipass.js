@@ -81,4 +81,4 @@ if (argv["db-dump"]) db.createReadStream()
 
 /* Stremio Addon interface
  */
-if (argv["stremio-addon"]) require("../stremio-addon/index")(argv["stremio-addon"]);
+if (argv["stremio-addon"]) require("../stremio-addon/addon")(argv["stremio-addon"]);
