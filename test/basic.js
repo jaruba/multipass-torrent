@@ -65,6 +65,7 @@ tape("processor - import torrent", function(t) {
 				var maxSeed = Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[0] }));
 				(torrent.files || []).forEach(function(f) {
 					if (maxSeed <= cfg.minSeedToIndex) return; // cleaner?
+					if (f.length < 85*1024*1024) return;
 					if (f.type == "movie") movie_ids[f.imdb_id] = true;
 					if (f.type == "series") series_ids[f.imdb_id] = [f.season,f.episode[0]]; // fill it with season / episode so we can use for testing later
 				});

@@ -25,10 +25,27 @@ function availability(torrent) {
     return 0;
 };
 
+function tags(file)
+{
+    var tags = [];
+    tags.push(file.path.split(".").pop().slice(1)); // file extension
+
+    // Then tokenize into keywords; try against tagWords
+    file.path.split("/").forEach(function(seg) {
+        var tokens = seg.split(/\.| |-|;|_/).filter(function(x){return x});
+        tokens = seg.split(/ |\.|\(|\)|\[|\]/).map(function(x) { return x.toLowerCase() }); // split, this time for tokens
+        _.each(cfg.tags, function(words, tag) {
+            if (tokens.filter(function(token) { return words.indexOf(token.toLowerCase()) > -1 }).length) tags.push(tag);
+        });
+    });
+
+    return tags;
+}
+
 function query(args, callback) {
     (function(next) { 
         if (args.infoHash) db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
-        else if (args.query) async.eachSeries(db.lookup(args.query, 3), function(hash, callback) {
+        else if (args.query) async.eachSeries(db.lookup(args.query, 3), function(hash, callback) { 
             db.get(hash.id, function(err, res) {
                 if (err) return callback({ err: err });
                 var tor = res[0] && res[0].value;
@@ -40,7 +57,9 @@ function query(args, callback) {
                         (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
                 });
 
-                //if (file.tags.concat().some(function(tag) { return blacklisted[tag] })) return callback(); // blacklisted tag
+                if ((file.tag = file.tag.concat(tags(file))).some(function(tag) { return cfg.blacklisted[tag] })) 
+                    return callback(); // blacklisted tag
+                console.log(file.tag);
 
                 callback({ torrent: tor, file: file });
             });
