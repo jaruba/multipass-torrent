@@ -11,7 +11,7 @@ tape("importer with rss source", function(t) {
 	var hashes = [ ];
 	importer.collect({ url: "http://torrentz.eu/feed_verified?q=", category: ["tv", "movies"] }, function(err, status) {
 		t.ok(!err, "no err from importer.collect");
-		t.ok(hashes.length > 20, "hashes collected ("+hashes.length+") are more than 20")
+		t.ok(hashes.length > 20, "hashes collected ("+hashes.length+") are more than 20");
 		t.end();
 	}, function(hash) {
 		hashes.push(hash);
@@ -19,3 +19,17 @@ tape("importer with rss source", function(t) {
 	});
 });
 
+tape("retriever", function(t) {
+	// try with 3 hashes, accept 2/3 success rate - some of them are simply not available
+	async.each(hashes.slice(0,3), function(hash, callback) {
+
+	});
+});
+
+tape("processor - import torrent", function(t) {
+
+});
+
+tape("processor - skip behaviour", function(t) {
+
+});
