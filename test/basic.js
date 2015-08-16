@@ -2,6 +2,7 @@ var tape = require("tape");
 var async = require("async");
 var _ = require("lodash");
 
+var Stremio = require("stremio-service");
 
 var cfg = require("../lib/cfg");
 cfg.dbPath = require("path").join(require("os").tmpdir(), Date.now()+"");
@@ -50,16 +51,18 @@ tape("retriever", function(t) {
 // TODO this is extremely primitive
 var mp = require("../cli/multipass");
 tape("processor - import torrent", function(t) {
-	t.timeoutAfter(35000); // 35s for 50 torrents
+	t.timeoutAfter(30000); // 30s for 50 torrents
 
 	var successful = [];
-	async.each(hashes.slice(0,50), function(hash, callback) {
+	async.each(hashes.slice(0, 50), function(hash, callback) {
 		mp.processQueue.push({ infoHash: hash, callback: function(err, torrent) {
 			if (err) return callback(err);
 			if (torrent) {
 				successful.push(torrent);
 				// Collect those for later tests
+				var maxSeed = Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[0] }));
 				(torrent.files || []).forEach(function(f) {
+					if (maxSeed <= cfg.minSeedToIndex) return; // cleaner?
 					if (f.type == "movie") movie_ids[f.imdb_id] = true;
 					if (f.type == "series") series_ids[f.imdb_id] = [f.season,f.episode[0]]; // fill it with season / episode so we can use for testing later
 				});
@@ -79,6 +82,13 @@ tape("processor - import torrent", function(t) {
 });
 
 
+/*
+tape("processor - skip behaviour", function(t) {
+
+});
+*/
+
+
 tape("indexes - contain the imdb ids", function(t) {
 	Object.keys(movie_ids).forEach(function(id) {
 		t.ok(db.indexes.meta.search(id).length, "we have entries for id "+id);
@@ -91,6 +101,7 @@ tape("db - db.find works with movies", function(t) {
 	var imdb_id = Object.keys(movie_ids)[0];
 	db.find({ imdb_id: imdb_id }, 1, function(err, torrents) {
 		t.ok(!err, "no error");
+		t.ok(torrents[0], "has a result");
 		t.ok(torrents.length <= 1, "no more than 1 result");
 		t.ok(torrents[0].infoHash, "infoHash for result");
 		t.ok(_.find(torrents[0].files, function(f) { return f.imdb_id == imdb_id }), "we have a file with that imdb_id inside");
@@ -111,9 +122,51 @@ tape("db - db.find works series", function(t) {
 	});
 });
 
+/* Addon tests
+ */
+var addonPort, addon;
+
+tape("addon - listening on port", function(t) {
+	t.timeoutAfter(500);
+
+	var server = require("../stremio-addon/addon")().on("listening", function() {
+		addonPort = server.address().port;
+		t.end();
+	})
+});
+
+tape("addon - initializes properly", function(t) {
+	t.timeoutAfter(1000);
+
+	addon = new Stremio.Client();
+	addon.addService("http://localhost:"+addonPort);
+	addon.on("service-ready", function(service) {
+		t.ok(service.manifest, "has manifest");
+		t.ok(service.manifest.name, "has name");
+		t.ok(service.manifest.methods && service.manifest.methods.length, "has methods");
+		t.ok(service.manifest.methods && service.manifest.methods.indexOf("stream.get")!=-1, "has stream.get method");
+		t.end();
+	});
+});
+
+
+tape("addon - sample query with a movie", function(t) {
+	t.timeoutAfter(1000);
+
+	addon.stream.get({ query: { } })
+});
 
 /*
-tape("processor - skip behaviour", function(t) {
+tape("addon - sample query with an episode", function(t) {
+	t.timeoutAfter(1000);
 
+	addon.stream.get({ query: { } })
+});
+
+
+tape("addon - get stream by infoHash", function(t) {
+	t.timeoutAfter(1000);
+
+	addon.stream.get({ infoHash:  })
 });
 */

@@ -31,13 +31,15 @@ function query(args, callback) {
         if (args.infoHash) db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
         else if (args.query) db.find(args.query, 3, function(err, torrents) {
             if (err) return next(err);
+            /*
             for (var i=0; i!=torrents.length; i++) {
                 var tor = torrents[i];
 
                 var file = _.findWhere(tor.files, args.query); // this won't work, episode is an array in files
-                if (file.tags.concat(/* TAGS */).some(function(tag) { return blacklisted[tag] })) continue; // blacklisted tag
+                if (file.tags.concat().some(function(tag) { return blacklisted[tag] })) continue; // blacklisted tag
                 next(null, tor, file);
             };
+            */
         });
         else return callback(new Error("must specify query or infoHash"));
     })(function(err, torrent, file) {
@@ -74,5 +76,5 @@ var server = http.createServer(function (req, res) {
 	console.log("Multipass Stremio Addon listening on "+server.address().port);
 });
 
-if (module.parent) module.exports = function(port) { server.listen(port) };
+if (module.parent) module.exports = function(port) { return server.listen(port) };
 else server.listen(process.env.PORT || 7000);
