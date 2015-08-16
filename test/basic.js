@@ -194,6 +194,10 @@ tape("addon - sample query with an episode", function(t) {
 	});
 });
 
+tape("addon - test preferrences", function(t) {
+	t.skip("NOT IMPLEMENTED");
+});
+
 tape("addon - get stream by infoHash", function(t) {
 	t.timeoutAfter(1500);
 

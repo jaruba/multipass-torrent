@@ -44,46 +44,49 @@ function tags(file)
 
 function query(args, callback) {
     (function(next) { 
-        if (args.infoHash) db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
-        else if (args.query) async.eachSeries(db.lookup(args.query, 3), function(hash, callback) { 
-            db.get(hash.id, function(err, res) {
-                if (err) return callback({ err: err });
-                var tor = res[0] && res[0].value;
-                if (! tor) return callback({ err: "hash not found "+hash.id });
+        if (args.infoHash) return db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
+        if (! args.query) return callback(new Error("must specify query or infoHash"));
 
-                var file = _.find(tor.files, function(f) { 
-                    return f.imdb_id == args.query.imdb_id && 
-                        (args.query.season ? (f.season == args.query.season) : true) &&
-                        (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
+        //var preferred = _.uniq(PREFERRED.concat(args.preferred || []), function(x) { return x.tag });
+        var preferred = args.preferred || [];
+        var prio = function(resolution) {
+            return preferred.map(function(pref) { 
+                return availability(resolution.torrent) >= pref.min_avail && resolution.file.tag.indexOf(pref.tag)!=-1
+            }).reduce(function(a,b) { return a+b }, 0);
+        };
+
+        var resolution = null;
+        var matches = db.lookup(args.query, 3);
+        async.whilst(
+            function() { return matches.length && (!resolution || prio(resolution) < preferred.length) },
+            function(callback) {
+                var hash = matches.shift();
+                db.get(hash.id, function(err, res) {
+                    if (err) return callback({ err: err });
+
+                    var tor = res[0] && res[0].value;
+                    if (! tor) return callback({ err: "hash not found "+hash.id });
+
+                    var file = _.find(tor.files, function(f) { 
+                        return f.imdb_id == args.query.imdb_id && 
+                            (args.query.season ? (f.season == args.query.season) : true) &&
+                            (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
+                    });
+
+                    if ((file.tag = file.tag.concat(tags(file))).some(function(tag) { return cfg.blacklisted[tag] })) 
+                        return callback(); // blacklisted tag
+
+                    var res = { torrent: tor, file: file };
+                    if (!resolution || prio(res) > prio(resolution)) resolution = res;
+
+                    callback();
                 });
-
-                if ((file.tag = file.tag.concat(tags(file))).some(function(tag) { return cfg.blacklisted[tag] })) 
-                    return callback(); // blacklisted tag
-
-                callback({ torrent: tor, file: file });
-            });
-            // TODO preferred; this means we have to get all torrents at once, which we don't want to do; 
-            // maybe iterate until we find a torrent which satisfies all preferences - if that doesn't happen just return last set resolution (first non blacklisted torrent)
-             /*
-            torrent.availability = availability(torrent);
-            var prio = function(t) {
-                return preferred.map(function(pref) { 
-                    return torrent.availability >= pref.min_avail && file.tag.indexOf(pref.tag)!=-1
-                }).reduce(function(a,b) { return a+b }, 0);
-            };
-            torrents.sort(function(a, b) { 
-                return (prio(b) - prio(a)) || b.seeders-a.seeders
-            });
-
-             */
-            // TODO: maybe update seed/leech counts?
-        }, function(resolution) {
-            if (!resolution) next(null, null);
-            else next(resolution.err, resolution.torrent, resolution.file);
-        });
-        else return callback(new Error("must specify query or infoHash"));
+            },
+            function() { resolution ? next(resolution.err, resolution.torrent, resolution.file) : next() }
+        );
     })(function(err, torrent, file) {
         // Output according to Stremio Addon API for stream.get
+        // http://strem.io/addons-api
         callback(err, torrent ? _.extend({ 
             infoHash: torrent.infoHash, 
             uploaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[0] })),
@@ -110,8 +113,9 @@ var service = new Stremio.Server({
         args.items.forEach(function(x) { error = error || validate(x) });
         if (error) return callback(error);
 
-
-        // TODO
+        async.map(args.items, query, function(err, items) { 
+            callback(err, items ? { items: _.pick(items, "availability") } : null);
+        });
     },
     //"stats.get":  // TODO
 }, { allow: [cfg.stremioCentral], secret: cfg.stremioSecret }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
