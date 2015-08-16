@@ -62,6 +62,20 @@ function query(args, callback) {
 
                 callback({ torrent: tor, file: file });
             });
+            // TODO preferred; this means we have to get all torrents at once, which we don't want to do; 
+            // maybe iterate until we find a torrent which satisfies all preferences - if that doesn't happen just return last set resolution (first non blacklisted torrent)
+             /*
+            torrent.availability = availability(torrent);
+            var prio = function(t) {
+                return preferred.map(function(pref) { 
+                    return torrent.availability >= pref.min_avail && file.tag.indexOf(pref.tag)!=-1
+                }).reduce(function(a,b) { return a+b }, 0);
+            };
+            torrents.sort(function(a, b) { 
+                return (prio(b) - prio(a)) || b.seeders-a.seeders
+            });
+
+             */
             // TODO: maybe update seed/leech counts?
         }, function(resolution) {
             if (!resolution) next(null, null);
