@@ -22,7 +22,8 @@
     "url": "https://github.com/Ivshti/multipass-torrent/issues"
   },
   "scripts": { 
-    "start": "node cli/multipass"
+    "start": "node cli/multipass",
+    "test": "tape test/*.js"
   },
   "dependencies": {
     "minimist": "1.x.x",
@@ -56,6 +57,9 @@
 
     "peer-search": "git://github.com/Ivshti/peer-search"
 
+  },
+  "devDependencies": {
+    "tape": "4.x.x"
   },
   "homepage": "https://github.com/Ivshti/multipass-torrent"
 }
