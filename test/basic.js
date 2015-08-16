@@ -154,16 +154,43 @@ tape("addon - initializes properly", function(t) {
 
 
 tape("addon - sample query with a movie", function(t) {
-	t.timeoutAfter(1000);
+	t.timeoutAfter(2000);
 
 	var imdb_id = Object.keys(movie_ids)[0];
 
-	addon.stream.get({ query: { imdb_id: imdb_id } }, function(err, resp) {
-		console.log(err);
-		console.log(resp);
+	addon.stream.get({ query: { imdb_id: imdb_id, type: "movie" } }, function(err, resp) {
+		t.ok(!err, "no error");
+		t.ok(resp && resp.infoHash && resp.infoHash.length == 40, "has infoHash");
+		t.ok(resp && Array.isArray(resp.map), "has map");
+		t.ok(resp && !isNaN(resp.mapIdx), "has mapIdx");
+		t.ok(resp && !isNaN(resp.availability), "has availability");
+
 		t.end();
 	});
 });
+
+tape("addon - sample query with an episode", function(t) {
+	t.timeoutAfter(2000);
+
+	var imdb_id = Object.keys(series_ids)[0];
+	var season = series_ids[imdb_id][0], episode = series_ids[imdb_id][1];
+
+	addon.stream.get({ query: { imdb_id: imdb_id, season: season, episode: episode, type: "series" } }, function(err, resp) {
+		t.ok(!err, "no error");
+		t.ok(resp && resp.infoHash && resp.infoHash.length == 40, "has infoHash");
+		t.ok(resp && Array.isArray(resp.map), "has map");
+		t.ok(resp && !isNaN(resp.mapIdx), "has mapIdx");
+		t.ok(resp && !isNaN(resp.availability), "has availability");
+
+		var file = resp && resp.map[resp.mapIdx];
+		t.ok(file, "has selected file");
+		t.ok(file && file.season && file.episode, "selected file has season/episode");
+		t.ok(file && file.season==season && file.episode.indexOf(episode)!=-1, "selected file matches query");	
+		
+		t.end();
+	});
+});
+
 
 /*
 tape("addon - sample query with an episode", function(t) {

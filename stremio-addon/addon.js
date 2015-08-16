@@ -51,11 +51,18 @@ function query(args, callback) {
         });
         else return callback(new Error("must specify query or infoHash"));
     })(function(err, torrent, file) {
-        // if (! torrent)
-        console.log(err, torrent, file)
-        // TODO link to stremio documentation, documenting those props
-        // Properties we have to provide
-        // "infoHash", "uploaders", "downloaders", "map", "mapIdx", "pieces", "pieceLength", "tag", "availability" sources runtime/time        
+        // Output according to Stremio Addon API for stream.get
+        callback(err, torrent ? _.extend({ 
+            infoHash: torrent.infoHash, 
+            uploaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[0] })),
+            downloaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[1] })),
+            map: torrent.files,
+            pieceLength: torrent.pieceLength,
+            availability: availability(torrent),
+        }, file ? { 
+            mapIdx: torrent.files.indexOf(file),
+            tag: file.tag,
+        } : { }) : null);      
     });
 };
 
