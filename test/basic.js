@@ -52,10 +52,10 @@ tape("retriever", function(t) {
 
 // TODO this is extremely primitive
 var mp = require("../cli/multipass");
+var successful = [];
 tape("processor - import torrent", function(t) {
 	t.timeoutAfter(30000); // 30s for 50 torrents
 
-	var successful = [];
 	async.each(hashes.slice(0, 50), function(hash, callback) {
 		mp.processQueue.push({ infoHash: hash, callback: function(err, torrent) {
 			if (err) return callback(err);
@@ -164,6 +164,7 @@ tape("addon - sample query with a movie", function(t) {
 		t.ok(resp && Array.isArray(resp.map), "has map");
 		t.ok(resp && !isNaN(resp.mapIdx), "has mapIdx");
 		t.ok(resp && !isNaN(resp.availability), "has availability");
+		//t.ok(resp && !isNaN(resp.uploaders), "has uploaders");
 
 		t.end();
 	});
@@ -181,28 +182,26 @@ tape("addon - sample query with an episode", function(t) {
 		t.ok(resp && Array.isArray(resp.map), "has map");
 		t.ok(resp && !isNaN(resp.mapIdx), "has mapIdx");
 		t.ok(resp && !isNaN(resp.availability), "has availability");
+		//t.ok(resp && !isNaN(resp.uploaders), "has uploaders");
 
 		var file = resp && resp.map[resp.mapIdx];
 		t.ok(file, "has selected file");
 		t.ok(file && file.season && file.episode, "selected file has season/episode");
 		t.ok(file && file.season==season && file.episode.indexOf(episode)!=-1, "selected file matches query");	
-		
+
 		t.end();
 	});
 });
 
-
-/*
-tape("addon - sample query with an episode", function(t) {
-	t.timeoutAfter(1000);
-
-	addon.stream.get({ query: { } })
-});
-
-
 tape("addon - get stream by infoHash", function(t) {
-	t.timeoutAfter(1000);
+	t.timeoutAfter(1500);
 
-	addon.stream.get({ infoHash:  })
+	addon.stream.get({ infoHash: successful[0].infoHash }, function(err, resp) {
+		t.ok(resp && resp.infoHash && resp.infoHash.length == 40, "has infoHash");
+		t.ok(resp && Array.isArray(resp.map), "has map");
+		t.ok(resp && !isNaN(resp.availability), "has availability");
+		//t.ok(resp && !isNaN(resp.uploaders), "has uploaders");
+
+		t.end();
+	});
 });
-*/
