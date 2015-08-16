@@ -28,7 +28,7 @@ function availability(torrent) {
 function tags(file)
 {
     var tags = [];
-    tags.push(file.path.split(".").pop().slice(1)); // file extension
+    tags.push(file.path.split(".").pop()); // file extension
 
     // Then tokenize into keywords; try against tagWords
     file.path.split("/").forEach(function(seg) {
@@ -60,7 +60,6 @@ function query(args, callback) {
                 if ((file.tag = file.tag.concat(tags(file))).some(function(tag) { return cfg.blacklisted[tag] })) 
                     return callback(); // blacklisted tag
                 console.log(file.tag);
-
                 callback({ torrent: tor, file: file });
             });
             // TODO: maybe update seed/leech counts?

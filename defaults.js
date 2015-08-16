@@ -13,27 +13,27 @@ module.exports = {
 	"stremioSecret": "8417fe936f0374fbd16a699668e8f3c4aa405d9f",
 	"stremioCentral": "http://api8.herokuapp.com",
 
-	// Tagging system
+	// Tagging system; all tags must be lowercase
 	"tags": {
-		"screener": ["SCREENER", "DVDSCR", "DVDSCREENER", "BDSCR", "SCR"],
-		"cam": ["CAM", "HDCAM", "CAMRip", "HQCAM"],
-		"telesync": ["TS", "HDTS", "TELESYNC", "PDVD"],
-		"workprint": ["WORKPRINT", "WP"],
-		"r5": ["TC", "TELECINE", "R5"], // r5 + telecine
-		"web": ["WEBDL", "WEB", "WEBRIP"],
-		"dvd": ["DVDRip"],
-		"hdtv": ["DSR", "DSRip", "DTHRip", "DVBRip", "HDTV", "PDTV", "TVRip", "HDTVRip", "HDRip"],
-		"vod": ["VODRip", "VODR"],
-		"br": ["BDRip", "BRRip", "BluRay", "BDR", "BD5", "BD9"],
-		"dts": ["DTS"],
+		"screener": ["screener", "dvdscr", "dvdscreener", "bdscr", "scr"],
+		"cam": ["cam", "hdcam", "camrip", "hqcam"],
+		"telesync": ["ts", "hdts", "telesync", "pdvd"],
+		"workprint": ["workprint", "wp"],
+		"r5": ["tc", "telecine", "r5"], // r5 + telecine
+		"web": ["webdl", "web", "webrip"],
+		"dvd": ["dvdrip"],
+		"hdtv": ["dsr", "dsrip", "dthrip", "dvbrip", "hdtv", "pdtv", "tvrip", "hdtvrip", "hdrip"],
+		"vod": ["vodrip", "vodr"],
+		"br": ["bdrip", "brrip", "bluray", "bdr", "bd5", "bd9"],
+		"dts": ["dts"],
 		"hd": ["1080p"],
 		"720p": ["720p"],
 		"1080p": ["1080p"],
 		"ac3": ["ac3"],
-		"nonenglish": ["FRENCH", "iTALiAN", "SPANISH", "RU", "RUSSIAN", "SweSub", "dublado"],
-		"badripper": ["iTALiAN", "SPARKS","EVO", "HC", "KORSUB", "Douglasvip", "MURD3R", "NKR"],
+		"nonenglish": ["french", "italian", "spanish", "ru", "russian", "swesub", "dublado"],
+		"badripper": ["italian", "sparks","evo", "hc", "korsub", "douglasvip", "murd3r", "nkr"],
 		"yify": ["yts","yify"],
-		//"yts": ["yts","yify"], // reserve for directly indexing from YTS
+		//"yts": ["yts","yify"], // reserve for directly indexing from yts
 		"cd1": ["cd1"], "cd2": ["cd2"], "cd3": ["cd3"],
 		"splitted": ["cd1","cd2","cd3","cd4","part1","part2","part3", "pt1", "pt2", "pt3"],
 	},
