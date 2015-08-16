@@ -39,7 +39,7 @@ function tags(file)
         });
     });
 
-    return tags;
+    return _.uniq(tags);
 }
 
 function query(args, callback) {
@@ -59,7 +59,7 @@ function query(args, callback) {
 
                 if ((file.tag = file.tag.concat(tags(file))).some(function(tag) { return cfg.blacklisted[tag] })) 
                     return callback(); // blacklisted tag
-                console.log(file.tag);
+
                 callback({ torrent: tor, file: file });
             });
             // TODO: maybe update seed/leech counts?
