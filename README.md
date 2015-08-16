@@ -45,6 +45,7 @@ connected to peer 192.168.0.103:50962
 We have 96 torrents
 ```
 
+
 # Querying
 Now that the data is in the DB, how to make use of it? 
 
@@ -53,11 +54,18 @@ Currently, no querying mechanism is implmeneted (that will change very soon), bu
 node cli/multipass --db-dump --db-id=ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6 --db-path=/tmp/test
 ```
 
+# Programatic usage
+Currently not documented, although the files in lib/ are clear enough on first read to see how to use it.
+You can also include cli/multipass as a module to take advantage of it's import and process queues.
+
 # Command-line usage
 * ``--source`` - provide an URL to source to crawl - this can be in .txt.gz dump, RSS feed or simply an HTML page containing info hashes; you can use multiple ``--source`` arguments
 * ``--id`` or ``--db-id`` - the DB ID (16 bit hex string) to use for replication; instances with the same DB ID will replicate the DB among them
 * ``--db-path`` - the filesystem path of the LevelDB database; default will be "multipass" inside OS's temporary directory
 * ``--log=level`` - level is a number from 0 to 3, 3 being most verbose - the logging level 
+
+# Stremio Addon
+multipass can be used as an Addon to [Stremio](http://strem.io) - just pass ``--stremio-addon=PORT`` to the CLI, and then start stremio with ``--services=http://localhost:PORT``. A GUI to add custom addons is soon to be added in Stremio.
 
 # why multipass?
 [For anything else there's multipass](https://www.pinterest.com/pin/83738874291404469/)

@@ -28,3 +28,5 @@ node_modules
 
 # Database path
 db
+
+cli/x3me.js
