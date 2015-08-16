@@ -49,10 +49,13 @@ var processQueue = async.queue(function(task, next) {
 			function(cb) { indexer.index(task, { }, cb) },
 			function(cb) { indexer.seedleech(task.infoHash, cb) }
 		], function(err, indexing) {
-			if (err) console.error(err);
+			if (err) { if (task.callback) task.callback(err); console.error(err); return next(); }
+
 			var torrent = _.merge(indexing[0], { popularity: indexing[1], popularityUpdated: Date.now() });
 			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
+			
 			next();
+			if (task.callback) task.callback(null, torrent);
 
 			if (torrent.uninteresting) log.warning(torrent.infoHash+" / "+torrent.name+" is non-interesting, no files indexed");
 			log.hash(task.infoHash, "processed");
