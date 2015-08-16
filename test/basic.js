@@ -9,6 +9,8 @@ var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 var retriever = require("../lib/retriever");
 
+//var mp = require("../cli/multipass");
+
 var hashes = [ ]; // global so we can reuse it
 var movie_ids = []; var series_ids = []; // also global, so we can reuse those 
  
@@ -25,12 +27,13 @@ tape("importer with rss source", function(t) {
 
 tape("retriever", function(t) {
 	t.timeoutAfter(3000);
-	
+
 	// try with 3 hashes, accept 2/3 success rate - some of them are simply not available
 	var results = [];
 	async.each(hashes.slice(0,3), function(hash, callback) {
 		retriever.retrieve(hash, function(err, tor) {
-			results.push(tor);
+			if (err) console.error(err);
+			if (tor) results.push(tor);
 			callback();
 		});
 	}, function() {

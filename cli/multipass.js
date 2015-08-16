@@ -69,9 +69,17 @@ async.forever(function(next) {
 		.on("end", function() { log.important("We have "+count+" torrents, "+processQueue.length()+" queued"); setTimeout(next, 5000) });
 });
 
+
+/* Programatic usage of this
+ */
+if (module.parent) return module.exports = {
+	processQueue: processQueue,
+	importQueue: importQueue,
+};
+
 /* Simple dump
  */
-var argv = require("minimist")(process.argv.slice(2));
+var argv = module.parent ? { } : require("minimist")(process.argv.slice(2));
 if (argv["db-dump"]) db.createReadStream()
 .on("data", function(d) { 
 	d.value.files.forEach(function(f) {
@@ -82,3 +90,4 @@ if (argv["db-dump"]) db.createReadStream()
 /* Stremio Addon interface
  */
 if (argv["stremio-addon"]) require("../stremio-addon/addon")(argv["stremio-addon"]);
+
