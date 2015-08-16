@@ -1,5 +1,7 @@
 var tape = require("tape");
 var async = require("async");
+var _ = require("lodash");
+
 
 var cfg = require("../lib/cfg");
 cfg.dbPath = require("path").join(require("os").tmpdir(), Date.now()+"");
@@ -59,7 +61,7 @@ tape("processor - import torrent", function(t) {
 				// Collect those for later tests
 				(torrent.files || []).forEach(function(f) {
 					if (f.type == "movie") movie_ids[f.imdb_id] = true;
-					if (f.type == "series") series_ids[f.imdb_id] = true;
+					if (f.type == "series") series_ids[f.imdb_id] = [f.season,f.episode[0]]; // fill it with season / episode so we can use for testing later
 				});
 			}
 			callback();
@@ -75,6 +77,41 @@ tape("processor - import torrent", function(t) {
 		t.end();
 	});
 });
+
+
+tape("indexes - contain the imdb ids", function(t) {
+	Object.keys(movie_ids).forEach(function(id) {
+		t.ok(db.indexes.meta.search(id).length, "we have entries for id "+id);
+	});
+	t.end();
+});
+
+
+tape("db - db.find works with movies", function(t) {
+	var imdb_id = Object.keys(movie_ids)[0];
+	db.find({ imdb_id: imdb_id }, 1, function(err, torrents) {
+		t.ok(!err, "no error");
+		t.ok(torrents.length <= 1, "no more than 1 result");
+		t.ok(torrents[0].infoHash, "infoHash for result");
+		t.ok(_.find(torrents[0].files, function(f) { return f.imdb_id == imdb_id }), "we have a file with that imdb_id inside");
+		t.end();
+	});
+});
+
+tape("db - db.find works series", function(t) {
+	var imdb_id = Object.keys(series_ids)[0];
+	var season = series_ids[imdb_id][0], episode = series_ids[imdb_id][1];
+
+	db.find({ imdb_id: imdb_id, season: season, episode: episode }, 1, function(err, torrents) {
+		t.ok(!err, "no error");
+		t.ok(torrents.length <= 1, "no more than 1 result");
+		t.ok(torrents[0].infoHash, "infoHash for result");
+		t.ok(_.find(torrents[0].files, function(f) { return f.imdb_id == imdb_id && f.season == season }), "we have a file with that imdb_id inside");
+		t.end();
+	});
+});
+
+
 /*
 tape("processor - skip behaviour", function(t) {
 

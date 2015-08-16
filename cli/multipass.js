@@ -63,6 +63,13 @@ var processQueue = async.queue(function(task, next) {
 	});
 }, 6);
 
+/* Programatic usage of this
+ */
+if (module.parent) return module.exports = {
+	processQueue: processQueue,
+	importQueue: importQueue,
+};
+
 /* Log number of torrents we have
  */
 async.forever(function(next) {
@@ -71,14 +78,6 @@ async.forever(function(next) {
 		.on("data",function(d) { count++ })
 		.on("end", function() { log.important("We have "+count+" torrents, "+processQueue.length()+" queued"); setTimeout(next, 5000) });
 });
-
-
-/* Programatic usage of this
- */
-if (module.parent) return module.exports = {
-	processQueue: processQueue,
-	importQueue: importQueue,
-};
 
 /* Simple dump
  */
