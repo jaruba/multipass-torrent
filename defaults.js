@@ -11,5 +11,8 @@ module.exports = {
 	"matchFiles": /.mp4$|.avi$|.mkv$/i,
 	"excludeFiles": /^RARBG|^Sample/i,
 
-	"cinemeta": "http://stremio-cinemeta.herokuapp.com"
+	"cinemeta": "http://stremio-cinemeta.herokuapp.com",
+
+	"stremioSecret": "8417fe936f0374fbd16a699668e8f3c4aa405d9f",
+	"stremioCentral": "http://api8.linvo.me",
 };

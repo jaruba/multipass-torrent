@@ -2,9 +2,7 @@ var Stremio = require("stremio-service");
 var http = require("http");
 var _ = require("lodash");
 
-var CENTRAL = "http://api8.linvo.me";
-var SECRET = "8417fe936f0374fbd16a699668e8f3c4aa405d9f";
-
+var cfg = require("../lib/cfg");
 var db = require("../lib/db");
 
 function validate(args) {
@@ -67,7 +65,7 @@ var service = new Stremio.Server({
         // TODO
     },
     //"stats.get":  // TODO
-}, { allow: [CENTRAL], secret: SECRET }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
+}, { allow: [cfg.stremioCentral], secret: cfg.stremioSecret }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
 
 var server = http.createServer(function (req, res) {
     service.middleware(req, res, function() { res.end() });

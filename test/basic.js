@@ -139,6 +139,7 @@ tape("addon - initializes properly", function(t) {
 	t.timeoutAfter(1000);
 
 	addon = new Stremio.Client();
+	addons.setAuth(cfg.stremioCentral, cfg.stremioSecret);
 	addon.addService("http://localhost:"+addonPort);
 	addon.on("service-ready", function(service) {
 		t.ok(service.manifest, "has manifest");
@@ -153,7 +154,13 @@ tape("addon - initializes properly", function(t) {
 tape("addon - sample query with a movie", function(t) {
 	t.timeoutAfter(1000);
 
-	addon.stream.get({ query: { } })
+	var imdb_id = Object.keys(movie_ids)[0];
+
+	addon.stream.get({ query: { imdb_id: imdb_id } }, function(err, resp) {
+		console.log(err);
+		console.log(resp);
+		t.end();
+	});
 });
 
 /*
