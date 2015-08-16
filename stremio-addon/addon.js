@@ -28,16 +28,26 @@ function query(args, callback) {
     (function(next) { 
         if (args.infoHash) db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
         else if (args.query) db.find(args.query, 3, function(err, torrents) {
+            // TODO: instead of retrieving all 3 torrents at once, we can try with first, if blacklisted get second, etc. 
+            // until we try top 3-4 
             if (err) return next(err);
-            /*
-            for (var i=0; i!=torrents.length; i++) {
-                var tor = torrents[i];
 
-                var file = _.findWhere(tor.files, args.query); // this won't work, episode is an array in files
-                if (file.tags.concat().some(function(tag) { return blacklisted[tag] })) continue; // blacklisted tag
+            // TODO: maybe update seed/leech counts?
+
+            var found = false;
+            torrents.forEach(function(tor) {
+                var file = _.find(tor.files, function(f) { 
+                    return f.imdb_id == args.query.imdb_id && 
+                        (args.query.season ? (f.season == args.query.season) : true) &&
+                        (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
+                });
+
+                //if (file.tags.concat().some(function(tag) { return blacklisted[tag] })) return; // blacklisted tag
+
+                found = true;
                 next(null, tor, file);
-            };
-            */
+                //console.log(tor, file)
+            });
         });
         else return callback(new Error("must specify query or infoHash"));
     })(function(err, torrent, file) {
