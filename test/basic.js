@@ -19,6 +19,8 @@ tape("importer with rss source", function(t) {
 	/* WARNING: this entire test file depends on this source; if it fails, all tests will fail
 	 * write individual tests covering edge cases in all modules, not dependant on external influence
 	 */
+	t.timeoutAfter(10000);
+
 	importer.collect({ url: "http://torrentz.eu/feed_verified?q=", category: ["tv", "movies"] }, function(err, status) {
 		t.ok(!err, "no err from importer.collect");
 		t.ok(hashes.length > 20, "hashes collected ("+hashes.length+") are more than 20");
@@ -139,7 +141,7 @@ tape("addon - initializes properly", function(t) {
 	t.timeoutAfter(1000);
 
 	addon = new Stremio.Client();
-	addons.setAuth(cfg.stremioCentral, cfg.stremioSecret);
+	addon.setAuth(cfg.stremioCentral, cfg.stremioSecret);
 	addon.addService("http://localhost:"+addonPort);
 	addon.on("service-ready", function(service) {
 		t.ok(service.manifest, "has manifest");
