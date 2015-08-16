@@ -60,12 +60,12 @@ function query(args, callback) {
         async.whilst(
             function() { return matches.length && (!resolution || prio(resolution) < preferred.length) },
             function(callback) {
-                var hash = matches.shift();
-                db.get(hash.id, function(err, res) {
+                var hash = matches.shift().id;
+                db.get(hash, function(err, res) {
                     if (err) return callback({ err: err });
 
                     var tor = res[0] && res[0].value;
-                    if (! tor) return callback({ err: "hash not found "+hash.id });
+                    if (! tor) return callback({ err: "hash not found "+hash });
 
                     var file = _.find(tor.files, function(f) { 
                         return f.imdb_id == args.query.imdb_id && 
