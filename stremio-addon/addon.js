@@ -1,6 +1,7 @@
 var Stremio = require("stremio-service");
 var http = require("http");
 var _ = require("lodash");
+var async = require("async");
 
 var cfg = require("../lib/cfg");
 var db = require("../lib/db");
@@ -27,32 +28,31 @@ function availability(torrent) {
 function query(args, callback) {
     (function(next) { 
         if (args.infoHash) db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
-        else if (args.query) db.find(args.query, 3, function(err, torrents) {
-            // TODO: instead of retrieving all 3 torrents at once, we can try with first, if blacklisted get second, etc. 
-            // until we try top 3-4 
-            if (err) return next(err);
+        else if (args.query) async.eachSeries(db.lookup(args.query, 3), function(hash, callback) {
+            db.get(hash.id, function(err, res) {
+                if (err) return callback({ err: err });
+                var tor = res[0] && res[0].value;
+                if (! tor) return callback({ err: "hash not found "+hash.id });
 
-            // TODO: maybe update seed/leech counts?
-
-            var found = false;
-            torrents.forEach(function(tor) {
                 var file = _.find(tor.files, function(f) { 
                     return f.imdb_id == args.query.imdb_id && 
                         (args.query.season ? (f.season == args.query.season) : true) &&
                         (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
                 });
 
-                //if (file.tags.concat().some(function(tag) { return blacklisted[tag] })) return; // blacklisted tag
+                //if (file.tags.concat().some(function(tag) { return blacklisted[tag] })) return callback(); // blacklisted tag
 
-                found = true;
-                next(null, tor, file);
-                //console.log(tor, file)
+                callback({ torrent: tor, file: file });
             });
+            // TODO: maybe update seed/leech counts?
+        }, function(resolution) {
+            if (!resolution) next(null, null);
+            else next(resolution.err, resolution.torrent, resolution.file);
         });
         else return callback(new Error("must specify query or infoHash"));
     })(function(err, torrent, file) {
         // if (! torrent)
-
+        console.log(err, torrent, file)
         // TODO link to stremio documentation, documenting those props
         // Properties we have to provide
         // "infoHash", "uploaders", "downloaders", "map", "mapIdx", "pieces", "pieceLength", "tag", "availability" sources runtime/time        
