@@ -52,6 +52,7 @@
     "feedparser": "0.19.x",
     "unzip": ">=0.1.9",
     "xml-stream": ">=0.4.4",
+    "duplexify": "3.x.x",
 
     "parse-torrent": "5.x.x",
 
