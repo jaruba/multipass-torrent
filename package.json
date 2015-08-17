@@ -44,7 +44,7 @@
     "entry": "0.4.0",
     "nat-pmp": "0.0.x",
     
-    "stremio-service": "Ivshti/stremio-service",
+    "stremio-addons": "Stremio/stremio-addons",
 
     "needle": "0.9.x",
     "gunzip-maybe": "1.2.x",

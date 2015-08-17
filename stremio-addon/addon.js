@@ -1,4 +1,4 @@
-var Stremio = require("stremio-service");
+var Stremio = require("stremio-addons");
 var http = require("http");
 var _ = require("lodash");
 var async = require("async");

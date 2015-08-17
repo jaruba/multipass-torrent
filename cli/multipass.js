@@ -39,6 +39,7 @@ if (cfg.sources) cfg.sources.forEach(importQueue.push);
 var processQueue = async.queue(function(task, next) {
 	log.hash(task.infoHash, "processing");
 
+	// consider using db.indexes.seeders to figure out a skip case here; don't overcomplicate though
 	db.get(task.infoHash, function(err, res) {
 		if (err) { log.error(err); return next(); }
 		
