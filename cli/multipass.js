@@ -40,7 +40,7 @@ var processQueue = async.queue(function(task, next) {
 	log.hash(task.infoHash, "processing");
 
 	db.get(task.infoHash, function(err, res) {
-		if (err) return next(err);
+		if (err) { log.error(err); return next(); }
 		
 		// Pass a merge of existing torrent objects as a base for indexing		
 		task.torrent = res && res.length && indexer.merge(res.sort(function(a, b) { return a.seq - b.seq }).map(function(x) { return x.value }));
@@ -49,7 +49,7 @@ var processQueue = async.queue(function(task, next) {
 			function(cb) { indexer.index(task, { }, cb) },
 			function(cb) { indexer.seedleech(task.infoHash, cb) }
 		], function(err, indexing) {
-			if (err) { if (task.callback) task.callback(err); console.error(err); return next(); }
+			if (err) { if (task.callback) task.callback(err); log.error(task.infoHash, err); return next(); }
 
 			var torrent = _.merge(indexing[0], { popularity: indexing[1], popularityUpdated: Date.now() });
 			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
