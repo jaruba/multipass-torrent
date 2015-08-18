@@ -51,7 +51,7 @@ var processQueue = async.queue(function(task, next) {
 
 		async.parallel([
 			function(cb) { indexer.index(task, { }, cb) },
-			function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - 60*60*1000)) ? cb() : indexer.seedleech(task.infoHash, cb) }
+			function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - 6*60*60*1000)) ? cb() : indexer.seedleech(task.infoHash, cb) }
 		], function(err, indexing) {
 			if (err) { if (task.callback) task.callback(err); log.error(task.infoHash, err); return next(); }
 
