@@ -2,7 +2,7 @@ var tape = require("tape");
 var async = require("async");
 var _ = require("lodash");
 
-var Stremio = require("stremio-service");
+var Stremio = require("stremio-addons");
 
 var cfg = require("../lib/cfg");
 cfg.dbPath = require("path").join(require("os").tmpdir(), Date.now()+"");
@@ -143,8 +143,8 @@ tape("addon - initializes properly", function(t) {
 
 	addon = new Stremio.Client();
 	addon.setAuth(cfg.stremioCentral, cfg.stremioSecret);
-	addon.addService("http://localhost:"+addonPort);
-	addon.on("service-ready", function(service) {
+	addon.add("http://localhost:"+addonPort);
+	addon.on("addon-ready", function(service) {
 		t.ok(service.manifest, "has manifest");
 		t.ok(service.manifest.name, "has name");
 		t.ok(service.manifest.methods && service.manifest.methods.length, "has methods");
