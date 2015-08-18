@@ -195,7 +195,7 @@ tape("addon - sample query with an episode", function(t) {
 });
 
 tape("addon - test preferrences", function(t) {
-	t.skip("NOT IMPLEMENTED");
+	t.skip("TEST NOT IMPLEMENTED - functionality is");
 });
 
 tape("addon - get stream by infoHash", function(t) {

@@ -61,7 +61,7 @@ var processQueue = async.queue(function(task, next) {
 			next();
 			if (task.callback) task.callback(null, torrent);
 
-			if (torrent.uninteresting) log.warning(torrent.infoHash+" / "+torrent.name+" is non-interesting, no files indexed");
+			if (torrent.uninteresting && !res.length) log.warning(torrent.infoHash+" / "+torrent.name+" is non-interesting, no files indexed");
 			log.hash(task.infoHash, "processed");
 		});
 	});
