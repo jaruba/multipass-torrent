@@ -39,7 +39,7 @@ if (cfg.sources) cfg.sources.forEach(importQueue.push);
 var processQueue = async.queue(function(task, next) {
 	var next = _.once(next);
 	setTimeout(function() { next(); log.error("process timeout for "+task.infoHash) }, 10*1000);
-	
+
 	log.hash(task.infoHash, "processing");
 
 	// consider using db.indexes.seeders to figure out a skip case here; don't overcomplicate though
@@ -51,11 +51,11 @@ var processQueue = async.queue(function(task, next) {
 
 		async.parallel([
 			function(cb) { indexer.index(task, { }, cb) },
-			function(cb) { indexer.seedleech(task.infoHash, cb) }
+			function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - 60*60*1000)) ? cb() : indexer.seedleech(task.infoHash, cb) }
 		], function(err, indexing) {
 			if (err) { if (task.callback) task.callback(err); log.error(task.infoHash, err); return next(); }
 
-			var torrent = _.merge(indexing[0], { popularity: indexing[1], popularityUpdated: Date.now() });
+			var torrent = _.merge(indexing[0], indexing[1] ? { popularity: indexing[1], popularityUpdated: Date.now() } : { });
 			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
 			
 			next();
