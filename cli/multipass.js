@@ -37,6 +37,9 @@ if (cfg.sources) cfg.sources.forEach(importQueue.push);
 /* Process & index infoHashes
  */
 var processQueue = async.queue(function(task, next) {
+	var next = _.once(next);
+	setTimeout(function() { next(); log.error("process timeout for "+task.infoHash) }, 10*1000);
+	
 	log.hash(task.infoHash, "processing");
 
 	// consider using db.indexes.seeders to figure out a skip case here; don't overcomplicate though
