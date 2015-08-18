@@ -36,9 +36,9 @@ if (cfg.sources) cfg.sources.forEach(importQueue.push);
 
 /* Process & index infoHashes
  */
-var processQueue = async.queue(function(task, next) {
-	var next = _.once(next);
-	setTimeout(function() { next(); log.error("process timeout for "+task.infoHash) }, 10*1000);
+var processQueue = async.queue(function(task, _next) {
+	var next = _.once(function() { called = true; _next() }), called = false;
+	setTimeout(function() { next(); if (!called) log.error("process timeout for "+task.infoHash) }, 10*1000);
 
 	log.hash(task.infoHash, "processing");
 
