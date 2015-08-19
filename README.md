@@ -60,7 +60,7 @@ You can also include cli/multipass as a module to take advantage of it's import 
 
 # Command-line usage
 * ``--source`` - provide an URL to source to crawl - this can be in .txt.gz dump, RSS feed or simply an HTML page containing info hashes; you can use multiple ``--source`` arguments
-* ``--id`` or ``--db-id`` - the DB ID (16 bit hex string) to use for replication; instances with the same DB ID will replicate the DB among them
+* ``--id`` or ``--db-id`` - the DB ID (16 bit hex string) to use for replication; can also be a plain string, which will be hashed to 16 bit hex; instances with the same DB ID will replicate the DB among them
 * ``--db-path`` - the filesystem path of the LevelDB database; default will be "multipass" inside OS's temporary directory
 * ``--log=level`` - level is a number from 0 to 3, 3 being most verbose - the logging level 
 
