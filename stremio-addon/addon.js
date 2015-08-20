@@ -16,8 +16,7 @@ function validate(args) {
 };
 
 function availability(torrent) {
-    var maxSeeders = Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[0] }));
-
+    var maxSeeders = db.getMaxPopularity(torrent);
     if (maxSeeders >= 300) return 4;
     if (maxSeeders >= 90) return 3;
     if (maxSeeders >= 15) return 2;
@@ -89,7 +88,7 @@ function query(args, callback) {
         // http://strem.io/addons-api
         callback(err, torrent ? _.extend({ 
             infoHash: torrent.infoHash, 
-            uploaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[0] })),
+            uploaders: db.getMaxPopularity(torrent),
             downloaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[1] })),
             map: torrent.files,
             pieceLength: torrent.pieceLength,

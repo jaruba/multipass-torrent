@@ -62,7 +62,7 @@ tape("processor - import torrent", function(t) {
 			if (torrent) {
 				successful.push(torrent);
 				// Collect those for later tests
-				var maxSeed = Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[0] }));
+				var maxSeed = db.getMaxPopularity(torrent);
 				(torrent.files || []).forEach(function(f) {
 					if (maxSeed <= cfg.minSeedToIndex) return; // cleaner?
 					if (f.length < 85*1024*1024) return;
@@ -155,7 +155,7 @@ tape("addon - initializes properly", function(t) {
 
 
 tape("addon - sample query with a movie", function(t) {
-	t.timeoutAfter(2000);
+	t.timeoutAfter(3000);
 
 	var imdb_id = Object.keys(movie_ids)[0];
 
@@ -172,7 +172,7 @@ tape("addon - sample query with a movie", function(t) {
 });
 
 tape("addon - sample query with an episode", function(t) {
-	t.timeoutAfter(2000);
+	t.timeoutAfter(3000);
 
 	var imdb_id = Object.keys(series_ids)[0];
 	var season = series_ids[imdb_id][0], episode = series_ids[imdb_id][1];
