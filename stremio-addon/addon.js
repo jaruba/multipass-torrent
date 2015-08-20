@@ -24,22 +24,6 @@ function availability(torrent) {
     return 0;
 };
 
-function tags(file)
-{
-    var tags = [];
-    tags.push(file.path.split(".").pop()); // file extension
-
-    // Then tokenize into keywords; try against tagWords
-    file.path.split("/").forEach(function(seg) {
-        var tokens = seg.split(/\.| |-|;|_/).filter(function(x){return x});
-        tokens = seg.split(/ |\.|\(|\)|\[|\]/).map(function(x) { return x.toLowerCase() }); // split, this time for tokens
-        _.each(cfg.tags, function(words, tag) {
-            if (tokens.filter(function(token) { return words.indexOf(token.toLowerCase()) > -1 }).length) tags.push(tag);
-        });
-    });
-
-    return _.uniq(tags);
-}
 
 function query(args, callback) {
     (function(next) { 
@@ -72,8 +56,7 @@ function query(args, callback) {
                             (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
                     });
 
-                    if ((file.tag = file.tag.concat(tags(file))).some(function(tag) { return cfg.blacklisted[tag] })) 
-                        return callback(); // blacklisted tag
+                    if (db.isFileBlacklisted(file)) return callback(); // blacklisted tag
 
                     var res = { torrent: tor, file: file };
                     if (!resolution || prio(res) > prio(resolution)) resolution = res;
@@ -101,11 +84,11 @@ function query(args, callback) {
 };
 
 var service = new Stremio.Server({
-	"stream.get": function(args, callback, user) {
-		var error = validate(args);
-		if (error) return callback(error);
+    "stream.get": function(args, callback, user) {
+        var error = validate(args);
+        if (error) return callback(error);
         query(args, callback);
-	},
+    },
     "stream.find": function(args, callback, user) {
         if (!( args.items && Array.isArray(args.items))) return callback({code: 10, message: "please provide args.items which is an array"});
         var error = null;
@@ -123,7 +106,7 @@ var server = http.createServer(function (req, res) {
     service.middleware(req, res, function() { res.end() });
 }).on("listening", function()
 {
-	console.log("Multipass Stremio Addon listening on "+server.address().port);
+    console.log("Multipass Stremio Addon listening on "+server.address().port);
 });
 
 if (module.parent) module.exports = function(port) { return server.listen(port) };
