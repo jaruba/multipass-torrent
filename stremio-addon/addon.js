@@ -76,6 +76,7 @@ function query(args, callback) {
             map: torrent.files,
             pieceLength: torrent.pieceLength,
             availability: availability(torrent),
+            sources: db.getSourcesForTorrent(torrent)
         }, file ? { 
             mapIdx: torrent.files.indexOf(file),
             tag: file.tag,
