@@ -110,5 +110,5 @@ var server = http.createServer(function (req, res) {
     console.log("Multipass Stremio Addon listening on "+server.address().port);
 });
 
-if (module.parent) module.exports = function(port) { return server.listen(port) };
+if (module.parent) module.exports = function(port, ip) { return server.listen(port, ip) };
 else server.listen(process.env.PORT || 7000);
