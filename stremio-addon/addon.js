@@ -26,6 +26,8 @@ function availability(torrent) {
 
 
 function query(args, callback) {
+    var start = Date.now();
+
     (function(next) { 
         if (args.infoHash) return db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
         if (! args.query) return callback(new Error("must specify query or infoHash"));
@@ -71,12 +73,13 @@ function query(args, callback) {
         // http://strem.io/addons-api
         callback(err, torrent ? _.extend({ 
             infoHash: torrent.infoHash, 
-            uploaders: db.getMaxPopularity(torrent),
-            downloaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[1] }).concat(0)),
+            uploaders: db.getMaxPopularity(torrent), // optional
+            downloaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[1] }).concat(0)), // optional
             //map: torrent.files,
             //pieceLength: torrent.pieceLength,
             availability: availability(torrent),
-            sources: db.getSourcesForTorrent(torrent)
+            sources: db.getSourcesForTorrent(torrent), // optional but preferred
+            runtime: Date.now()-start // optional
         }, file ? { 
             mapIdx: torrent.files.indexOf(file),
             tag: file.tag,
