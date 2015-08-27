@@ -97,7 +97,7 @@ var service = new Stremio.Server({
         if (error) return callback(error);
 
         async.map(args.items, query, function(err, items) { 
-            callback(err, items ? { items: _.pick(items, "availability") } : null);
+            callback(err, items ? { items: _.pluck(items, "availability") } : null);
         });
     },
     //"stats.get":  // TODO
