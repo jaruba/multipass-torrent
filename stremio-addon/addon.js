@@ -72,7 +72,7 @@ function query(args, callback) {
         callback(err, torrent ? _.extend({ 
             infoHash: torrent.infoHash, 
             uploaders: db.getMaxPopularity(torrent),
-            downloaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[1] })),
+            downloaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[1] }).concat(0)),
             map: torrent.files,
             pieceLength: torrent.pieceLength,
             availability: availability(torrent),
