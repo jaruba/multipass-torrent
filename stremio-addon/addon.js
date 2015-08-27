@@ -100,7 +100,7 @@ var service = new Stremio.Server({
         if (error) return callback(error);
 
         async.map(args.items, query, function(err, items) { 
-            callback(err, items ? { items: items.map(function(x) { return { availability: x.availability } }) } : null);
+            callback(err, items ? { items: items.map(function(x) { return x ? { availability: x.availability } : null }) } : null);
         });
     },
     //"stats.get":  // TODO
