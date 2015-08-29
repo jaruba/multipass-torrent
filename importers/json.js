@@ -3,7 +3,6 @@
 var needle = require('needle');
 var Q = require('q');
 var url = require('url');
-var _ = require('underscore');
 
 var log = require('../lib/log');
 
@@ -24,7 +23,7 @@ function importjson(json, host) {
 
     switch (host) {
         case 'eztv':
-            getEztvPages().then(parseEztv);
+            parseEztv();
             break;
         case 'yts.to':
 
@@ -34,28 +33,65 @@ function importjson(json, host) {
 
 }
 
+function crawl(cb) {
+    var queue;
+    needle.get(source.url + "shows", function(err, resp) {
+        if (err) console.error(err);
 
-function parseEztv(pages) {
-    var imdbs = [];
-    var requests = 0
-    while (pages > 0 && requests <= 2) {
-        requests++;
-        console.log(requests, pages);
-        getjson('https://eztvapi.re/shows/' + pages).then(function(json) {
-            requests--;
+        if (!(resp && resp.body && Array.isArray(resp.body))) return cb(new Error("/shows err"));
+
+        resp.body.forEach(function(url) {
+            queue.push(source.url + url)
         });
-        pages--;
-    }
-}
-
-function getEztvPages() {
-    var defer = Q.defer();
-    getjson('https://eztvapi.re/shows').then(function(json) {
-        defer.resolve(json.length);
     });
-    return defer.promise;
+    queue = async.queue(function(task, next) {
+        needle.get(task.url, function(err, resp) {
+            if (err) return next(err); // or ignore - choose one
+
+            // Shows response, add all shows to queue
+            if (resp && resp.body && Array.isArray(resp.body)) resp.body.forEach(function(s) {
+                queue.push(source.url + "show/" + s.imdb_id)
+            });
+
+            // Episodes response, do whatever
+            if (resp && resp.body && resp.body.episodes) {
+
+            }
+        })
+    }, 2);
 }
 
+function processEztv() {
+    console.log('blah')
+    var queue = async.queue(function(task, next) {
+        console.log(task);
+        getjson(task).then(function(response) {
+            process.nextTick(next)
+            console.log(response);
+        });
+    }, 2);
+
+    queue.push('https://eztvapi.re/shows');
+}
+
+/*needle.get(task.url, function(err, resp, body) {
+            if (err) return next(err); // or ignore - choose one
+
+            if (resp && resp.body && Array.isArray(resp.body) && typeof(resp.body[0]) == "string") resp.body.forEach(function(url) {
+                queue.push(source.url + url)
+            });
+
+            // Shows response, add all shows to queue
+            if (resp && resp.body && Array.isArray(resp.body) && resp.body[0].imdb_id) resp.body.forEach(function(s) {
+                queue.push(source.url + "show/" + s.imdb_id)
+            });
+
+            // Episodes response, do whatever
+            if (resp && resp.body && resp.body.episodes) {
+                console.log(resp.body.episodes);
+
+            }
+        })*/
 
 function parsesource(s) {
     var host,
@@ -78,7 +114,8 @@ function getjson(url) {
     var defer = Q.defer();
     var params = {
         compressed: true, // sets 'Accept-Encoding' to 'gzip,deflate'
-        follow_max: 2
+        follow_max: 2,
+        json: true
     };
     needle.get(url, params, function(error, response) {
         if (!error && response.statusCode == 200) {
