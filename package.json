@@ -23,7 +23,6 @@
     "url": "https://github.com/Ivshti/multipass-torrent/issues"
   },
   "dependencies": {
-    "JSONStream": "^1.0.4",
     "async": "0.2.9",
     "binary-search-tree": "0.2.x",
     "bittorrent-dht": "3.x.x",
@@ -31,7 +30,6 @@
     "duplexify": "3.x.x",
     "entry": "0.4.0",
     "es6-map": "0.1.x",
-    "event-stream": "^3.3.1",
     "feedparser": "0.19.x",
     "gunzip-maybe": "1.2.x",
     "hat": "0.0.x",
@@ -47,6 +45,7 @@
     "node-ssdp": "2.5.x",
     "parse-torrent": "5.x.x",
     "peer-search": "git://github.com/Ivshti/peer-search",
+    "q": "^1.4.1",
     "stremio-addons": "Stremio/stremio-addons",
     "unzip": ">=0.1.9",
     "xml-stream": ">=0.4.4"
