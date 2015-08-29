@@ -23,9 +23,9 @@ function importjson(json, host) {
 
     switch (host) {
         case 'eztv':
-            parseEztv();
+            processEztv();
             break;
-        case 'yts.to':
+        case 'yts':
 
             break;
 
@@ -33,43 +33,18 @@ function importjson(json, host) {
 
 }
 
-function crawl(cb) {
-    var queue;
-    needle.get(source.url + "shows", function(err, resp) {
-        if (err) console.error(err);
-
-        if (!(resp && resp.body && Array.isArray(resp.body))) return cb(new Error("/shows err"));
-
-        resp.body.forEach(function(url) {
-            queue.push(source.url + url)
-        });
-    });
-    queue = async.queue(function(task, next) {
-        needle.get(task.url, function(err, resp) {
-            if (err) return next(err); // or ignore - choose one
-
-            // Shows response, add all shows to queue
-            if (resp && resp.body && Array.isArray(resp.body)) resp.body.forEach(function(s) {
-                queue.push(source.url + "show/" + s.imdb_id)
-            });
-
-            // Episodes response, do whatever
-            if (resp && resp.body && resp.body.episodes) {
-
-            }
-        })
-    }, 2);
-}
 
 function processEztv() {
     console.log('blah')
     var queue = async.queue(function(task, next) {
         console.log(task);
         getjson(task).then(function(response) {
-            process.nextTick(next)
+            process.nextTick(next);
             console.log(response);
         });
     }, 2);
+    console.log(queue);
+
 
     queue.push('https://eztvapi.re/shows');
 }
