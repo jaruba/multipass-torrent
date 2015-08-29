@@ -30,9 +30,7 @@ function importjson(json, host) {
             break;
 
     }
-
 }
-
 
 function processEztv() {
     console.log('blah')
@@ -48,25 +46,6 @@ function processEztv() {
 
     queue.push('https://eztvapi.re/shows');
 }
-
-/*needle.get(task.url, function(err, resp, body) {
-            if (err) return next(err); // or ignore - choose one
-
-            if (resp && resp.body && Array.isArray(resp.body) && typeof(resp.body[0]) == "string") resp.body.forEach(function(url) {
-                queue.push(source.url + url)
-            });
-
-            // Shows response, add all shows to queue
-            if (resp && resp.body && Array.isArray(resp.body) && resp.body[0].imdb_id) resp.body.forEach(function(s) {
-                queue.push(source.url + "show/" + s.imdb_id)
-            });
-
-            // Episodes response, do whatever
-            if (resp && resp.body && resp.body.episodes) {
-                console.log(resp.body.episodes);
-
-            }
-        })*/
 
 function parsesource(s) {
     var host,
@@ -84,7 +63,6 @@ function parsesource(s) {
     return Q(host);
 }
 
-
 function getjson(url) {
     var defer = Q.defer();
     var params = {
@@ -101,3 +79,22 @@ function getjson(url) {
     });
     return defer.promise;
 }
+
+
+/*needle.get(task.url, function(err, resp, body) {
+            if (err) return next(err); // or ignore - choose one
+
+            if (resp && resp.body && Array.isArray(resp.body) && typeof(resp.body[0]) == "string") resp.body.forEach(function(url) {
+                queue.push(source.url + url)
+            });
+
+            // Shows response, add all shows to queue
+            if (resp && resp.body && Array.isArray(resp.body) && resp.body[0].imdb_id) resp.body.forEach(function(s) {
+                queue.push(source.url + "show/" + s.imdb_id)
+            });
+            // Episodes response, do whatever
+            if (resp && resp.body && resp.body.episodes) {
+                console.log(resp.body.episodes);
+
+            }
+        })*/
