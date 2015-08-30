@@ -9,7 +9,6 @@ var log = require('../lib/log');
 
 var eztvEndpoints = ['eztvapi.re', 'tv.ytspt.re', 'api.popcorntime.io', 'api.popcorntime.cc'];
 
-
 // This should emit results up through an EventEmitter or a pipe, not use collect directly
 
 module.exports = function(stream, source) {
@@ -21,7 +20,6 @@ function importjson(json, host) {
         log.error('json unknown source', source);
         return;
     }
-
     switch (host) {
         case 'eztv':
             processEztv();
@@ -34,15 +32,18 @@ function importjson(json, host) {
 function processEztv() {
     var queue = async.queue(function(task, next) {
         getjson(task).then(function(response) {
+            console.log(task.toString());
             if (response.episodes) {
-                console.log(response);
+                console.log(JSON.stringify(response))
             } else if (response.imdb_id) {
-                response.forEach(function(s) {
-                    queue.push('https://eztvapi.re' + "show/" + s.imdb_id)
+                console.log(JSON.stringify(response))
+                response.forEach(function(item) {
+                    console.log(item)
+                    queue.push('https://eztvapi.re/show/' + item)
                 });
             } else if (response && response.length > 0) {
-                response.forEach(function(item) {
-                    queue.push('https://eztvapi.re/' + item.imdb_id)
+                response.forEach(function(url) {
+                    queue.push('https://eztvapi.re/' + url)
                 });
             }
             process.nextTick(next);
