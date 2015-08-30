@@ -11,12 +11,12 @@ It also has a Stremio Addon front-end, allowing for the content you scraped to b
 
 # Examples
 ```bash
-node cli/multipass --db-id=ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6 --source="https://torrentz.eu/feed_verified?q=" --db-path=/tmp/test
+node cli/multipass --db-id="identifier string of your replica set" --source="https://torrentz.eu/feed_verified?q=" --db-path=/tmp/test
 ```
 
 Now you can run the same command on another computer (or terminal) to see the replication. Run it without ``--source`` so you see the replication instead of importing the same source again
 ```bash
-node cli/multipass --db-id=ccb9a6f8a9af421809ad6b1f58a76f493fb30fb6 --db-path=/tmp/test-2
+node cli/multipass --db-id="identifier string of your replica set" --db-path=/tmp/test-2
 ```
 
 Output from first command:
