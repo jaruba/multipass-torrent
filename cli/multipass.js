@@ -101,6 +101,7 @@ function buffering(source) {
 if (module.parent) return module.exports = {
 	processQueue: processQueue,
 	importQueue: importQueue,
+	db: db,
 	onBuffering: function(cb){ events.on('Buffering',cb); return this },
 	onFinished: function(cb){ events.on('Finished',cb); return this },
 	onFound: function(cb){ events.on('Found',cb); return this }
