@@ -71,6 +71,8 @@ var processQueue = async.queue(function(task, _next) {
 			var torrent = _.merge(indexing[0], indexing[1] ? { popularity: indexing[1], popularityUpdated: Date.now() } : { });
 			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
 			
+			events.emit("Found", task.source.url, torrent);
+			
 			next();
 			if (task.callback) task.callback(null, torrent);
 
@@ -100,7 +102,8 @@ if (module.parent) return module.exports = {
 	processQueue: processQueue,
 	importQueue: importQueue,
 	onBuffering: function(cb){ events.on('Buffering',cb); return this },
-	onFinished: function(cb){ events.on('Finished',cb); return this }
+	onFinished: function(cb){ events.on('Finished',cb); return this },
+	onFound: function(cb){ events.on('Found',cb); return this }
 };
 
 /* Log number of torrents we have
