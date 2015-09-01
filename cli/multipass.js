@@ -88,7 +88,10 @@ function buffering(source) {
 	perc = buffer[source].progress/buffer[source].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
 	events.emit('Buffering', source, perc);
-	if (perc == 1) delete buffer[source];
+	if (perc == 1) {
+		events.emit('Finished', source);
+		delete buffer[source];
+	}
 }
 
 /* Programatic usage of this
@@ -96,7 +99,8 @@ function buffering(source) {
 if (module.parent) return module.exports = {
 	processQueue: processQueue,
 	importQueue: importQueue,
-	onBuffering: function(cb){ events.on('Buffering',cb); return this }
+	onBuffering: function(cb){ events.on('Buffering',cb); return this },
+	onFinished: function(cb){ events.on('Finished',cb); return this }
 };
 
 /* Log number of torrents we have
