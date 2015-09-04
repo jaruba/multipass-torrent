@@ -5,6 +5,7 @@ var net = require("net");
 var _ = require("lodash");
 var async = require("async");
 var Tracker = require("peer-search/tracker");
+var events = require('events');
 
 var cfg = require("../lib/cfg");
 var log = require("../lib/log");
@@ -12,16 +13,17 @@ var db = require("../lib/db");
 var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 
-var events_mod = require('events');
-var events = new events_mod.EventEmitter();
+var mp = new events.EventEmitter();
 var buffer = [];
+
+mp.db = db; // expose db
 
 db.listenReplications(cfg.dbId); // start our replication server
 db.findReplications(cfg.dbId); // replicate to other instances
 
 /* Collect infoHashes from source
  */
-var importQueue = async.queue(function(source, next) {
+mp.importQueue = async.queue(function(source, next) {
 	source = typeof(source) == "string" ? { url: source } : source;
 	buffer[source.url] = { progress: 0, total: 0 };
 	log.important("importing from "+source.url);
@@ -30,19 +32,19 @@ var importQueue = async.queue(function(source, next) {
 		else log.important("importing finished from "+source.url+", "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
 		buffer[source.url].total = parseInt(status.found);
 
-		if (source.interval) setTimeout(function() { importQueue.push(source) }, source.interval); // repeat at interval - re-push
+		if (source.interval) setTimeout(function() { mp.importQueue.push(source) }, source.interval); // repeat at interval - re-push
 
 		next();
 	}, function(hash, extra) {
 		log.hash(hash, "collect");
-		processQueue.push({ infoHash: hash, extra: extra, source: source });
+		mp.processQueue.push({ infoHash: hash, extra: extra, source: source });
 	});
 }, 1);
-if (cfg.sources) cfg.sources.forEach(importQueue.push);
+if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
 
 /* Process & index infoHashes
  */
-var processQueue = async.queue(function(task, _next) {
+mp.processQueue = async.queue(function(task, _next) {
 	var next = _.once(function() { called = true; _next() }), called = false;
 	setTimeout(function() { next(); if (!called) log.error("process timeout for "+task.infoHash) }, 10*1000);
 
@@ -71,7 +73,7 @@ var processQueue = async.queue(function(task, _next) {
 			var torrent = _.merge(indexing[0], indexing[1] ? { popularity: indexing[1], popularityUpdated: Date.now() } : { });
 			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
 			
-			events.emit("Found", task.source.url, torrent);
+			mp.emit("Found", task.source.url, torrent);
 			
 			next();
 			if (task.callback) task.callback(null, torrent);
@@ -89,23 +91,16 @@ function buffering(source) {
 	buffer[source].progress++;
 	perc = buffer[source].progress/buffer[source].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
-	events.emit('Buffering', source, perc);
+	mp.emit('Buffering', source, perc);
 	if (perc == 1) {
-		events.emit('Finished', source);
+		mp.emit('Finished', source);
 		delete buffer[source];
 	}
 }
 
 /* Programatic usage of this
  */
-if (module.parent) return module.exports = {
-	processQueue: processQueue,
-	importQueue: importQueue,
-	db: db,
-	onBuffering: function(cb){ events.on('Buffering',cb); return this },
-	onFinished: function(cb){ events.on('Finished',cb); return this },
-	onFound: function(cb){ events.on('Found',cb); return this }
-};
+if (module.parent) return module.exports = mp;
 
 /* Log number of torrents we have
  */
@@ -113,7 +108,7 @@ async.forever(function(next) {
 	var count = 0;
 	db.createKeyStream()
 		.on("data",function(d) { count++ })
-		.on("end", function() { log.important("We have "+count+" torrents, "+processQueue.length()+" queued"); setTimeout(next, 5000) });
+		.on("end", function() { log.important("We have "+count+" torrents, "+mp.processQueue.length()+" queued"); setTimeout(next, 5000) });
 });
 
 /* Simple dump
