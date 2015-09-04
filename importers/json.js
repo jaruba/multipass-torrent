@@ -7,6 +7,7 @@ var async = require('async');
 var _ = require('lodash');
 var log = require('../lib/log');
 var events = require('events');
+var parseTorrent = require('parse-torrent');
 var emitter = new events.EventEmitter();
 
 
@@ -42,16 +43,16 @@ function processEztv(host) {
                     verified: true
                 }
                 response.episodes.forEach(function(item) {
-                    var availableTorrents = {};
-                    _.forEach(_.omit(item.torrents, '0'), function(t, key) { // quality 0 === 420p we remove to avoid duplicates 
-                        availableTorrents[key] = t.url;
-                    });
                     _.assign(returnObject, {
                         episode_tvdb: item.tvdb_id,
-                        episode_name: item.title,
-                        episode_torrents: availableTorrents
+                        episode_name: item.title
                     });
-                    emitter.emit('infoHash', 'eztv', returnObject);
+                    _.forEach(_.omit(item.torrents, '0'), function(t, key) { // quality 0 === 420p we remove to avoid duplicates 
+                        _.assign(returnObject, {
+                            quality: key
+                        });
+                        emitter.emit('infoHash', parseTorrent(t.url).infoHash, returnObject);
+                    });
                 });
             } else if (response[0].imdb_id) {
                 response.forEach(function(item) {
