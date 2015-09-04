@@ -1,66 +1,67 @@
 {
-  "name": "multipass-torrent",
-  "version": "0.1.17",
-  "description": "Collects torrents from various sources (dump, RSS, HTML pages) and associates the video files within with IMDB ID",
-  "main": "cli/mp-collect",
-  "scripts": {
-    "test": "mocha --reporter spec --timeout 10000"
-  },
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/Ivshti/multipass-torrent"
-  },
-  "keywords": [
-    "torrent",
-    "crawling",
-    "scraping",
-    "indexing"
-  ],
-  "author": "Ivo Georgiev",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Ivshti/multipass-torrent/issues"
-  },
-  "scripts": { 
-    "start": "node cli/multipass",
-    "test": "tape test/*.js"
-  },
-  "dependencies": {
-    "minimist": "1.x.x",
-    "async": "0.2.9",
-    "multi-master-merge": "*",
-    "es6-map": "0.1.x",
-    "level": "1.x.x",
-    "level-sublevel": "6.4.x",
-    "binary-search-tree": "0.2.x",
-    "mkdirp": "0.5.x", 
-    "lodash": "3.10.x",
-    "bittorrent-dht": "3.x.x",
-    "hat": "0.0.x",
-    "ip": "^0.3.0",    
-    "byline": "4.2.x",
-    "node-ssdp": "2.5.x",
+    "name": "multipass-torrent",
+    "version": "0.1.17",
+    "description": "Collects torrents from various sources (dump, RSS, HTML pages) and associates the video files within with IMDB ID",
+    "main": "cli/mp-collect",
+    "scripts": {
+        "test": "mocha --reporter spec --timeout 10000"
+    },
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/Ivshti/multipass-torrent"
+    },
+    "keywords": [
+        "torrent",
+        "crawling",
+        "scraping",
+        "indexing"
+    ],
+    "author": "Ivo Georgiev",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Ivshti/multipass-torrent/issues"
+    },
+    "scripts": {
+        "start": "node cli/multipass",
+        "test": "tape test/*.js"
+    },
+    "dependencies": {
+        "minimist": "1.x.x",
+        "async": "0.2.9",
+        "multi-master-merge": "*",
+        "es6-map": "0.1.x",
+        "level": "1.x.x",
+        "level-sublevel": "6.4.x",
+        "binary-search-tree": "0.2.x",
+        "mkdirp": "0.5.x",
+        "lodash": "3.10.x",
+        "q": "^1.4.1",
+        "bittorrent-dht": "3.x.x",
+        "hat": "0.0.x",
+        "ip": "^0.3.0",
+        "byline": "4.2.x",
+        "node-ssdp": "2.5.x",
 
-    "entry": "0.4.0",
-    "nat-pmp": "0.0.x",
-    
-    "stremio-addons": "Stremio/stremio-addons",
+        "entry": "0.4.0",
+        "nat-pmp": "0.0.x",
 
-    "needle": "0.9.x",
-    "gunzip-maybe": "1.2.x",
-    
-    "feedparser": "0.19.x",
-    "unzip": ">=0.1.9",
-    "xml-stream": ">=0.4.4",
-    "duplexify": "3.x.x",
+        "stremio-addons": "Stremio/stremio-addons",
 
-    "parse-torrent": "5.x.x",
+        "needle": "0.9.x",
+        "gunzip-maybe": "1.2.x",
 
-    "peer-search": "git://github.com/Ivshti/peer-search"
+        "feedparser": "0.19.x",
+        "unzip": ">=0.1.9",
+        "xml-stream": ">=0.4.4",
+        "duplexify": "3.x.x",
 
-  },
-  "devDependencies": {
-    "tape": "4.x.x"
-  },
-  "homepage": "https://github.com/Ivshti/multipass-torrent"
+        "parse-torrent": "5.x.x",
+
+        "peer-search": "git://github.com/Ivshti/peer-search"
+
+    },
+    "devDependencies": {
+        "tape": "4.x.x"
+    },
+    "homepage": "https://github.com/Ivshti/multipass-torrent"
 }
