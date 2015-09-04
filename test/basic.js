@@ -54,7 +54,7 @@ tape("retriever", function(t) {
 var mp = require("../cli/multipass");
 var successful = [];
 tape("processor - import torrent", function(t) {
-	t.timeoutAfter(30000); // 30s for 50 torrents
+	t.timeoutAfter(40000); // 40s for 50 torrents
 
 	async.each(hashes.slice(0, 50), function(hash, callback) {
 		mp.processQueue.push({ infoHash: hash, callback: function(err, torrent) {
@@ -162,8 +162,8 @@ tape("addon - sample query with a movie", function(t) {
 	addon.stream.get({ query: { imdb_id: imdb_id, type: "movie" } }, function(err, resp) {
 		t.ok(!err, "no error");
 		t.ok(resp && resp.infoHash && resp.infoHash.length == 40, "has infoHash");
-		t.ok(resp && Array.isArray(resp.map), "has map");
-		t.ok(resp && !isNaN(resp.mapIdx), "has mapIdx");
+		//t.ok(resp && Array.isArray(resp.map), "has map");
+		//t.ok(resp && !isNaN(resp.mapIdx), "has mapIdx");
 		t.ok(resp && !isNaN(resp.availability), "has availability");
 		//t.ok(resp && !isNaN(resp.uploaders), "has uploaders");
 
@@ -180,8 +180,8 @@ tape("addon - sample query with an episode", function(t) {
 	addon.stream.get({ query: { imdb_id: imdb_id, season: season, episode: episode, type: "series" } }, function(err, resp) {
 		t.ok(!err, "no error");
 		t.ok(resp && resp.infoHash && resp.infoHash.length == 40, "has infoHash");
-		t.ok(resp && Array.isArray(resp.map), "has map");
-		t.ok(resp && !isNaN(resp.mapIdx), "has mapIdx");
+		//t.ok(resp && Array.isArray(resp.map), "has map");
+		//t.ok(resp && !isNaN(resp.mapIdx), "has mapIdx");
 		t.ok(resp && !isNaN(resp.availability), "has availability");
 		//t.ok(resp && !isNaN(resp.uploaders), "has uploaders");
 

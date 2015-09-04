@@ -1,11 +1,10 @@
 {
     "name": "multipass-torrent",
-    "version": "0.1.12",
+    "version": "0.1.17",
     "description": "Collects torrents from various sources (dump, RSS, HTML pages) and associates the video files within with IMDB ID",
     "main": "cli/mp-collect",
     "scripts": {
-        "start": "node cli/multipass",
-        "test": "tape test/*.js"
+        "test": "mocha --reporter spec --timeout 10000"
     },
     "repository": {
         "type": "git",
@@ -22,33 +21,44 @@
     "bugs": {
         "url": "https://github.com/Ivshti/multipass-torrent/issues"
     },
+    "scripts": {
+        "start": "node cli/multipass",
+        "test": "tape test/*.js"
+    },
     "dependencies": {
+        "minimist": "1.x.x",
         "async": "0.2.9",
-        "binary-search-tree": "0.2.x",
-        "bittorrent-dht": "3.x.x",
-        "byline": "4.2.x",
-        "duplexify": "3.x.x",
-        "entry": "0.4.0",
+        "multi-master-merge": "*",
         "es6-map": "0.1.x",
-        "feedparser": "0.19.x",
-        "gunzip-maybe": "1.2.x",
-        "hat": "0.0.x",
-        "ip": "^0.3.0",
         "level": "1.x.x",
         "level-sublevel": "6.4.x",
-        "lodash": "3.10.x",
-        "minimist": "1.x.x",
+        "binary-search-tree": "0.2.x",
         "mkdirp": "0.5.x",
-        "multi-master-merge": "Ivshti/multi-master-merge",
-        "nat-pmp": "0.0.x",
-        "needle": "0.9.x",
-        "node-ssdp": "2.5.x",
-        "parse-torrent": "5.x.x",
-        "peer-search": "git://github.com/Ivshti/peer-search",
+        "lodash": "3.10.x",
         "q": "^1.4.1",
+        "bittorrent-dht": "3.x.x",
+        "hat": "0.0.x",
+        "ip": "^0.3.0",
+        "byline": "4.2.x",
+        "node-ssdp": "2.5.x",
+
+        "entry": "0.4.0",
+        "nat-pmp": "0.0.x",
+
         "stremio-addons": "Stremio/stremio-addons",
+
+        "needle": "0.9.x",
+        "gunzip-maybe": "1.2.x",
+
+        "feedparser": "0.19.x",
         "unzip": ">=0.1.9",
-        "xml-stream": ">=0.4.4"
+        "xml-stream": ">=0.4.4",
+        "duplexify": "3.x.x",
+
+        "parse-torrent": "5.x.x",
+
+        "peer-search": "git://github.com/Ivshti/peer-search"
+
     },
     "devDependencies": {
         "tape": "4.x.x"
