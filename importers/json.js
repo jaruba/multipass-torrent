@@ -6,11 +6,15 @@ var url = require('url');
 var async = require('async');
 var _ = require('lodash');
 var log = require('../lib/log');
+var events = require('events');
+var emitter = new events.EventEmitter();
 
-// This should emit results up through an EventEmitter or a pipe, not use collect directly
 
 module.exports = function(stream, source) {
-    return Q.all([getjson(source.url), parsesource(url.parse(addhttp(source.url)))]).spread(importjson);
+
+    Q.all([getjson(source.url), parsesource(url.parse(addhttp(source.url)))]).spread(importjson);
+
+    return emitter;
 }
 
 function importjson(json, host) {
@@ -23,6 +27,7 @@ function importjson(json, host) {
             processEztv(host);
             break;
         case 'yts':
+            log.error('json detected yts; please use https://yts.to/tz_daily.txt.gz instead', source);
             break;
     }
 }
@@ -46,7 +51,7 @@ function processEztv(host) {
                         episode_name: item.title,
                         episode_torrents: availableTorrents
                     });
-                    console.log('Found:', returnObject.show_name, '-', 'S' + item.season + 'E' + item.episode, '-', item.title, '-', _.without(Object.keys(item.torrents), '0'))
+                    emitter.emit('infoHash', 'eztv', returnObject);
                 });
             } else if (response[0].imdb_id) {
                 response.forEach(function(item) {
@@ -64,6 +69,9 @@ function processEztv(host) {
                         queue.push(host.protocol + host.host + '/' + url)
                     }
                 });
+            }
+            if (!next) {
+                emitter.emit('end');
             }
             process.nextTick(next);
         });
