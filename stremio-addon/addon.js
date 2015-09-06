@@ -105,7 +105,12 @@ var service = new Stremio.Server({
             }) } : null);
         });
     },
-    //"stats.get":  // TODO
+    "stats.get": function(args, callback, user) { // TODO
+        var c = Object.keys(db.indexes.seeders).length;
+        callback(err, [
+            { name: "number of torrents - "+c, count: c, colour: "green" }
+        ]);
+    },
 }, { allow: [cfg.stremioCentral], secret: cfg.stremioSecret }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
 
 var server = http.createServer(function (req, res) {
