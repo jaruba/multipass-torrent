@@ -81,7 +81,7 @@ function query(args, callback) {
             sources: db.getSourcesForTorrent(torrent), // optional but preferred
             runtime: Date.now()-start // optional
         }, file ? { 
-            mapIdx: torrent.files.indexOf(file),
+            mapIdx: file.idx,
             tag: file.tag,
         } : { }) : null);      
     });
