@@ -15,16 +15,6 @@ function validate(args) {
     return false;
 };
 
-function availability(torrent) {
-    var maxSeeders = db.getMaxPopularity(torrent);
-    if (maxSeeders >= 300) return 4;
-    if (maxSeeders >= 90) return 3;
-    if (maxSeeders >= 15) return 2;
-    if (maxSeeders > 0) return 1; 
-    return 0;
-};
-
-
 function query(args, callback) {
     var start = Date.now();
 
@@ -36,7 +26,7 @@ function query(args, callback) {
         var preferred = args.preferred || [];
         var prio = function(resolution) {
             return preferred.map(function(pref) { 
-                return availability(resolution.torrent) >= pref.min_avail && resolution.file.tag.indexOf(pref.tag)!=-1
+                return db.getAvailForTorrent(resolution.torrent) >= pref.min_avail && resolution.file.tag.indexOf(pref.tag)!=-1
             }).reduce(function(a,b) { return a+b }, 0);
         };
 
@@ -77,7 +67,7 @@ function query(args, callback) {
             downloaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[1] }).concat(0)), // optional
             //map: torrent.files,
             //pieceLength: torrent.pieceLength,
-            availability: availability(torrent),
+            availability: db.getAvailForTorrent(torrent),
             sources: db.getSourcesForTorrent(torrent), // optional but preferred
             runtime: Date.now()-start // optional
         }, file ? { 
