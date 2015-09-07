@@ -25,7 +25,6 @@ db.findReplications(cfg.dbId); // replicate to other instances
  */
 mp.importQueue = async.queue(function(source, next) {
 	source = typeof(source) == "string" ? { url: source } : source;
-	buffer[source.url] = { progress: 0, total: 0 };
 	log.important("importing from "+source.url);
 	importer.collect(source, function(err, status) {
 		if (err) log.error(err);
@@ -73,7 +72,7 @@ mp.processQueue = async.queue(function(task, _next) {
 			var torrent = _.merge(indexing[0], indexing[1] ? { popularity: indexing[1], popularityUpdated: Date.now() } : { });
 			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
 			
-			mp.emit("Found", task.source.url, torrent);
+			mp.emit("found", task.source.url, torrent);
 			
 			next();
 			if (task.callback) task.callback(null, torrent);
@@ -88,12 +87,13 @@ mp.processQueue = async.queue(function(task, _next) {
 /* Emit buffering event
  */
 function buffering(source) {
+	if (! buffer[source]) buffer[source] = { progress: 0, total: 0 };
 	buffer[source].progress++;
 	perc = buffer[source].progress/buffer[source].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
-	mp.emit('Buffering', source, perc);
+	mp.emit('buffering', source, perc);
 	if (perc == 1) {
-		mp.emit('Finished', source);
+		mp.emit('finished', source);
 		delete buffer[source];
 	}
 }

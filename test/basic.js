@@ -57,7 +57,7 @@ tape("processor - import torrent", function(t) {
 	t.timeoutAfter(40000); // 40s for 50 torrents
 
 	async.each(hashes.slice(0, 50), function(hash, callback) {
-		mp.processQueue.push({ infoHash: hash, callback: function(err, torrent) {
+		mp.processQueue.push({ infoHash: hash, source: { url: "http://torrentz.eu" }, callback: function(err, torrent) {
 			if (err) return callback(err);
 			if (torrent) {
 				successful.push(torrent);
