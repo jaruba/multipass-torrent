@@ -119,8 +119,8 @@ tape("db - db.find works series", function(t) {
 	db.find({ imdb_id: imdb_id, season: season, episode: episode }, 1, function(err, torrents) {
 		t.ok(!err, "no error");
 		t.ok(torrents.length <= 1, "no more than 1 result");
-		t.ok(torrents[0].infoHash, "infoHash for result");
-		t.ok(_.find(torrents[0].files, function(f) { return f.imdb_id == imdb_id && f.season == season && f.episode.indexOf(episode)!=-1 }), "we have a file with that imdb_id inside");
+		t.ok(torrents[0] && torrents[0].infoHash, "infoHash for result");
+		t.ok(torrents[0] && _.find(torrents[0].files, function(f) { return f.imdb_id == imdb_id && f.season == season && f.episode.indexOf(episode)!=-1 }), "we have a file with that imdb_id inside");
 		t.end();
 	});
 });
