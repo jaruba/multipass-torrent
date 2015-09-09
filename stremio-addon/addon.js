@@ -99,7 +99,7 @@ var service = new Stremio.Server({
             // New format ; same as stream.get, even returns the full result; no point to slim it down, takes same time
             var error = validate(args);
             if (error) return callback(error);
-            query(args, callback);
+            query(args, function(err, resp) { callback(err, resp ? [resp] : null) }); // TODO: query for multiple items; query.bind({ multiple: true })
         } else return callback({code: 10, message: "unsupported arguments"});
 
     },
