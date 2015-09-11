@@ -100,7 +100,7 @@ var service = new Stremio.Server({
             var error = validate(args);
             if (error) return callback(error);
             async.map([ _.extend({ },args,{ preferred: [{ tag: "hd", min_avail: 2 }] }), args ], query, function(err, res) {
-                callback(err, res ? _.uniq(res, function(x) { return x.infoHash }) : undefined);
+                callback(err, res ? _.chain(res).filter(function(x) { return x }).uniq(function(x) { return x.infoHash }).value() : undefined);
             });
         } else return callback({code: 10, message: "unsupported arguments"});
 
