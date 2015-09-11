@@ -99,8 +99,11 @@ var service = new Stremio.Server({
             // New format ; same as stream.get, even returns the full result; no point to slim it down, takes same time
             var error = validate(args);
             if (error) return callback(error);
+            async.map([args, _.extend({ },args,{ preferred: [{ tag: "hd", min_avail: 2 }] })], query, function(err, res) {
+                console.log(err,res)
+            });
             query(args, function(err, resp) { callback(err, resp ? [resp] : null) }); // TODO: query for multiple items; query.bind({ multiple: true })
-        } else return callback({code: 10, message: "unsupported arguments"});
+        }; else return callback({code: 10, message: "unsupported arguments"});
 
     },
     "stats.get": function(args, callback, user) { // TODO

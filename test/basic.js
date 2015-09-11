@@ -64,9 +64,10 @@ tape("processor - import torrent", function(t) {
 				// Collect those for later tests
 				var maxSeed = db.getMaxPopularity(torrent);
 				(torrent.files || []).forEach(function(f) {
+					//console.log(f.imdb_id,f.type)
 					if (maxSeed <= cfg.minSeedToIndex) return; // cleaner?
 					if (f.length < 85*1024*1024) return;
-					if (f.type == "movie") movie_ids[f.imdb_id] = true;
+					if (f.type == "movie") movie_ids[f.imdb_id] = (movie_ids[f.imdb_id] || 0)+1;
 					if (f.type == "series") series_ids[f.imdb_id] = [f.season,f.episode[0]]; // fill it with season / episode so we can use for testing later
 				});
 			}
@@ -167,6 +168,21 @@ tape("addon - sample query with a movie", function(t) {
 		t.ok(resp && !isNaN(resp.availability), "has availability");
 		//t.ok(resp && !isNaN(resp.uploaders), "has uploaders");
 
+		t.end();
+	});
+});
+
+
+tape("addon - sample query with a movie - stream.find", function(t) {
+	t.timeoutAfter(3000);
+
+	var imdb_id = _.pairs(movie_ids).sort(function(b,a){ return a[1] - b[1] })[0][0];
+	console.log(movie_ids)
+
+	addon.stream.find({ query: { imdb_id: imdb_id, type: "movie" } }, function(err, resp) {
+		t.ok(!err, "no error");
+		t.ok(Array.isArray(resp), "returns an array of streams");
+		console.log(resp)
 		t.end();
 	});
 });
