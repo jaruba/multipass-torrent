@@ -58,6 +58,7 @@ tape("processor - import torrent", function(t) {
 
 	async.each(hashes.slice(0, 50), function(hash, callback) {
 		mp.processQueue.push({ infoHash: hash, source: { url: "http://torrentz.eu" }, callback: function(err, torrent) {
+			if (err) console.error(err);
 			if (err) return callback(err);
 			if (torrent) {
 				successful.push(torrent);
@@ -74,7 +75,6 @@ tape("processor - import torrent", function(t) {
 			callback();
 		} })
 	}, function(err) {
-		if (err) console.error(err);
 		t.ok(!err, "no error");
 
 		t.ok(successful.length > 20, "we have more than 20 results");
