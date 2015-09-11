@@ -95,15 +95,14 @@ var service = new Stremio.Server({
                     return x ? { availability: x.availability, tag: x.tag } : null // TODO: send back number of candidates under _candidates
                 }) } : null);
             });
-        } else {
+        } else if (args.query) {
             // New format ; same as stream.get, even returns the full result; no point to slim it down, takes same time
             var error = validate(args);
             if (error) return callback(error);
-            async.map([args, _.extend({ },args,{ preferred: [{ tag: "hd", min_avail: 2 }] })], query, function(err, res) {
-                console.log(err,res)
+            async.map([ _.extend({ },args,{ preferred: [{ tag: "hd", min_avail: 2 }] }), args ], query, function(err, res) {
+                callback(err, res ? _.uniq(res, function(x) { return x.infoHash }) : undefined);
             });
-            query(args, function(err, resp) { callback(err, resp ? [resp] : null) }); // TODO: query for multiple items; query.bind({ multiple: true })
-        }; else return callback({code: 10, message: "unsupported arguments"});
+        } else return callback({code: 10, message: "unsupported arguments"});
 
     },
     "stats.get": function(args, callback, user) { // TODO

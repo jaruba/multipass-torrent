@@ -177,12 +177,10 @@ tape("addon - sample query with a movie - stream.find", function(t) {
 	t.timeoutAfter(3000);
 
 	var imdb_id = _.pairs(movie_ids).sort(function(b,a){ return a[1] - b[1] })[0][0];
-	console.log(movie_ids)
 
 	addon.stream.find({ query: { imdb_id: imdb_id, type: "movie" } }, function(err, resp) {
 		t.ok(!err, "no error");
 		t.ok(Array.isArray(resp), "returns an array of streams");
-		console.log(resp)
 		t.end();
 	});
 });
