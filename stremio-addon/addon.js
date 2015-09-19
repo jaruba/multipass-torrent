@@ -62,7 +62,7 @@ function query(args, callback) {
         // Output according to Stremio Addon API for stream.get
         // http://strem.io/addons-api
         callback(err, torrent ? _.extend({ 
-            infoHash: torrent.infoHash, 
+            infoHash: torrent.infoHash.toLowerCase(), 
             uploaders: db.getMaxPopularity(torrent), // optional
             downloaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[1] }).concat(0)), // optional
             //map: torrent.files,
