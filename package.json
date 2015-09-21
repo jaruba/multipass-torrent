@@ -61,6 +61,11 @@
 
     },
     "devDependencies": {
+        "grunt": "^0.4.5",
+        "grunt-cli": "^0.1.13",
+        "grunt-contrib-jshint": "^0.11.2",
+        "grunt-jsbeautifier": "^0.2.10",
+        "load-grunt-tasks": "^3.2.0",
         "tape": "4.x.x"
     },
     "homepage": "https://github.com/Ivshti/multipass-torrent"
