@@ -79,3 +79,5 @@ grunt jsdry # shows what files will be changed via grunt js
 
 # why multipass?
 [For anything else there's multipass](https://www.pinterest.com/pin/83738874291404469/)
+
+Also, a handy coincidence with the DB we ended up using - [multi-master-merge](http://github.com/mafintosh/multi-master-merge)
