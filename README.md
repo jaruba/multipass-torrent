@@ -67,5 +67,15 @@ You can also include cli/multipass as a module to take advantage of it's import 
 # Stremio Addon
 multipass can be used as an Addon to [Stremio](http://strem.io) - just pass ``--stremio-addon=PORT`` to the CLI, and then start stremio with ``--services=http://localhost:PORT``. A GUI to add custom addons is soon to be added in Stremio.
 
+# Testing / code standards
+```bash
+npm test # testing
+
+# those aren't done by default by the testing yet
+grunt jshint # detect errors and potential problems in the js code.
+grunt js # beautifies all js files 
+grunt jsdry # shows what files will be changed via grunt js
+```
+
 # why multipass?
 [For anything else there's multipass](https://www.pinterest.com/pin/83738874291404469/)
