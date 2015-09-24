@@ -36,7 +36,7 @@ mp.importQueue = async.queue(function(source, next) {
 		next();
 	}, function(hash, extra) {
 		log.hash(hash, "collect");
-		mp.processQueue.push({ infoHash: hash, extra: extra, source: source });
+		mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra.hints, source: source });
 	});
 }, 1);
 if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
