@@ -14,7 +14,7 @@ var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 
 var mp = new events.EventEmitter();
-var buffer = [];
+var buffer = { };
 
 mp.db = db; // expose db
 
@@ -29,7 +29,7 @@ mp.importQueue = async.queue(function(source, next) {
 	importer.collect(source, function(err, status) {
 		if (err) log.error(err);
 		else log.important("importing finished from "+source.url+", "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
-		buffer[source.url].total = parseInt(status.found);
+		buffering(task.source.url); buffer[source.url].total = parseInt(status.found);
 
 		if (source.interval) setTimeout(function() { mp.importQueue.push(source) }, source.interval); // repeat at interval - re-push
 
@@ -89,6 +89,7 @@ mp.processQueue = async.queue(function(task, _next) {
 function buffering(source) {
 	if (! buffer[source]) buffer[source] = { progress: 0, total: 0 };
 	buffer[source].progress++;
+	var perc;
 	perc = buffer[source].progress/buffer[source].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
 	mp.emit('buffering', source, perc);
