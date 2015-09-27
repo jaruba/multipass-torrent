@@ -107,7 +107,10 @@ var service = new Stremio.Server({
     },
     "stats.get": function(args, callback, user) { // TODO
         var c = Object.keys(db.indexes.seeders).length;
-        callback(null, { stats: [
+        var items = 0;
+        db.indexes.meta.executeOnEveryNode(function() { items++ });
+        callback(null, { statsNum: items+" movies and episodes", stats: [
+            { name: "number of items - "+items, count: items, colour: "green" },
             { name: "number of torrents - "+c, count: c, colour: "green" }
         ] });
     },
