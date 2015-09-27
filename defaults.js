@@ -4,6 +4,7 @@ module.exports = {
 	"trackerTimeout": 300, 
 
 	"minSeedToIndex": 4,
+	"minSeedImportant": 200, // if it's important, we'll try to get the meta from the DHT / peers even when caches fail
 
 	// If the torrent hasn't been updated for that time and not seeded, delete it
 	"torrentTTL": 10*24*60*60*1000, 
