@@ -58,19 +58,20 @@ mp.processQueue = async.queue(function(task, _next) {
 		}
 		
 		// Pass a merge of existing torrent objects as a base for indexing		
+		var noChanges;
 		task.torrent = res && res.length && indexer.merge(res.sort(function(a, b) { return a.seq - b.seq }).map(function(x) { return x.value }));
-
-		async.parallel([
-			function(cb) { indexer.index(task, { }, cb) },
-			function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - 6*60*60*1000)) ? cb() : indexer.seedleech(task.infoHash, cb) }
-		], function(err, indexing) {
+		async.auto({
+			index: function(cb) { indexer.index(task, { }, function(err, tor, nochanges) { noChanges = nochanges; cb(err, tor) }) },
+			seedleech: function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - 6*60*60*1000)) ? cb() : indexer.seedleech(task.infoHash, cb) }
+		}, function(err, res) {
 			if (err) {
 				buffering(task.source.url);
-				if (task.callback) task.callback(err); log.error(task.infoHash, err); return next();
+				if (task.callback) task.callback(err); log.error(task.infoHash, err);
+				return next();
 			}
 
-			var torrent = _.merge(indexing[0], indexing[1] ? { popularity: indexing[1], popularityUpdated: Date.now() } : { });
-			db.merge(torrent.infoHash, res, torrent); // TODO think of cases when to omit that
+			var torrent = _.merge(res.index, res.seedleech ? { popularity: res.seedleech, popularityUpdated: Date.now() } : { });
+			if ( ! (res.length == 1 && noChanges)) db.merge(torrent.infoHash, res, torrent);
 			
 			mp.emit("found", task.source.url, torrent);
 			
