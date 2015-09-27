@@ -74,7 +74,7 @@ tape("retriever - pass url", function(t) {
 tape("retriever - fallback to DHT/peers fetching", function(t) {
 	t.timeoutAfter(20000);
 
-	// try with 3 hashes, accept 2/3 success rate - some of them are simply not available
+	// try with 3 hashes, accept 3/3 success rate - all metas should be there with peers
 	var results = [ ];
 	async.each(hashes.slice(0,3), function(hash, callback) {
 		retriever.retrieve(hash, { important: true, url: "http://notcache.net/"+hash.toUpperCase()+".torrent" },function(err, tor) {
@@ -83,7 +83,7 @@ tape("retriever - fallback to DHT/peers fetching", function(t) {
 			callback();
 		});
 	}, function() {
-		t.ok(results.length >= 2, "we have 2 or more results");
+		t.ok(results.length >= 3, "we have 3 or more results");
 		t.ok(results.every(function(x) { return x.infoHash }), "all of them have infohash");
 		t.ok(results.every(function(x) { return x.files }), "all of them have files");
 		t.end();
