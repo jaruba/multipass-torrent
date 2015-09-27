@@ -14,7 +14,8 @@ var retriever = require("../lib/retriever");
 
 var hashes = [ ]; // global so we can reuse it
 var movie_ids =  { }; var series_ids = { }; // also global, so we can reuse those 
- 
+
+
 tape("importer with rss source", function(t) {
 	/* WARNING: this entire test file depends on this source; if it fails, all tests will fail
 	 * write individual tests covering edge cases in all modules, not dependant on external influence
@@ -49,6 +50,46 @@ tape("retriever", function(t) {
 		t.end();
 	});
 });
+
+tape("retriever - pass url", function(t) {
+	t.timeoutAfter(3000);
+
+	// try with 3 hashes, accept 2/3 success rate - some of them are simply not available
+	var results = [ ];
+	async.each(hashes.slice(0,3), function(hash, callback) {
+		retriever.retrieve(hash, { url: "http://torcache.net/torrent/"+hash.toUpperCase()+".torrent" },function(err, tor) {
+			if (err) console.error(err);
+			if (tor) results.push(tor);
+			callback();
+		});
+	}, function() {
+		t.ok(results.length >= 2, "we have 2 or more results");
+		t.ok(results.every(function(x) { return x.infoHash }), "all of them have infohash");
+		t.ok(results.every(function(x) { return x.files }), "all of them have files");
+		t.end();
+	});
+});
+
+
+tape("retriever - fallback to DHT/peers fetching", function(t) {
+	t.timeoutAfter(20000);
+
+	// try with 3 hashes, accept 2/3 success rate - some of them are simply not available
+	var results = [ ];
+	async.each(hashes.slice(0,3), function(hash, callback) {
+		retriever.retrieve(hash, { important: true, url: "http://notcache.net/"+hash.toUpperCase()+".torrent" },function(err, tor) {
+			if (err) console.error(err);
+			if (tor) results.push(tor);
+			callback();
+		});
+	}, function() {
+		t.ok(results.length >= 2, "we have 2 or more results");
+		t.ok(results.every(function(x) { return x.infoHash }), "all of them have infohash");
+		t.ok(results.every(function(x) { return x.files }), "all of them have files");
+		t.end();
+	});
+});
+
 
 // TODO this is extremely primitive
 var mp = require("../cli/multipass");
