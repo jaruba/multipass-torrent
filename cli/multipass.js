@@ -29,14 +29,14 @@ mp.importQueue = async.queue(function(source, next) {
 	importer.collect(source, function(err, status) {
 		if (err) log.error(err);
 		else log.important("importing finished from "+source.url+", "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
-		buffering(task.source.url); buffer[source.url].total = parseInt(status.found);
+		buffering(source.url); buffer[source.url].total = parseInt(status.found);
 
 		if (source.interval) setTimeout(function() { mp.importQueue.push(source) }, source.interval); // repeat at interval - re-push
 
 		next();
 	}, function(hash, extra) {
 		log.hash(hash, "collect");
-		mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra.hints, source: source });
+		mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
 	});
 }, 1);
 if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
