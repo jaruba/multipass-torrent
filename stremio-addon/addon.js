@@ -106,7 +106,7 @@ var service = new Stremio.Server({
 
     },
     "stats.get": function(args, callback, user) { // TODO
-        var c = Object.keys(db.indexes.seeders).length;
+        var c = db.indexes.seeders.size;
         var items = 0;
         db.indexes.meta.executeOnEveryNode(function() { items++ });
         callback(null, { statsNum: items+" movies and episodes", stats: [
