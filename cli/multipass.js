@@ -63,14 +63,14 @@ mp.processQueue = async.queue(function(task, _next) {
 		async.auto({
 			index: function(cb) { indexer.index(task, { }, function(err, tor, nochanges) { noChanges = nochanges; cb(err, tor) }) },
 			seedleech: function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - 6*60*60*1000)) ? cb() : indexer.seedleech(task.infoHash, cb) }
-		}, function(err, res) {
+		}, function(err, indexing) {
 			if (err) {
 				buffering(task.source.url);
 				if (task.callback) task.callback(err); log.error(task.infoHash, err);
 				return next();
 			}
 
-			var torrent = _.merge(res.index, res.seedleech ? { popularity: res.seedleech, popularityUpdated: Date.now() } : { });
+			var torrent = _.merge(indexing.index, indexing.seedleech ? { popularity: indexing.seedleech, popularityUpdated: Date.now() } : { });
 			if ( ! (res.length == 1 && noChanges)) db.merge(torrent.infoHash, res, torrent);
 			
 			mp.emit("found", task.source.url, torrent);
