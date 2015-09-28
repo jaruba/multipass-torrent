@@ -48,7 +48,7 @@ mp.importQueue = async.queue(function(source, next) {
 /* Process & index infoHashes
  */
 mp.processQueue = async.queue(function(task, _next) {
-	var next = _.once(function() { called = true; _next() }), called = false;
+	var next = _.once(function() { called = true; buffering(task.source.url); _next() }), called = false;
 	setTimeout(function() { next(); if (!called) log.error("process timeout for "+task.infoHash) }, 10*1000);
 
 	log.hash(task.infoHash, "processing");
@@ -56,7 +56,6 @@ mp.processQueue = async.queue(function(task, _next) {
 	// consider using db.indexes.seeders to figure out a skip case here; don't overcomplicate though
 	db.get(task.infoHash, function(err, res) {
 		if (err) {
-			buffering(task.source.url);
 			log.error(err);
 			return next();
 		}
@@ -69,7 +68,6 @@ mp.processQueue = async.queue(function(task, _next) {
 			seedleech: function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - 6*60*60*1000)) ? cb() : indexer.seedleech(task.infoHash, cb) }
 		}, function(err, indexing) {
 			if (err) {
-				buffering(task.source.url);
 				if (task.callback) task.callback(err); log.error(task.infoHash, err);
 				return next();
 			}
@@ -84,7 +82,6 @@ mp.processQueue = async.queue(function(task, _next) {
 
 			if (torrent.uninteresting && !res.length) log.warning(torrent.infoHash+" / "+torrent.name+" is non-interesting, no files indexed");
 			log.hash(task.infoHash, "processed");
-			buffering(task.source.url);
 		});
 	});
 }, 6);
