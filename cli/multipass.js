@@ -34,7 +34,7 @@ mp.importQueue = async.queue(function(source, next) {
 	importer.collect(source, function(err, status) {
 		if (err) log.error(err);
 		else log.important("importing finished from "+source.url+", "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
-		buffering(source.url); buffer[source.url].total = parseInt(status.found);
+		buffering(source, status.found);
 
 		if (source.interval) setTimeout(function() { mp.importQueue.push(source) }, source.interval); // repeat at interval - re-push
 
@@ -48,7 +48,7 @@ mp.importQueue = async.queue(function(source, next) {
 /* Process & index infoHashes
  */
 mp.processQueue = async.queue(function(task, _next) {
-	var next = _.once(function() { called = true; buffering(task.source.url); _next() }), called = false;
+	var next = _.once(function() { called = true; buffering(task.source); _next() }), called = false;
 	setTimeout(function() { next(); if (!called) log.error("process timeout for "+task.infoHash) }, 10*1000);
 
 	log.hash(task.infoHash, "processing");
@@ -88,16 +88,18 @@ mp.processQueue = async.queue(function(task, _next) {
 
 /* Emit buffering event
  */
-function buffering(source) {
-	if (! buffer[source]) buffer[source] = { progress: 0, total: 0 };
-	buffer[source].progress++;
+function buffering(source, total) {
+	if (! (source && source.url)) return;
+	if (! buffer[source.url]) buffer[source.url] = { progress: 0, total: 0 };
+	if (!isNaN(total)) return buffer[source.url].total = total;
+	buffer[source.url].progress++;
 	var perc;
-	perc = buffer[source].progress/buffer[source].total;
+	perc = buffer[source.url].progress/buffer[source.url].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
 	mp.emit('buffering', source, perc);
 	if (perc == 1) {
 		mp.emit('finished', source);
-		delete buffer[source];
+		delete buffer[source.url];
 	}
 }
 
