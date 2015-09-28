@@ -25,6 +25,10 @@ cfg.on("ready", function() {
 
 	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
 });
+cfg.on("updated", function() {
+	// currently concurrency for importQueue is 1 so checking buffer[] works
+	if (cfg.sources) cfg.sources.forEach(function(source) { if (! buffer[source.url]) mp.importQueue.push(source) });
+});
 
 /* Collect infoHashes from source
  */
@@ -96,9 +100,9 @@ function buffering(source, total) {
 	var perc;
 	perc = buffer[source.url].progress/buffer[source.url].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
-	mp.emit('buffering', source, perc);
+	mp.emit("buffering", source, perc);
 	if (perc == 1) {
-		mp.emit('finished', source);
+		mp.emit("finished", source);
 		delete buffer[source.url];
 	}
 }
