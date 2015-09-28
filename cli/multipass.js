@@ -15,7 +15,6 @@ var importer = require("../lib/importer");
 
 var mp = new events.EventEmitter();
 var buffer = { };
-
 mp.db = db; // expose db
 
 db.listenReplications(cfg.dbId); // start our replication server
@@ -39,7 +38,11 @@ mp.importQueue = async.queue(function(source, next) {
 		mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
 	});
 }, 1);
-if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
+
+// WARNING: waiting for cfg to be ready
+cfg.on("ready", function() {
+	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
+});
 
 /* Process & index infoHashes
  */
@@ -126,4 +129,5 @@ if (argv["db-dump"]) db.createReadStream()
 /* Stremio Addon interface
  */
 if (argv["stremio-addon"]) require("../stremio-addon/addon")(argv["stremio-addon"]);
+
 
