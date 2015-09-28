@@ -17,6 +17,15 @@ var mp = new events.EventEmitter();
 var buffer = { };
 mp.db = db; // expose db
 
+/* Config - dependant stuff
+ */
+cfg.on("ready", function() {
+	db.listenReplications(cfg.dbId); // start our replication server
+	db.findReplications(cfg.dbId); // replicate to other instances
+
+	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
+});
+
 /* Collect infoHashes from source
  */
 mp.importQueue = async.queue(function(source, next) {
@@ -35,13 +44,6 @@ mp.importQueue = async.queue(function(source, next) {
 		mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
 	});
 }, 1);
-
-cfg.on("ready", function() {
-	db.listenReplications(cfg.dbId); // start our replication server
-	db.findReplications(cfg.dbId); // replicate to other instances
-
-	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
-});
 
 /* Process & index infoHashes
  */
