@@ -15,11 +15,21 @@ var importer = require("../lib/importer");
 
 var mp = new events.EventEmitter();
 var buffer = { };
-
 mp.db = db; // expose db
 
-db.listenReplications(cfg.dbId); // start our replication server
-db.findReplications(cfg.dbId); // replicate to other instances
+/* Config - dependant stuff
+ */
+cfg.on("ready", function() {
+	db.listenReplications(cfg.dbId); // start our replication server
+	db.findReplications(cfg.dbId); // replicate to other instances
+
+	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
+});
+cfg.on("updated", function() {
+	// currently concurrency for importQueue is 1 so checking buffer[] works
+	// TODO: fix this, since some sources may be completed by re-added with setTimeout because of source.interval
+	if (cfg.sources) cfg.sources.forEach(function(source) { if (! buffer[source.url]) mp.importQueue.push(source) });
+});
 
 /* Collect infoHashes from source
  */
@@ -29,7 +39,7 @@ mp.importQueue = async.queue(function(source, next) {
 	importer.collect(source, function(err, status) {
 		if (err) log.error(err);
 		else log.important("importing finished from "+source.url+", "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
-		buffering(source.url); buffer[source.url].total = parseInt(status.found);
+		buffering(source, status.found);
 
 		if (source.interval) setTimeout(function() { mp.importQueue.push(source) }, source.interval); // repeat at interval - re-push
 
@@ -39,12 +49,11 @@ mp.importQueue = async.queue(function(source, next) {
 		mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
 	});
 }, 1);
-if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
 
 /* Process & index infoHashes
  */
 mp.processQueue = async.queue(function(task, _next) {
-	var next = _.once(function() { called = true; _next() }), called = false;
+	var next = _.once(function() { called = true; buffering(task.source); _next() }), called = false;
 	setTimeout(function() { next(); if (!called) log.error("process timeout for "+task.infoHash) }, 10*1000);
 
 	log.hash(task.infoHash, "processing");
@@ -52,7 +61,6 @@ mp.processQueue = async.queue(function(task, _next) {
 	// consider using db.indexes.seeders to figure out a skip case here; don't overcomplicate though
 	db.get(task.infoHash, function(err, res) {
 		if (err) {
-			buffering(task.source.url);
 			log.error(err);
 			return next();
 		}
@@ -65,7 +73,6 @@ mp.processQueue = async.queue(function(task, _next) {
 			seedleech: function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - 6*60*60*1000)) ? cb() : indexer.seedleech(task.infoHash, cb) }
 		}, function(err, indexing) {
 			if (err) {
-				buffering(task.source.url);
 				if (task.callback) task.callback(err); log.error(task.infoHash, err);
 				return next();
 			}
@@ -80,23 +87,24 @@ mp.processQueue = async.queue(function(task, _next) {
 
 			if (torrent.uninteresting && !res.length) log.warning(torrent.infoHash+" / "+torrent.name+" is non-interesting, no files indexed");
 			log.hash(task.infoHash, "processed");
-			buffering(task.source.url);
 		});
 	});
 }, 6);
 
 /* Emit buffering event
  */
-function buffering(source) {
-	if (! buffer[source]) buffer[source] = { progress: 0, total: 0 };
-	buffer[source].progress++;
+function buffering(source, total) {
+	if (! (source && source.url)) return;
+	if (! buffer[source.url]) buffer[source.url] = { progress: 0, total: 0 };
+	if (!isNaN(total)) return buffer[source.url].total = total;
+	buffer[source.url].progress++;
 	var perc;
-	perc = buffer[source].progress/buffer[source].total;
+	perc = buffer[source.url].progress/buffer[source.url].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
-	mp.emit('buffering', source, perc);
+	mp.emit("buffering", source, perc);
 	if (perc == 1) {
-		mp.emit('finished', source);
-		delete buffer[source];
+		mp.emit("finished", source);
+		delete buffer[source.url];
 	}
 }
 
@@ -124,4 +132,5 @@ if (argv["db-dump"]) db.createReadStream()
 /* Stremio Addon interface
  */
 if (argv["stremio-addon"]) require("../stremio-addon/addon")(argv["stremio-addon"]);
+
 
