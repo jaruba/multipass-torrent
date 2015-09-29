@@ -107,10 +107,8 @@ if (module.parent) return module.exports = mp;
 /* Log number of torrents we have
  */
 async.forever(function(next) {
-	var count = 0;
-	db.createKeyStream()
-		.on("data",function(d) { count++ })
-		.on("end", function() { log.important("We have "+count+" torrents, "+mp.processQueue.length()+" queued"); setTimeout(next, 5000) });
+	log.important("We have "+db.indexes.seeders.size+" torrents, "+processQueue.length()+" queued"); 
+	setTimeout(next, 5000);
 });
 
 /* Simple dump
