@@ -72,8 +72,8 @@ function query(args, callback) {
             runtime: Date.now()-start // optional
         }, file ? { 
             mapIdx: file.idx,
-            tag: file.tag,
-        } : { }) : null);      
+            tag: file.tag, filename: file.name,
+        } : { }) : null);
     });
 };
 
