@@ -1,6 +1,6 @@
 {
   "name": "multipass-torrent",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "Collects torrents from various sources (dump, RSS, HTML pages) and associates the video files within with IMDB ID",
   "main": "cli/mp-collect",
   "scripts": {
