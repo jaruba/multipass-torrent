@@ -103,7 +103,13 @@ var service = new Stremio.Server({
                 callback(err, res ? _.chain(res).filter(function(x) { return x }).uniq(function(x) { return x.infoHash }).value() : undefined);
             });
         } else return callback({code: 10, message: "unsupported arguments"});
-
+    },
+    "stream.popularities": function(args, callback, user) {
+        var popularities = { };
+        db.indexes.meta.executeOnEveryNode(function(n) {
+            popularities[n.key.split(" ")[0]] = Math.max.apply(null, n.data.map(function(k) { return db.indexes.seeders.get(k) })) || 0;
+        });
+        callback(null, { popularities: popularities });
     },
     "stats.get": function(args, callback, user) { // TODO
         var c = db.indexes.seeders.size;
@@ -115,6 +121,7 @@ var service = new Stremio.Server({
         ] });
     },
 }, { allow: [cfg.stremioCentral], secret: cfg.stremioSecret }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
+
 
 var server = http.createServer(function (req, res) {
     service.middleware(req, res, function() { res.end() });
