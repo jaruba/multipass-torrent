@@ -115,7 +115,7 @@ if (module.parent) return module.exports = mp;
 /* Log number of torrents we have
  */
 async.forever(function(next) {
-	log.important("We have "+db.indexes.seeders.size+" torrents, "+processQueue.length()+" queued"); 
+	log.important("We have "+db.indexes.seeders.size+" torrents, "+mp.processQueue.length()+" queued"); 
 	setTimeout(next, 5000);
 });
 
