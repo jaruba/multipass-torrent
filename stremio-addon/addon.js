@@ -8,7 +8,7 @@ var db = require("../lib/db");
 
 function validate(args) {
     var meta = args.query;
-    if (! (args.query || args.infoHash)) return { code: 0, message: "query/infoHash requried" };
+    if (! (args.query || args.infoHash)) return { code: 0, message: "query/infoHash required" };
     if (meta && !meta.imdb_id) return { code: 1, message: "imdb_id required" };
     if (meta && (meta.type == "series" && !(meta.hasOwnProperty("episode") && meta.hasOwnProperty("season"))))
         return { code: 2, message: "season and episode required for series type" };

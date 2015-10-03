@@ -253,7 +253,9 @@ tape("addon - sample query with an episode", function(t) {
 
 tape("addon - test preferrences", function(t) {
 	t.skip("TEST NOT IMPLEMENTED - functionality is");
+	t.end();
 });
+
 
 tape("addon - get stream by infoHash", function(t) {
 	t.timeoutAfter(1500);
@@ -264,6 +266,18 @@ tape("addon - get stream by infoHash", function(t) {
 		t.ok(resp && !isNaN(resp.availability), "has availability");
 		//t.ok(resp && !isNaN(resp.uploaders), "has uploaders");
 
+		t.end();
+	});
+});
+
+
+tape("addon - get popularities", function(t) {
+	addon.call("stream.popularities", { }, function(err, res) { 
+		t.ok(!err, "no error");
+		t.ok(res && res.popularities, "has popularities object");
+		t.ok(Object.keys(res.popularities).length > 1, "popularities object full");
+		//t.ok()
+		console.log(res)
 		t.end();
 	});
 });
