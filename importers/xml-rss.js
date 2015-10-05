@@ -2,6 +2,8 @@ var FeedParser = require("feedparser");
 //var collect = require("../lib/collector").collect;
 var log = require("../lib/log");
 
+var _ = require("lodash");
+
 // This should emit results up through an EventEmitter or a pipe, not use collect directly
 
 module.exports = function(stream, source)
