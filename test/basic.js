@@ -277,7 +277,6 @@ tape("addon - get popularities", function(t) {
 		t.ok(res && res.popularities, "has popularities object");
 		t.ok(Object.keys(res.popularities).length > 1, "popularities object full");
 		//t.ok()
-		console.log(res)
 		t.end();
 	});
 });

@@ -123,12 +123,16 @@ var service = new Stremio.Server({
 }, { allow: [cfg.stremioCentral], secret: cfg.stremioSecret }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
 
 
-var server = http.createServer(function (req, res) {
-    service.middleware(req, res, function() { res.end() });
-}).on("listening", function()
-{
-    console.log("Multipass Stremio Addon listening on "+server.address().port);
-});
 
-if (module.parent) module.exports = function(port, ip) { return server.listen(port, ip) };
-else server.listen(process.env.PORT || 7000);
+function listen(port, ip) {
+    var server = http.createServer(function (req, res) {
+        service.middleware(req, res, function() { res.end() });
+    }).on("listening", function()
+    {
+        console.log("Multipass Stremio Addon listening on "+server.address().port);
+    });
+    return server.listen(port, ip);
+}
+
+if (module.parent) { module.exports = listen; module.exports.service = service; }
+else listen(process.env.PORT || 7000);
