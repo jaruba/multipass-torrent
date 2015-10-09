@@ -12,6 +12,7 @@ module.exports = {
 	"matchFiles": /.mp4$|.avi$|.mkv$/i,
 	"excludeFiles": /^RARBG|^Sample|Cam Rip/i,
 	"excludeTorrents": null,
+	"excludeNonAscii": true,
 
 	"cinemeta": "http://stremio-cinemeta.herokuapp.com",
 
