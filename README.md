@@ -9,6 +9,12 @@ This means the system is **distributed** and you can run several instances with 
 It also has a Stremio Addon front-end, allowing for the content you scraped to be used in [Stremio](http://strem.io).
 
 
+# GUI 
+Multipass has a [web-based user interface](Ivshti/multipass-www), in which you can:
+
+1. pick a list of sources which are to be crawled
+2. see a movie / series catalogue of everything indexed 
+
 # Examples
 ```bash
 node cli/multipass --db-id="identifier string of your replica set" --source="https://torrentz.eu/feed_verified?q=" --db-path=/tmp/test
