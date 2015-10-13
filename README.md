@@ -10,7 +10,7 @@ It also has a Stremio Addon front-end, allowing for the content you scraped to b
 
 
 # GUI 
-Multipass has a [web-based user interface](Ivshti/multipass-www), in which you can:
+Multipass has a [web-based user interface](http://github.com/Ivshti/multipass-www), in which you can:
 
 1. pick a list of sources which are to be crawled
 2. see a movie / series catalogue of everything indexed 
