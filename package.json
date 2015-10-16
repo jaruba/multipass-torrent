@@ -46,6 +46,7 @@
     "parse-torrent": "5.x.x",
     "peer-search": "git://github.com/Ivshti/peer-search",
     "q": "^1.4.1",
+    "sift": "^2.0.9",
     "stremio-addons": "Stremio/stremio-addons",
     "torrent-stream": "^1.0.0",
     "unzip": ">=0.1.9",

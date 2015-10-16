@@ -2,6 +2,7 @@ var Stremio = require("stremio-addons");
 var http = require("http");
 var _ = require("lodash");
 var async = require("async");
+var sift = require("sift");
 
 var cfg = require("../lib/cfg");
 var db = require("../lib/db");
