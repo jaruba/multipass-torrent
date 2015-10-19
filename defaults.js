@@ -9,6 +9,9 @@ module.exports = {
 	// If the torrent hasn't been updated for that time and not seeded, delete it
 	"torrentTTL": 10*24*60*60*1000, 
 
+	// How often we update popularity
+	"popularityTTL": 6*60*60*1000,
+
 	"matchFiles": /.mp4$|.avi$|.mkv$/i,
 	"excludeFiles": /^RARBG|^Sample|Cam Rip/i,
 	"excludeTorrents": null,
