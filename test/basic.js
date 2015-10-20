@@ -13,7 +13,6 @@ var importer = require("../lib/importer");
 var retriever = require("../lib/retriever");
 
 var hashes = [ ]; // global so we can reuse it
-var hashesDump = [];
 var movie_ids =  { }; var series_ids = { }; // also global, so we can reuse those 
 
 
@@ -36,6 +35,8 @@ tape("importer with rss source", function(t) {
 tape("importer with dump source", function(t) {
 	t.timeoutAfter(10000);
 
+	var hashesDump = [];
+
 	importer.collect({ url: "http://bitsnoop.com/api/latest_tz.php?t=verified", category: ["tv", "movies"], type: "dump" }, function(err, status) {
 		t.ok(!err, "no err from importer.collect");
 		t.ok(hashesDump.length > 5, "hashes collected ("+hashesDump.length+") are more than 5");
@@ -49,6 +50,28 @@ tape("importer with dump source", function(t) {
 	});
 });
 
+/*
+tape("importer with dump source - large with minseeders", function(t) {
+	t.timeoutAfter(10000);
+
+	importer.collect({ 
+		url: "http://ext.bitsnoop.com/export/b3_verified.txt.gz", 
+		minSeedersUrl: "http://ext.bitsnoop.com/export/b3_e003_torrents.txt.gz",
+		minSeeders: 5,
+		category: ["tv", "movies"], type: "dump" 
+	}, function(err, status) {
+		t.ok(!err, "no err from importer.collect");
+		t.ok(hashesDump.length > 5, "hashes collected ("+hashesDump.length+") are more than 5");
+		t.ok(status.type == "dump", "we've collected from a dump")
+		t.end();
+
+	}, function(hash, extra) {
+		hashesDump.push(hash);
+		t.ok(typeof(hash)=="string" && hash.length==40, "valid infoHash");
+		t.ok(extra && extra.category.match("movie|tv"), "match movie/tv in category");
+	});
+});
+*/
 
 tape("retriever", function(t) {
 	t.timeoutAfter(3000);

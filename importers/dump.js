@@ -2,6 +2,7 @@ var byline = require("byline");
 var _ = require("lodash");
 var log = require("../lib/log");
 var events = require("events");
+var needle = require("needle");
 
 module.exports = function(stream, source)
 {
@@ -22,11 +23,21 @@ module.exports = function(stream, source)
         //if (cat.match("video") && (cat.match("dvd") || cat.match("rip") || cat.match("tv")))
         if (cat.match("movie") || cat.match("dvd") || cat.match("rip") || cat.match("tv")/* || cat.match("video")*/) {
             additional.category = cat;
-            emitter.emit("infoHash", infoHash, _.extend(additional, source.addon || { }));
+            hashReady(infoHash, _.extend(additional, source.addon || { }));
         };
     })
     .on("error", function(err) { log.error("dump", err) })
     .on("end", function() { emitter.emit("end") });
+
+    var checkingMinSeeders = source.minSeedersUrl && source.minSeeders;
+    if (checkingMinSeeders) {
+        var seedersStream = require("../lib/importer").getStream({ url: source.minSeedersUrl });
+
+    };
+
+    function hashReady(hash, extra) {
+        emitter.emit("infoHash", hash, extra);
+    };
 
     return emitter;
 }
