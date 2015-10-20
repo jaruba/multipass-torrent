@@ -42,9 +42,10 @@ tape("importer with dump source", function(t) {
 		t.ok(status.type == "dump", "we've collected from a dump")
 		t.end();
 
-	}, function(hash) {
+	}, function(hash, extra) {
 		hashesDump.push(hash);
-		//t.ok(typeof(hash)=="string" && hash.length==40, "valid infoHash");
+		t.ok(typeof(hash)=="string" && hash.length==40, "valid infoHash");
+		t.ok(extra && extra.category.match("movie|tv"), "match movie/tv in category");
 	});
 });
 

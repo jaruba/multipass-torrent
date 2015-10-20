@@ -1,10 +1,13 @@
 var byline = require("byline");
 var _ = require("lodash");
 var log = require("../lib/log");
+var events = require("events");
 
 module.exports = function(stream, source)
 {
-    return stream = stream.pipe(byline.createStream())
+    var emitter = new events.EventEmitter();
+
+    stream.pipe(byline.createStream())
     .on("data", function(line)
     {
         var parts = line.toString().split("|"),
@@ -18,8 +21,12 @@ module.exports = function(stream, source)
 
         //if (cat.match("video") && (cat.match("dvd") || cat.match("rip") || cat.match("tv")))
         if (cat.match("movies") || cat.match("dvd") || cat.match("rip") || cat.match("tv")/* || cat.match("video")*/) {
-            stream.emit("infoHash", infoHash, _.extend(additional, source.addon || { }));
+            additional.category = cat;
+            emitter.emit("infoHash", infoHash, _.extend(additional, source.addon || { }));
         };
     })
-    .on("error", function(err) { log.error("dump", err) });
+    .on("error", function(err) { log.error("dump", err) })
+    .on("end", function() { emitter.emit("end") });
+
+    return emitter;
 }
