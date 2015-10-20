@@ -31,16 +31,17 @@ module.exports = function(stream, source)
     .on("end", checkEnded());
 
     var checkingSeeders = source.minSeedersUrl && source.minSeeders;
-    if (checkingSeeders) {
-        require("../lib/importer").getStream({ url: source.minSeedersUrl })
-        .pipe(byline.createStream())
+    if (checkingSeeders) require("../lib/importer").getStream({ url: source.minSeedersUrl }, function(err, stream) {
+        if (err) return checkingSeeders = false; // warning - bug - some info hashes will never be flushed 
+
+        stream.pipe(byline.createStream())
         .on("data", function(line) {
             var parts = line.toString().split("|");
             var infoHash = parts[0].toLowerCase(), uploaders = parseInt(parts[1]), downloaders = parseInt(parts[2]);
             if (uploaders >= source.minSeeders) hashReady(infoHash, { uploaders: uploaders, downloaders: downloaders });
         })
         .on("end", checkEnded())
-    };
+    });
 
     // TODO: make sure this is cleaned up
     var hashes = { };
@@ -50,7 +51,7 @@ module.exports = function(stream, source)
         hashes[hash] = hashes[hash] || { hit: 0 };
         hashes[hash].hit++;
         _.extend(hashes[hash], extra || { });
-        if (hashes[hash].hit == 2) emitter.emit("infoHash", hash, extra);
+        if (hashes[hash].hit == 2) emitter.emit("infoHash", hash, hashes[hash]);
     };
 
     function checkEnded() {

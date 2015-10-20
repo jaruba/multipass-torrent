@@ -50,28 +50,31 @@ tape("importer with dump source", function(t) {
 	});
 });
 
-/*
 tape("importer with dump source - large with minseeders", function(t) {
-	t.timeoutAfter(10000);
+	t.timeoutAfter(500*1000);
+
+	var count = 0;
 
 	importer.collect({ 
 		url: "http://ext.bitsnoop.com/export/b3_verified.txt.gz", 
 		minSeedersUrl: "http://ext.bitsnoop.com/export/b3_e003_torrents.txt.gz",
-		minSeeders: 5,
+		minSeeders: 10,
 		category: ["tv", "movies"], type: "dump" 
 	}, function(err, status) {
 		t.ok(!err, "no err from importer.collect");
-		t.ok(hashesDump.length > 5, "hashes collected ("+hashesDump.length+") are more than 5");
 		t.ok(status.type == "dump", "we've collected from a dump")
+		console.log("found "+count+" hashes");
+		// around 3k with over 10 seeds
+		// around 
 		t.end();
-
 	}, function(hash, extra) {
-		hashesDump.push(hash);
-		t.ok(typeof(hash)=="string" && hash.length==40, "valid infoHash");
-		t.ok(extra && extra.category.match("movie|tv"), "match movie/tv in category");
+		//t.ok(typeof(hash)=="string" && hash.length==40, "valid infoHash");
+		//t.ok(extra && extra.category.match("movie|tv"), "match movie/tv in category");
+		//t.ok(extra && extra.uploaders >= 10, "has min uploaders");
+		count++;
 	});
 });
-*/
+
 
 tape("retriever", function(t) {
 	t.timeoutAfter(3000);
