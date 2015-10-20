@@ -7,12 +7,13 @@ var needle = require("needle");
 module.exports = function(stream, source)
 {
     var emitter = new events.EventEmitter();
+    var i = 0, j = 0; // i - how many streams, j - how many completed
 
     stream.pipe(byline.createStream())
     .on("data", function(line)
     {
         var parts = line.toString().split("|"),
-            infoHash = parts[0], cat = (parts[2] || "").toLowerCase(),
+            infoHash = parts[0].toLowerCase(), cat = (parts[2] || "").toLowerCase(),
             additional = { }; // additional info found
 
         var infoUrl = parts[3];
@@ -27,16 +28,34 @@ module.exports = function(stream, source)
         };
     })
     .on("error", function(err) { log.error("dump", err) })
-    .on("end", function() { emitter.emit("end") });
+    .on("end", checkEnded());
 
-    var checkingMinSeeders = source.minSeedersUrl && source.minSeeders;
-    if (checkingMinSeeders) {
-        var seedersStream = require("../lib/importer").getStream({ url: source.minSeedersUrl });
-
+    var checkingSeeders = source.minSeedersUrl && source.minSeeders;
+    if (checkingSeeders) {
+        require("../lib/importer").getStream({ url: source.minSeedersUrl })
+        .pipe(byline.createStream())
+        .on("data", function(line) {
+            var parts = line.toString().split("|");
+            var infoHash = parts[0].toLowerCase(), uploaders = parseInt(parts[1]), downloaders = parseInt(parts[2]);
+            if (uploaders >= source.minSeeders) hashReady(infoHash, { uploaders: uploaders, downloaders: downloaders });
+        })
+        .on("end", checkEnded())
     };
 
+    // TODO: make sure this is cleaned up
+    var hashes = { };
     function hashReady(hash, extra) {
-        emitter.emit("infoHash", hash, extra);
+        if (!checkingSeeders) return emitter.emit("infoHash", hash, extra);
+            
+        hashes[hash] = hashes[hash] || { hit: 0 };
+        hashes[hash].hit++;
+        _.extend(hashes[hash], extra || { });
+        if (hashes[hash].hit == 2) emitter.emit("infoHash", hash, extra);
+    };
+
+    function checkEnded() {
+        i++;
+        return function() { if (++j == i) emitter.emit("end") };
     };
 
     return emitter;
