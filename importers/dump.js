@@ -12,7 +12,7 @@ module.exports = function(stream, source)
             additional = { }; // additional info found
 
         var infoUrl = parts[3];
-        if (infoUrl.match("kat.cr")) additional.hints = { url: infoUrl }; // OR any torrent website that we know contains IMDB ID on it's info page
+        if (infoUrl.match("kat.cr|kickass.to")) additional.hints = { url: infoUrl }; // OR any torrent website that we know contains IMDB ID on it's info page
         
         if (cat.match("porn") || cat.match("adult")) return; // exclude that for now
 
