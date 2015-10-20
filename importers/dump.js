@@ -20,7 +20,7 @@ module.exports = function(stream, source)
         if (cat.match("porn") || cat.match("adult")) return; // exclude that for now
 
         //if (cat.match("video") && (cat.match("dvd") || cat.match("rip") || cat.match("tv")))
-        if (cat.match("movies") || cat.match("dvd") || cat.match("rip") || cat.match("tv")/* || cat.match("video")*/) {
+        if (cat.match("movie") || cat.match("dvd") || cat.match("rip") || cat.match("tv")/* || cat.match("video")*/) {
             additional.category = cat;
             emitter.emit("infoHash", infoHash, _.extend(additional, source.addon || { }));
         };
