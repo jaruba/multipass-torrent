@@ -13,6 +13,7 @@ var importer = require("../lib/importer");
 var retriever = require("../lib/retriever");
 
 var hashes = [ ]; // global so we can reuse it
+var hashesDump = [];
 var movie_ids =  { }; var series_ids = { }; // also global, so we can reuse those 
 
 
@@ -31,6 +32,22 @@ tape("importer with rss source", function(t) {
 		t.ok(typeof(hash)=="string" && hash.length==40, "valid infoHash");
 	});
 });
+
+tape("importer with dump source", function(t) {
+	t.timeoutAfter(10000);
+
+	importer.collect({ url: "http://bitsnoop.com/api/latest_tz.php?t=verified", category: ["tv", "movies"], type: "dump" }, function(err, status) {
+		t.ok(!err, "no err from importer.collect");
+		t.ok(hashesDump.length > 5, "hashes collected ("+hashesDump.length+") are more than 5");
+		t.ok(status.type == "dump", "we've collected from a dump")
+		t.end();
+
+	}, function(hash) {
+		hashesDump.push(hash);
+		//t.ok(typeof(hash)=="string" && hash.length==40, "valid infoHash");
+	});
+});
+
 
 tape("retriever", function(t) {
 	t.timeoutAfter(3000);
