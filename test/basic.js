@@ -33,7 +33,7 @@ tape("importer with rss source", function(t) {
 });
 
 tape("importer with dump source", function(t) {
-	t.timeoutAfter(10000);
+	t.timeoutAfter(20000);
 
 	var hashesDump = [];
 
@@ -50,6 +50,7 @@ tape("importer with dump source", function(t) {
 	});
 });
 
+/*
 tape("importer with dump source - large with minseeders", function(t) {
 	t.timeoutAfter(500*1000);
 
@@ -58,13 +59,14 @@ tape("importer with dump source - large with minseeders", function(t) {
 	importer.collect({ 
 		url: "http://ext.bitsnoop.com/export/b3_verified.txt.gz", 
 		minSeedersUrl: "http://ext.bitsnoop.com/export/b3_e003_torrents.txt.gz",
-		minSeeders: 10,
+		minSeeders: 5,
 		category: ["tv", "movies"], type: "dump" 
 	}, function(err, status) {
 		t.ok(!err, "no err from importer.collect");
 		t.ok(status.type == "dump", "we've collected from a dump")
 		console.log("found "+count+" hashes");
 		// around 3k with over 10 seeds
+		// found 5k with over 5 seeds
 		// around 
 		t.end();
 	}, function(hash, extra) {
@@ -74,6 +76,7 @@ tape("importer with dump source - large with minseeders", function(t) {
 		count++;
 	});
 });
+*/
 
 
 tape("retriever", function(t) {
