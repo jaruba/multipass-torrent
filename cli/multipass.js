@@ -77,6 +77,7 @@ mp.processQueue = async.queue(function(task, _next) {
 				return next();
 			}
 
+			// Note that this is a _.merge, popularity is not overriden
 			var torrent = _.merge(indexing.index, indexing.seedleech ? { popularity: indexing.seedleech, popularityUpdated: Date.now() } : { });
 			if ( ! (res.length == 1 && noChanges)) db.merge(torrent.infoHash, res, torrent);
 			
