@@ -47,6 +47,8 @@ mp.importQueue = async.queue(function(source, next) {
 	}, function(hash, extra) {
 		log.hash(hash, "collect");
 		mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
+		// extra - collected from the source, can be info like uploaders/downloaders, category, etc.
+		// hints - hints to particular meta information already found from the source, like imdb_id, season/episode
 	});
 }, 1);
 
