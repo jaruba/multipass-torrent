@@ -35,7 +35,7 @@ module.exports = function(stream, source) {
                 if (response.episodes) {
                     var returnObject = {
                         show_name: response.title,
-                        show_imdb: response.imdb_id,
+                        imdb_id: response.imdb_id,
                         verified: true
                     }
                     response.episodes.forEach(function(item) {
