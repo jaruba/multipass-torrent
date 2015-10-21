@@ -69,6 +69,9 @@ module.exports = function(stream, source) {
                 }
 
                 process.nextTick(next);
+            }, function(err) {
+                log.error(err);
+                process.nextTick(next);
             });
         }, 2);
         
