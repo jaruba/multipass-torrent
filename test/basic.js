@@ -80,7 +80,7 @@ tape("importer with dump source - large with minseeders", function(t) {
 
 
 tape("retriever", function(t) {
-	t.timeoutAfter(3000);
+	t.timeoutAfter(5000);
 
 	// try with 3 hashes, accept 2/3 success rate - some of them are simply not available
 	var results = [];
@@ -105,7 +105,6 @@ tape("retriever - catch errors", function(t) {
 	retriever.retrieve(hash, function(errs, tor) {
 		t.ok(errs && errs.length, "has errors");
 		t.end();
-		console.log(errs)
 	});
 })
 
