@@ -9,7 +9,6 @@ var log = require('../lib/log');
 var events = require('events');
 var parseTorrent = require('parse-torrent');
 
-
 module.exports = function(stream, source) {
     var emitter = new events.EventEmitter();
 
@@ -68,18 +67,19 @@ module.exports = function(stream, source) {
                         }
                     });
                 }
-                if (!next) {
-                    emitter.emit('end');
-                }
+
                 process.nextTick(next);
             });
         }, 2);
+        
+        queue.drain = function() { emitter.emit('end') };
+
         if (host.slashes) {
             queue.push(host.protocol + '//' + host.host + '/shows')
         } else {
             queue.push(host.protocol + host.host + '/shows')
         }
-    }
+    };
 
     function parsesource(s) {
 
@@ -105,10 +105,13 @@ module.exports = function(stream, source) {
     }
 
     function getjson(url) {
+        log.message("json getting: "+url);
+
         var defer = Q.defer();
         var params = {
             compressed: true, // sets 'Accept-Encoding' to 'gzip,deflate'
-            follow_max: 2
+            follow_max: 2,
+            headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.99 Safari/537.36" }
         };
         needle.get(url, params, function(error, response) {
             if (!error && response.statusCode == 200) {
