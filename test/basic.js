@@ -98,6 +98,17 @@ tape("retriever", function(t) {
 	});
 });
 
+tape("retriever - catch errors", function(t) {
+	t.timeoutAfter(10000);
+	var hash = "230bb375188a9ecf57ba469fc8ec36cf5634a0382";
+
+	retriever.retrieve(hash, function(errs, tor) {
+		t.ok(errs && errs.length, "has errors");
+		t.end();
+		console.log(errs)
+	});
+})
+
 tape("retriever - pass url", function(t) {
 	t.timeoutAfter(3000);
 
@@ -124,7 +135,7 @@ tape("retriever - fallback to DHT/peers fetching", function(t) {
 	// try with 3 hashes, accept 3/3 success rate - all metas should be there with peers
 	var results = [ ];
 	async.each(hashes.slice(0,3), function(hash, callback) {
-		retriever.retrieve(hash, { important: true, url: "http://notcache.net/"+hash.toUpperCase()+".torrent" },function(err, tor) {
+		retriever.retrieve(hash, { important: true, url: "http://notcache.net/"+hash.toUpperCase()+".torrent" }, function(err, tor) {
 			if (err) console.error(err);
 			if (tor) results.push(tor);
 			callback();
