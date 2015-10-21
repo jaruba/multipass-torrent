@@ -23,6 +23,9 @@ cfg.on("ready", function() {
 	db.listenReplications(cfg.dbId); // start our replication server
 	db.findReplications(cfg.dbId); // replicate to other instances
 
+	log.important("DB Path "+cfg.dbPath);
+	log.important("we have "+cfg.sources.length+" sources");
+
 	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
 });
 cfg.on("updated", function() {
@@ -46,7 +49,7 @@ mp.importQueue = async.queue(function(source, next) {
 		next();
 	}, function(hash, extra) {
 		log.hash(hash, "collect");
-		mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
+		if (!argv["disable-process"]) mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
 		// extra - collected from the source, can be info like uploaders/downloaders, category, etc.
 		// hints - hints to particular meta information already found from the source, like imdb_id, season/episode
 	});
