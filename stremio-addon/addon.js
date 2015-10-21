@@ -114,16 +114,19 @@ var service = new Stremio.Server({
     },
     "stats.get": function(args, callback, user) { // TODO
         var c = db.indexes.seeders.size;
-        var items = 0;
-        db.indexes.meta.executeOnEveryNode(function() { items++ });
+        var items = 0, episodes = 0, movies = 0;
+        db.indexes.meta.executeOnEveryNode(function(n) {
+            if (n.key.indexOf(" ") != -1) episodes++; else movies++;
+            items++;
+        });
         callback(null, { statsNum: items+" movies and episodes", stats: [
-            { name: "number of items - "+items, count: items, colour: "green" },
-            { name: "number of torrents - "+c, count: c, colour: "green" }
+            { name: "number of items - "+items, count: items, colour: items > 100 ? "green" : (items > 50 ? "yellow" : "red") },
+            { name: "number of movies - "+movies, count: movies, colour: movies > 100 ? "green" : (movies > 50 ? "yellow" : "red") },
+            { name: "number of episodes - "+episodes, count: episodes, colour: episodes > 100 ? "green" : (episodes > 50 ? "yellow" : "red") },
+            { name: "number of torrents - "+c, count: c, colour: c > 1000 ? "green" : (c > 500 ? "yellow" : "red") }
         ] });
     },
 }, { allow: [cfg.stremioCentral], secret: cfg.stremioSecret }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
-
-
 
 function listen(port, ip) {
     var server = http.createServer(function (req, res) {
