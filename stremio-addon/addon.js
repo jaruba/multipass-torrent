@@ -3,14 +3,24 @@ var http = require("http");
 var _ = require("lodash");
 var async = require("async");
 var sift = require("sift");
+var bagpipe = require("bagpipe");
 
 var cfg = require("../lib/cfg");
 var db = require("../lib/db");
 
 var addons = require("../lib/indexer").addons;
+var meta = { col: [], updated: 0 };
 function collectMeta() {
 
 };
+
+db.evs.on("idxbuild", _.debounce(function() {
+
+}, 500));
+
+// Algo here will be 
+// async.queue with concurrency = 1 / bagpipe(1) ; we push update requests and collectMeta() calls to it 
+// updateMeta() function, called on idxbuild, debounced at half a second (or 300ms?)
 
 function validate(args) {
     var meta = args.query;
@@ -126,7 +136,8 @@ var service = new Stremio.Server({
         callback(null, { popularities: popularities });
     },
    /* "meta.find": function(args, callback, user) {
-        collectMeta(function(col) {
+        // Call this to wait for meta to be collected
+        collectMeta(function(meta) {
         });
     },*/
     "stats.get": function(args, callback, user) { // TODO

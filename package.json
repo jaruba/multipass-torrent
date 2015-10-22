@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "async": "0.2.9",
+    "bagpipe": "^0.3.5",
     "binary-search-tree": "0.2.x",
     "bittorrent-dht": "3.x.x",
     "byline": "4.2.x",
