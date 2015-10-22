@@ -7,13 +7,10 @@ var sift = require("sift");
 var cfg = require("../lib/cfg");
 var db = require("../lib/db");
 
+var addons = require("../lib/indexer").addons;
+function collectMeta() {
 
-
-/* Collect metadata so we can serve meta.find
- */
-db.on("idxready", function() {
-
-});
+};
 
 function validate(args) {
     var meta = args.query;
@@ -128,6 +125,10 @@ var service = new Stremio.Server({
         });
         callback(null, { popularities: popularities });
     },
+   /* "meta.find": function(args, callback, user) {
+        collectMeta(function(col) {
+        });
+    },*/
     "stats.get": function(args, callback, user) { // TODO
         var c = db.indexes.seeders.size;
         var items = 0, episodes = 0, movies = 0;
