@@ -7,6 +7,14 @@ var sift = require("sift");
 var cfg = require("../lib/cfg");
 var db = require("../lib/db");
 
+
+
+/* Collect metadata so we can serve meta.find
+ */
+db.on("idxready", function() {
+
+});
+
 function validate(args) {
     var meta = args.query;
     if (! (args.query || args.infoHash)) return { code: 0, message: "query/infoHash required" };
