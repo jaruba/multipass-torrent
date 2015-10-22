@@ -24,7 +24,7 @@ module.exports = function(stream, source)
 
             /* Category filter - custom */
             if (source.category && item.categories && item.categories[0]
-                && !source.category.filter(function(cat) { return item.categories[0].match(cat) }).length
+                && !source.category.filter(function(cat) { return item.categories[0].match(new RegExp(cat, "i")) }).length
                 ) return;
             
 			// For now, skip porn - to avoid false positives when finding movies
