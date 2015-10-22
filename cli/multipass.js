@@ -139,6 +139,6 @@ if (argv["db-dump"]) db.createReadStream()
 
 /* Stremio Addon interface
  */
-if (argv["stremio-addon"]) require("../stremio-addon/addon")(argv["stremio-addon"]);
+if (cfg.stremioAddon) require("../stremio-addon/addon")(cfg.stremioAddon);
 
 
