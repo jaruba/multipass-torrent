@@ -12,6 +12,7 @@ var db = require("../lib/db");
 // Keeping meta collection up to date; Algo here is
 // async.queue with concurrency = 1 / bagpipe(1) ; we push update requests and collectMeta() calls to it 
 // updateMeta() function, called on idxbuild, debounced at half a second (or 300ms?)
+// sample test: 79.1mb / 74.8mb / 75.1mb RAM with 1000 lean meta ; without: 72.0mb, 74.4, 72.3 NO DIFF in memory usage
 
 var addons = require("../lib/indexer").addons;
 var meta = { col: [], updated: 0, have: { } }, getPopularities;
