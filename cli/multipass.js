@@ -31,13 +31,16 @@ cfg.on("ready", function() {
 cfg.on("updated", function() {
 	// currently concurrency for importQueue is 1 so checking buffer[] works
 	// TODO: fix this, since some sources may be completed by re-added with setTimeout because of source.interval
-	if (!argv["disable-collect"] && cfg.sources) cfg.sources.forEach(function(source) { if (! buffer[source.url]) mp.importQueue.push(source) });
+	if (cfg.sources) cfg.sources.forEach(function(source) { if (! buffer[source.url]) mp.importQueue.push(source) });
 });
 
 /* Collect infoHashes from source
  */
 mp.importQueue = async.queue(function(source, next) {
 	source = typeof(source) == "string" ? { url: source } : source;
+
+	if (argv["disable-collect"]) { log.important("skipping "+source.url+" because of --disable-collect"); return next(); }
+
 	log.important("importing from "+source.url);
 	importer.collect(source, function(err, status) {
 		if (err) log.error(err);
