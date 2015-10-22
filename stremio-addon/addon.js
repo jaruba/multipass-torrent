@@ -8,20 +8,33 @@ var bagpipe = require("bagpipe");
 var cfg = require("../lib/cfg");
 var db = require("../lib/db");
 
-var addons = require("../lib/indexer").addons;
-var meta = { col: [], updated: 0 };
-function collectMeta() {
 
-};
-
-db.evs.on("idxbuild", _.debounce(function() {
-
-}, 500));
-
-// Algo here will be 
+// Keeping meta collection up to date; Algo here is
 // async.queue with concurrency = 1 / bagpipe(1) ; we push update requests and collectMeta() calls to it 
 // updateMeta() function, called on idxbuild, debounced at half a second (or 300ms?)
 
+var addons = require("../lib/indexer").addons;
+var meta = { col: [], updated: 0, have: { } }, getPopularities;
+var metaPipe = new bagpipe(1);
+
+function updateMeta(ready) {
+    getPopularities({ }, function(err, res) {
+        var popSort = function(x) { return -res.popularities[x] };
+
+        var toGet = _.chain(res.popularities).omit(_.keys(meta.have)).keys().sortBy(popSort).value();
+        addons.meta.find({ query: { imdb_id: { $in: toGet } }, limit: toGet.length }, function(err, res) {
+            process.nextTick(ready); // ensure we don't dead-end (deadlock is not a right term, block is not the right term, terms have to figured out for async code)
+
+            if (err) console.error(err);
+            meta.col = _.chain(meta.col).concat(res || []).sortBy(popSort).uniq("imdb_id").each(function(x) { meta.have[x.imdb_id] = 1 }).value();
+            // TODO: set 'popularities.'+LID
+        });
+    });
+};
+
+db.evs.on("idxbuild", _.debounce(function() { metaPipe.push(updateMeta) }, 500));
+
+// Basic validation of args
 function validate(args) {
     var meta = args.query;
     if (! (args.query || args.infoHash)) return { code: 0, message: "query/infoHash required" };
@@ -128,7 +141,7 @@ var service = new Stremio.Server({
             });
         } else return callback({code: 10, message: "unsupported arguments"});
     },
-    "stream.popularities": function(args, callback, user) {
+    "stream.popularities": getPopularities = function(args, callback, user) {
         var popularities = { };
         db.indexes.meta.executeOnEveryNode(function(n) {
             popularities[n.key.split(" ")[0]] = Math.max.apply(null, n.data.map(function(k) { return db.indexes.seeders.get(k) })) || 0;
