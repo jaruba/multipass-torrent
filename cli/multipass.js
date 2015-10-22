@@ -31,7 +31,7 @@ cfg.on("ready", function() {
 cfg.on("updated", function() {
 	// currently concurrency for importQueue is 1 so checking buffer[] works
 	// TODO: fix this, since some sources may be completed by re-added with setTimeout because of source.interval
-	if (cfg.sources) cfg.sources.forEach(function(source) { if (! buffer[source.url]) mp.importQueue.push(source) });
+	if (!argv["disable-collect"] && cfg.sources) cfg.sources.forEach(function(source) { if (! buffer[source.url]) mp.importQueue.push(source) });
 });
 
 /* Collect infoHashes from source
