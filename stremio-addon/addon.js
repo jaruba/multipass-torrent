@@ -78,6 +78,14 @@ function query(args, callback) {
     });
 };
 
+// var LID = 
+var manifest = _.merge({ 
+    // this should be always overridable by stremio-manifest
+    // stremio_LID: LID,
+    // filter: _.object(["sort."+LID,"query."+LID],[{"$exists": true},{"$exists": true}])
+    // set filter so that we intercept meta.find from cinemeta
+}, require("./stremio-manifest"), _.pick(require("../package"), "version"));
+
 var service = new Stremio.Server({
     "stream.get": function(args, callback, user) {
         var error = validate(args);
@@ -126,7 +134,7 @@ var service = new Stremio.Server({
             { name: "number of torrents - "+c, count: c, colour: c > 1000 ? "green" : (c > 500 ? "yellow" : "red") }
         ] });
     },
-}, { allow: [cfg.stremioCentral], secret: cfg.stremioSecret }, _.extend(require("./stremio-manifest"), _.pick(require("../package"), "version")));
+}, { allow: [cfg.stremioCentral], secret: cfg.stremioSecret }, manifest);
 
 function listen(port, ip) {
     var server = http.createServer(function (req, res) {
