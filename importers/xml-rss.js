@@ -15,7 +15,7 @@ module.exports = function(stream, source)
         var item, stream = this;
         while(item = stream.read())
         {
-            var match = (item.link+"\n"+item.description).match(new RegExp("([0-9A-Fa-f]){40}", "g"));
+            var match = (item.link+"\n"+item.description+"\n"+item["rss:link"]).match(new RegExp("([0-9A-Fa-f]){40}", "g"));
             var hash = (item["rss:torrent"] && item["rss:torrent"]["infohash"]["#"]) 
                 || (item["torrent:infohash"] && item["torrent:infohash"]["#"]) 
                 || (match && match[0]);
