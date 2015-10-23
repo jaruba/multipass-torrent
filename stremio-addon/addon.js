@@ -119,8 +119,9 @@ function query(args, callback) {
 var manifest = _.merge({ 
     // this should be always overridable by stremio-manifest
     stremio_LID: LID,
-    filter: _.object([ "sort.popularities."+LID,"query.popularities."+LID ], [{ "$exists": true },{ "$exists": true }])
     // set filter so that we intercept meta.find from cinemeta
+    // WARNING: this won't work because mpath doesn't support going into keys that contain dots, since it always thinks of it as a delimiter
+    filter: _.object([ "sort.popularities."+LID,"query.popularities."+LID ], [{ "$exists": true },{ "$exists": true }])
 }, require("./stremio-manifest"), _.pick(require("../package"), "version"));
 
 var service = new Stremio.Server({
