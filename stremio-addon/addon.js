@@ -13,13 +13,12 @@ var db = require("../lib/db");
 // async.queue with concurrency = 1 / bagpipe(1) ; we push update requests and collectMeta() calls to it 
 // updateMeta() function, called on idxbuild, debounced at half a second (or 300ms?)
 // sample test: 79.1mb / 74.8mb / 75.1mb RAM with 1000 lean meta ; without: 72.0mb, 74.4, 72.3 NO DIFF in memory usage
-var metaQueryProps = ["imdb_id", "type", "name", "year", "genre", "director", "dvdRelease", "imdbRating", "poster"];
+var LID = cfg.dbId.slice(0, 10);
+var metaQueryProps = ["imdb_id", "type", "name", "year", "genre", "director", "dvdRelease", "imdbRating", "poster", "popularities."+LID];
 
 var addons = require("../lib/indexer").addons;
 var meta = { col: [], updated: 0, have: { } }, getPopularities;
 var metaPipe = new bagpipe(1);
-
-var LID = cfg.dbId.slice(0,10);
 
 function updateMeta(ready) {
     getPopularities({ }, function(err, res) {
@@ -165,6 +164,8 @@ var service = new Stremio.Server({
             process.nextTick(ready); // ensure we don't lock 
 
             args.query = _.pick.apply(null, [args.query || { }].concat(metaQueryProps));
+            args.sort = _.pick.apply(null, [args.sort || { }].concat(metaQueryProps));
+            //if (! _.keys(args.sort).length) args.sort["popularities."+LID] = -1; // no need as this is our default sort order
 
             var proj, projFn;
             if (args.projection && typeof(args.projection) == "object") { 
@@ -172,12 +173,13 @@ var service = new Stremio.Server({
                 projFn = _.values(args.projection)[0] ? _.pick : _.omit;
             }
 
-            callback(null, _.chain(meta.col)
+            var res = _.chain(meta.col)
                 .filter(args.query ? sift(args.query) : _.constant(true))
-                //.sortByAll()
+                .sortByOrder(_.keys(args.sort), _.values(args.sort).map(function(x) { return x>0 ? "asc" : "desc" }))
                 .slice(args.skip || 0, Math.min(400, args.limit))
                 .map(function(x) { return projFn ? projFn(x, proj) : x })
-                .value());
+                .value();
+            callback(null, res);
         });
     },
     "stats.get": function(args, callback, user) { // TODO
