@@ -42,7 +42,7 @@
     "mkdirp": "0.5.x",
     "multi-master-merge": "Ivshti/multi-master-merge",
     "nat-pmp": "0.0.x",
-    "needle": "0.9.x",
+    "needle": "0.x.x",
     "node-ssdp": "2.5.x",
     "parse-torrent": "5.x.x",
     "peer-search": "git://github.com/Ivshti/peer-search",
