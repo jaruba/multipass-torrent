@@ -334,7 +334,6 @@ tape("addon - get popularities", function(t) {
 		t.ok(res && res.popularities, "has popularities object");
 		t.ok(Object.keys(res.popularities).length > 1, "popularities object full");
 		//t.ok()
-		t.end();
 	});
 });
 
@@ -343,7 +342,19 @@ tape("addon - meta.find", function(t) {
 	addon.call("meta.find", { limit: 5, query: {} }, function(err, res) { 
 		t.ok(!err, "no error");
 		t.ok(res && res.length === 5, "returns 5 results");
-		//t.ok()
 		t.end();
 	});
+
+});
+
+tape("addon - meta.find by genre", function(t) {
+	addon.call("meta.find", { limit: 3, query: { genre: "Comedy" } }, function(err, res) { 
+		t.ok(!err, "no error");
+		t.ok(res && res.length === 3, "returns 3 results");
+		res.forEach(function(r) {
+			t.ok(r.genre.indexOf("Comedy")!=-1, "has Comedy in genre");
+		});
+		t.end();
+	});
+	
 });
