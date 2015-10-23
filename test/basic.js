@@ -337,3 +337,13 @@ tape("addon - get popularities", function(t) {
 		t.end();
 	});
 });
+
+
+tape("addon - meta.find", function(t) {
+	addon.call("meta.find", { limit: 5, query: {} }, function(err, res) { 
+		t.ok(!err, "no error");
+		t.ok(res && res.length === 5, "returns 5 results");
+		//t.ok()
+		t.end();
+	});
+});

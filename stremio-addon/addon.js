@@ -150,12 +150,28 @@ var service = new Stremio.Server({
         });
         callback(null, { popularities: popularities });
     },
-    /*"meta.find": function(args, callback, user) {
+    "meta.find": function(args, callback, user) {
         // Call this to wait for meta to be collected
+        if (! meta.col.length) metaPipe.push(updateMeta); 
         metaPipe.push(function(ready) {
+            process.nextTick(ready); // ensure we don't lock 
 
+            args.query = _.pick.apply(null, [args.query || { }].concat(metaQueryProps));
+
+            var proj, projFn;
+            if (args.projection && typeof(args.projection) == "object") { 
+                proj = _.keys(args.projection);
+                projFn = _.values(args.projection)[0] ? _.pick : _.omit;
+            }
+
+            callback(null, _.chain(meta.col)
+                .filter(args.query ? sift(args.query) : _.constant(true))
+                //.sortByAll()
+                .slice(args.skip || 0, Math.min(400, args.limit))
+                .map(function(x) { return projFn ? projFn(x, proj) : x })
+                .value());
         });
-    },*/
+    },
     "stats.get": function(args, callback, user) { // TODO
         var c = db.indexes.seeders.size;
         var items = 0, episodes = 0, movies = 0;
