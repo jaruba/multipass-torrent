@@ -19,15 +19,18 @@ var addons = require("../lib/indexer").addons;
 var meta = { col: [], updated: 0, have: { } }, getPopularities;
 var metaPipe = new bagpipe(1);
 
-function constructMeta(x) {
-    x.imdbRating = parseFloat(x.imdbRating);
-    // figure out year? since for series it's like "2011-2015" we can sort by the first field, but we can't replace the value
-    meta.have[x.imdb_id] = 1;
-}
+var LID = cfg.dbId.slice(0,10);
 
 function updateMeta(ready) {
     getPopularities({ }, function(err, res) {
         var popSort = function(x) { return -res.popularities[x] };
+        var constructMeta = function(x) {
+            x.imdbRating = parseFloat(x.imdbRating);
+            x.popularities = { }; // reset that - don't know if it brings any benefits
+            x.popularities[LID] = res.popularities[x.imdb_id];
+            // figure out year? since for series it's like "2011-2015" we can sort by the first field, but we can't replace the value
+            meta.have[x.imdb_id] = 1;
+        };
 
         var toGet = _.chain(res.popularities).omit(_.keys(meta.have)).keys().sortBy(popSort).value();
         addons.meta.find({ query: { imdb_id: { $in: toGet } }, limit: toGet.length }, function(err, res) {
@@ -35,7 +38,6 @@ function updateMeta(ready) {
 
             if (err) console.error(err);
             meta.col = _.chain(meta.col).concat(res || []).sortBy(popSort).uniq("imdb_id").each(constructMeta).value();
-            // TODO: set 'popularities.'+LID
         });
     });
 };
@@ -114,11 +116,10 @@ function query(args, callback) {
     });
 };
 
-// var LID = 
 var manifest = _.merge({ 
     // this should be always overridable by stremio-manifest
-    // stremio_LID: LID,
-    // filter: _.object(["sort."+LID,"query."+LID],[{"$exists": true},{"$exists": true}])
+    stremio_LID: LID,
+    filter: _.object([ "sort.popularities."+LID,"query.popularities."+LID ], [{ "$exists": true },{ "$exists": true }])
     // set filter so that we intercept meta.find from cinemeta
 }, require("./stremio-manifest"), _.pick(require("../package"), "version"));
 
