@@ -13,6 +13,7 @@ var db = require("../lib/db");
 // async.queue with concurrency = 1 / bagpipe(1) ; we push update requests and collectMeta() calls to it 
 // updateMeta() function, called on idxbuild, debounced at half a second (or 300ms?)
 // sample test: 79.1mb / 74.8mb / 75.1mb RAM with 1000 lean meta ; without: 72.0mb, 74.4, 72.3 NO DIFF in memory usage
+var metaQueryProps = ["imdb_id", "type", "name", "year", "genre", "imdbRating", "poster"];
 
 var addons = require("../lib/indexer").addons;
 var meta = { col: [], updated: 0, have: { } }, getPopularities;
@@ -149,9 +150,10 @@ var service = new Stremio.Server({
         });
         callback(null, { popularities: popularities });
     },
-   /* "meta.find": function(args, callback, user) {
+    /*"meta.find": function(args, callback, user) {
         // Call this to wait for meta to be collected
-        collectMeta(function(meta) {
+        metaPipe.push(function(ready) {
+
         });
     },*/
     "stats.get": function(args, callback, user) { // TODO
