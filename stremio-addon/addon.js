@@ -13,11 +13,17 @@ var db = require("../lib/db");
 // async.queue with concurrency = 1 / bagpipe(1) ; we push update requests and collectMeta() calls to it 
 // updateMeta() function, called on idxbuild, debounced at half a second (or 300ms?)
 // sample test: 79.1mb / 74.8mb / 75.1mb RAM with 1000 lean meta ; without: 72.0mb, 74.4, 72.3 NO DIFF in memory usage
-var metaQueryProps = ["imdb_id", "type", "name", "year", "genre", "imdbRating", "poster"];
+var metaQueryProps = ["imdb_id", "type", "name", "year", "genre", "director", "dvdRelease", "imdbRating", "poster"];
 
 var addons = require("../lib/indexer").addons;
 var meta = { col: [], updated: 0, have: { } }, getPopularities;
 var metaPipe = new bagpipe(1);
+
+function constructMeta(x) {
+    x.imdbRating = parseFloat(x.imdbRating);
+    // figure out year? since for series it's like "2011-2015" we can sort by the first field, but we can't replace the value
+    meta.have[x.imdb_id] = 1;
+}
 
 function updateMeta(ready) {
     getPopularities({ }, function(err, res) {
@@ -28,7 +34,7 @@ function updateMeta(ready) {
             process.nextTick(ready); // ensure we don't dead-end (deadlock is not a right term, block is not the right term, terms have to figured out for async code)
 
             if (err) console.error(err);
-            meta.col = _.chain(meta.col).concat(res || []).sortBy(popSort).uniq("imdb_id").each(function(x) { meta.have[x.imdb_id] = 1 }).value();
+            meta.col = _.chain(meta.col).concat(res || []).sortBy(popSort).uniq("imdb_id").each(constructMeta).value();
             // TODO: set 'popularities.'+LID
         });
     });
