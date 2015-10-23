@@ -319,7 +319,7 @@ tape("addon - get stream by infoHash", function(t) {
 
 	addon.stream.get({ infoHash: successful[0].infoHash }, function(err, resp) {
 		t.ok(resp && resp.infoHash && resp.infoHash.length == 40, "has infoHash");
-		t.ok(resp && Array.isArray(resp.map), "has map");
+		//t.ok(resp && Array.isArray(resp.map), "has map");
 		t.ok(resp && !isNaN(resp.availability), "has availability");
 		//t.ok(resp && !isNaN(resp.uploaders), "has uploaders");
 
