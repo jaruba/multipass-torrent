@@ -14,7 +14,7 @@ var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 
 var mp = new events.EventEmitter();
-var sources = { };
+var sources = { }, recurring = { };
 mp.db = db; // expose db
 
 /* Config - dependant stuff
@@ -29,9 +29,7 @@ cfg.on("ready", function() {
 	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
 });
 cfg.on("updated", function() {
-	// currently concurrency for importQueue is 1 so checking sources[] works
-	// TODO: fix this, since some sources may be completed by re-added with setTimeout because of source.interval
-	if (cfg.sources) cfg.sources.forEach(function(source) { if (! sources[source.url]) mp.importQueue.push(source) });
+	if (cfg.sources) cfg.sources.forEach(function(source) { if (! recurring[source.url]) mp.importQueue.push(source) });
 });
 
 /* Collect infoHashes from source
@@ -49,7 +47,7 @@ mp.importQueue = async.queue(function(source, next) {
 			buffering(source, status.found);
 		}
 		
-		if (source.interval) setTimeout(function() { mp.importQueue.push(source) }, source.interval); // repeat at interval - re-push
+		if (source.interval) recurring[source.url] = setTimeout(function() { mp.importQueue.push(source) }, source.interval); // repeat at interval - re-push
 
 		next();
 	}, function(hash, extra) {
