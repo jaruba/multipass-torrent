@@ -14,7 +14,7 @@ var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 
 var mp = new events.EventEmitter();
-var buffer = { };
+var sources = { };
 mp.db = db; // expose db
 
 /* Config - dependant stuff
@@ -29,9 +29,9 @@ cfg.on("ready", function() {
 	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
 });
 cfg.on("updated", function() {
-	// currently concurrency for importQueue is 1 so checking buffer[] works
+	// currently concurrency for importQueue is 1 so checking sources[] works
 	// TODO: fix this, since some sources may be completed by re-added with setTimeout because of source.interval
-	if (cfg.sources) cfg.sources.forEach(function(source) { if (! buffer[source.url]) mp.importQueue.push(source) });
+	if (cfg.sources) cfg.sources.forEach(function(source) { if (! sources[source.url]) mp.importQueue.push(source) });
 });
 
 /* Collect infoHashes from source
@@ -106,16 +106,16 @@ mp.processQueue = async.queue(function(task, _next) {
  */
 function buffering(source, total) {
 	if (! (source && source.url)) return;
-	if (! buffer[source.url]) buffer[source.url] = { progress: 0, total: 0 };
-	if (!isNaN(total)) return buffer[source.url].total = total;
-	buffer[source.url].progress++;
+	if (! sources[source.url]) sources[source.url] = { progress: 0, total: 0 };
+	if (!isNaN(total)) return sources[source.url].total = total;
+	sources[source.url].progress++;
 	var perc;
-	perc = buffer[source.url].progress/buffer[source.url].total;
+	perc = sources[source.url].progress/sources[source.url].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
 	mp.emit("buffering", source, perc);
 	if (perc == 1) {
 		mp.emit("finished", source);
-		delete buffer[source.url];
+		delete sources[source.url];
 	}
 }
 
