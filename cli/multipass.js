@@ -37,7 +37,7 @@ cfg.on("updated", function() {
 mp.importQueue = async.queue(function(source, next) {
 	source = typeof(source) == "string" ? { url: source } : source;
 
-	if (argv["disable-collect"]) { log.important("skipping "+source.url+" because of --disable-collect"); return next(); }
+	if (argv && argv["disable-collect"]) { log.important("skipping "+source.url+" because of --disable-collect"); return next(); }
 
 	log.important("importing from "+source.url);
 	importer.collect(source, function(err, status) {
@@ -52,7 +52,7 @@ mp.importQueue = async.queue(function(source, next) {
 		next();
 	}, function(hash, extra) {
 		log.hash(hash, "collect");
-		if (!argv["disable-process"]) mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
+		if (!argv || !argv["disable-process"]) mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
 		// extra - collected from the source, can be info like uploaders/downloaders, category, etc.
 		// hints - hints to particular meta information already found from the source, like imdb_id, season/episode
 	});
