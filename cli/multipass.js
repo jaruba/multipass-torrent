@@ -13,6 +13,8 @@ var db = require("../lib/db");
 var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 
+var argv = module.parent ? { } : require("minimist")(process.argv.slice(2));
+
 var mp = new events.EventEmitter();
 var sources = { }, recurring = { };
 mp.db = db; // expose db
@@ -37,7 +39,7 @@ cfg.on("updated", function() {
 mp.importQueue = async.queue(function(source, next) {
 	source = typeof(source) == "string" ? { url: source } : source;
 
-	if (argv && argv["disable-collect"]) { log.important("skipping "+source.url+" because of --disable-collect"); return next(); }
+	if (argv["disable-collect"]) { log.important("skipping "+source.url+" because of --disable-collect"); return next(); }
 
 	log.important("importing from "+source.url);
 	importer.collect(source, function(err, status) {
@@ -52,7 +54,7 @@ mp.importQueue = async.queue(function(source, next) {
 		next();
 	}, function(hash, extra) {
 		log.hash(hash, "collect");
-		if (!argv || !argv["disable-process"]) mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
+		if (!argv["disable-process"]) mp.processQueue.push({ infoHash: hash, extra: extra, hints: extra && extra.hints, source: source });
 		// extra - collected from the source, can be info like uploaders/downloaders, category, etc.
 		// hints - hints to particular meta information already found from the source, like imdb_id, season/episode
 	});
@@ -130,7 +132,6 @@ async.forever(function(next) {
 
 /* Simple dump
  */
-var argv = module.parent ? { } : require("minimist")(process.argv.slice(2));
 if (argv["db-dump"]) db.createReadStream()
 .on("data", function(d) { 
 	d.value.files.forEach(function(f) {
