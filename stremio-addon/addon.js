@@ -13,7 +13,7 @@ var db = require("../lib/db");
 // async.queue with concurrency = 1 / bagpipe(1) ; we push update requests and collectMeta() calls to it 
 // updateMeta() function, called on idxbuild, debounced at half a second (or 300ms?)
 // sample test: 79.1mb / 74.8mb / 75.1mb RAM with 1000 lean meta ; without: 72.0mb, 74.4, 72.3 NO DIFF in memory usage
-var LID = cfg.dbId.slice(0, 10);
+var LID = cfg.LID || cfg.dbId.slice(0, 10);
 var metaQueryProps = ["imdb_id", "type", "name", "year", "genre", "director", "dvdRelease", "imdbRating", "poster", "popularities."+LID];
 
 var addons = require("../lib/indexer").addons;
