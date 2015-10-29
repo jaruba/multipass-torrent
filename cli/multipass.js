@@ -13,6 +13,8 @@ var db = require("../lib/db");
 var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 
+var argv = module.parent ? { } : require("minimist")(process.argv.slice(2));
+
 var mp = new events.EventEmitter();
 var sources = { }, recurring = { };
 mp.db = db; // expose db
@@ -130,7 +132,6 @@ async.forever(function(next) {
 
 /* Simple dump
  */
-var argv = module.parent ? { } : require("minimist")(process.argv.slice(2));
 if (argv["db-dump"]) db.createReadStream()
 .on("data", function(d) { 
 	d.value.files.forEach(function(f) {
