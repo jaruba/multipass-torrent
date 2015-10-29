@@ -154,7 +154,7 @@ var service = new Stremio.Server({
         var popularities = { };
         db.indexes.meta.executeOnEveryNode(function(n) {
             // value is equivalent to db.getMaxPopularity
-            popularities[n.key.split(" ")[0]] = Math.max.apply(null, n.data.map(function(k) { return db.indexes.seeders.get(k) })) || 0;
+            if (n.key) popularities[n.key.split(" ")[0]] = Math.max.apply(null, n.data.map(function(k) { return db.indexes.seeders.get(k) })) || 0;
         });
         callback(null, { popularities: popularities });
     },
