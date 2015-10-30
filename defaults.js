@@ -8,12 +8,14 @@ module.exports = {
 	    { url: "http://torrage.com/torrent/%s.torrent" },
 	    { url: "http://yts.to/torrent/download/%s.torrent" }
 	],
+
+	"processingConcurrency": 6,
 	
 	"minSeedToIndex": 4,
 	"minSeedImportant": 200, // if it's important, we'll try to get the meta from the DHT / peers even when caches fail
 
 	// If the torrent hasn't been updated for that time and not seeded, delete it
-	"torrentTTL": 10*24*60*60*1000, 
+	"nonSeededTTL": 25*24*60*60*1000, 
 
 	// How often we update popularity
 	"popularityTTL": 6*60*60*1000,

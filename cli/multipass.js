@@ -100,7 +100,13 @@ mp.processQueue = async.queue(function(task, _next) {
 			log.hash(task.infoHash, "processed");
 		});
 	});
-}, 6);
+}, cfg.processingConcurrency);
+
+db.evs.on("idxbuild", function(tor, peer, seq) {
+	var updated = tor.sources && Math.max.apply(null, _.values(tor.sources));
+	if (cfg.nonSeededTTL && peer && updated && (Date.now()-updated > cfg.nonSeededTTL) && !db.getMaxPopularity(tor))
+		db.log.del(peer, seq, function() { console.log("removed "+tor.infoHash) });
+});
 
 /* Emit buffering event
  */
