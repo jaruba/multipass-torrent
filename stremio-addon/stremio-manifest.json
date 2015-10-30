@@ -1,7 +1,7 @@
 {
 	"name": "Multipass Torrents",
 	"id": "org.multipass.torrentstream",
-	"description": "Collects and indexes torrents from sources like KAT.cr, EZTV, YTS",
+	"description": "Collects and indexes torrents from dumps, RSS feeds and websites",
 	"types": ["series","movie"],
 	"filter": { "infoHash": { "$exists": true }, "query.imdb_id":{"$exists": true}, "query.type": {"$in":["series","movie"]} }
 }
