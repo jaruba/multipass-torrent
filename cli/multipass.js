@@ -132,15 +132,6 @@ db.evs.on("idxready", function() {
 	});
 });
 
-/* Simple dump
- */
-if (argv["db-dump"]) db.createReadStream()
-.on("data", function(d) { 
-	d.value.files.forEach(function(f) {
-		console.log([d.value.infoHash, f.path, f.imdb_id, f.season, f.episode].filter(function(x) { return x }).join(" / "))
-	});
-});
-
 /* Stremio Addon interface
  */
 if (cfg.stremioAddon) require("../stremio-addon/addon")(cfg.stremioAddon);
