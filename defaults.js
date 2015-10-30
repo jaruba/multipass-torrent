@@ -3,6 +3,14 @@ module.exports = {
 	"trackers": ["udp://open.demonii.com:1337/announce", "udp://tracker.openbittorrent.com:80/announce"],
 	"trackerTimeout": 300, 
 
+	// Different frm trackers - we have to update seed/leech for each torrents for all trackers, but this is for when we do retriever / fetchTorrent
+	"fetchTorrentTrackers": [
+	    'udp://open.demonii.com:1337',
+	    'udp://tracker.openbittorrent.com:80',
+	    'udp://tracker.leechers-paradise.org:6969',
+	    'udp://tracker.pomf.se:80'
+	],
+
 	"retrieverSources": [
 	    { url: "http://torcache.net/torrent/%s.torrent" },
 	    { url: "http://torrage.com/torrent/%s.torrent" },

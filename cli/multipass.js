@@ -75,6 +75,7 @@ mp.processQueue = async.queue(function(task, _next) {
 			return next();
 		}
 		
+		// WARNING: no skip logic here, as we need at least to update .sources and seed/leech data		
 		// Pass a merge of existing torrent objects as a base for indexing		
 		var noChanges;
 		task.torrent = res && res.length && indexer.merge(res.sort(function(a, b) { return a.seq - b.seq }).map(function(x) { return x.value }));
