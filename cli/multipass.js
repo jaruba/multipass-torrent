@@ -41,6 +41,10 @@ mp.importQueue = async.queue(function(source, next) {
 
 	if (argv["disable-collect"]) { log.important("skipping "+source.url+" because of --disable-collect"); return next(); }
 
+	if (source.fn) return source.fn(mp, function() {
+		if (source.interval) recurring[source.url] = setTimeout(function() { mp.importQueue.push(source) }, source.interval); // repeat at interval - re-push
+	});
+
 	log.important("importing from "+source.url);
 	importer.collect(source, function(err, status) {
 		if (err) log.error(err);
