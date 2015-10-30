@@ -29,6 +29,8 @@ mp.init = function(settings) {
 
 	cfg = require("../lib/cfg");
 
+	if (settings.downloadSources) cfg.retrieverSources = settings.downloadSources;
+
 	if (settings.dbPath) cfg.dbPath = settings.dbPath;
 
 	db = require("../lib/db");

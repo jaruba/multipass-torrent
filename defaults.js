@@ -11,11 +11,6 @@ module.exports = {
 	    'udp://tracker.pomf.se:80'
 	],
 
-	"retrieverSources": [
-	    { url: "http://torcache.net/torrent/%s.torrent" },
-	    { url: "http://torrage.com/torrent/%s.torrent" }
-	],
-
 	"processingConcurrency": 6,
 	
 	"minSeedToIndex": 4,
