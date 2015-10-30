@@ -3,6 +3,12 @@ module.exports = {
 	"trackers": ["udp://open.demonii.com:1337/announce", "udp://tracker.openbittorrent.com:80/announce"],
 	"trackerTimeout": 300, 
 
+	"retrieverSources": [
+	    { url: "http://torcache.net/torrent/%s.torrent" },
+	    { url: "http://torrage.com/torrent/%s.torrent" },
+	    { url: "http://yts.to/torrent/download/%s.torrent" }
+	],
+	
 	"minSeedToIndex": 4,
 	"minSeedImportant": 200, // if it's important, we'll try to get the meta from the DHT / peers even when caches fail
 
