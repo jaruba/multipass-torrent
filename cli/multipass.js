@@ -50,6 +50,11 @@ mp.init = function(settings) {
 /* Collect infoHashes from source
  */
 
+mp.import = function(link) {
+	sources[link] = { progress: 0, total: 0 };
+	this.importQueue.push(link);
+}
+
 mp.importQueue = async.queue(function(source, next) {
 	source = typeof(source) == "string" ? { url: source } : source;
 
