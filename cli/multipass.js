@@ -7,35 +7,49 @@ var async = require("async");
 var Tracker = require("peer-search/tracker");
 var events = require('events');
 
-var cfg = require("../lib/cfg");
+var cfg, db, indexer, importer;
+
 var log = require("../lib/log");
-var db = require("../lib/db");
-var indexer = require("../lib/indexer");
-var importer = require("../lib/importer");
 
 var argv = module.parent ? { } : require("minimist")(process.argv.slice(2));
 
 var mp = new events.EventEmitter();
 var sources = { }, recurring = { };
-mp.db = db; // expose db
 
-/* Config - dependant stuff
- */
-cfg.on("ready", function() {
-	db.listenReplications(cfg.dbId); // start our replication server
-	db.findReplications(cfg.dbId); // replicate to other instances
+mp.init = function(settings) {
 
-	log.important("DB Path "+cfg.dbPath);
-	log.important("we have "+cfg.sources.length+" sources");
+	if (cfg) {
+		log.important('Multipass has already been initiated.');
+		return;
+	}
+
+	// set defaults
+	if (!settings) settings = {};
+	if (typeof settings.replicate === 'undefined') settings.replicate = true;
+
+	cfg = require("../lib/cfg");
+
+	if (settings.dbPath) cfg.dbPath = settings.dbPath;
+
+	db = require("../lib/db");
+
+	this.db = db;
+
+	indexer = require("../lib/indexer");
+	importer = require("../lib/importer");
+
+	if (settings.replicate) {
+		db.listenReplications(cfg.dbId); // start our replication server
+		db.findReplications(cfg.dbId); // replicate to other instances
+	}
 
 	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
-});
-cfg.on("updated", function() {
-	if (cfg.sources) cfg.sources.forEach(function(source) { if (! recurring[source.url]) mp.importQueue.push(source) });
-});
+
+}
 
 /* Collect infoHashes from source
  */
+
 mp.importQueue = async.queue(function(source, next) {
 	source = typeof(source) == "string" ? { url: source } : source;
 
@@ -133,6 +147,7 @@ function buffering(source, total) {
 /* Programatic usage of this
  */
 if (module.parent) return module.exports = mp;
+else mp.init();
 
 /* Log number of torrents we have
  */
