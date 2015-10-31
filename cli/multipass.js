@@ -147,10 +147,12 @@ function buffering(source, total) {
 	var perc;
 	perc = sources[source.url].progress/sources[source.url].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
-	mp.emit("buffering", source.url, perc);
-	if (perc == 1) {
-		mp.emit("finished", source.url);
-		delete sources[source.url];
+	if (isFinite(perc)) {
+		mp.emit("buffering", source.url, perc);
+		if (perc == 1) {
+			mp.emit("finished", source.url);
+			delete sources[source.url];
+		}
 	}
 }
 
