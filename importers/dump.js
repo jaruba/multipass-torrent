@@ -20,7 +20,7 @@ module.exports = function(stream, source)
         if (infoUrl && infoUrl.match("kat.cr|kickass.to")) additional.hints = { url: infoUrl }; // OR any torrent website that we know contains IMDB ID on it's info page
             
         // URL to torrent file
-        if (parts[4].match(".torrent$")) additional.download = parts[4];
+        if (parts[4] && parts[4].match(".torrent$")) additional.download = parts[4];
 
         // IMDB ID match
         var imdbMatch = (parts[5] && parts[5].match("(tt[0-9]+)")) || (parts[3] && parts[3].match("(tt[0-9]+)"));
