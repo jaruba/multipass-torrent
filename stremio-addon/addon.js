@@ -22,11 +22,11 @@ var metaPipe = new bagpipe(1);
 
 function updateMeta(ready) {
     getPopularities({ }, function(err, res) {
-        var popSort = function(x) { return -res.popularities[x] };
+        var popSort = function(x) { return -res.popularities[x.imdb_id || x] };
         var constructMeta = function(x) {
             x.imdbRating = parseFloat(x.imdbRating);
             x.popularities = { }; // reset that - don't know if it brings any benefits
-            x.popularities[LID] = res.popularities[x.imdb_id];
+            x.popularities[LID] = res.popularities[x.imdb_id] || 0;
             // figure out year? since for series it's like "2011-2015" we can sort by the first field, but we can't replace the value
             meta.have[x.imdb_id] = 1;
         };
@@ -42,6 +42,7 @@ function updateMeta(ready) {
 };
 
 db.evs.on("idxbuild", _.debounce(function() { metaPipe.push(updateMeta) }, 500));
+db.evs.on("idxready", function() { metaPipe.push(updateMeta) });
 
 // Basic validation of args
 function validate(args) {
