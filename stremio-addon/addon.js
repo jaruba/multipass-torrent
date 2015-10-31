@@ -32,6 +32,11 @@ function updateMeta(ready) {
         };
 
         var toGet = _.chain(res.popularities).omit(_.keys(meta.have)).keys().sortBy(popSort).value();
+        /* Kind of useful for debugging
+        console.log(_.chain(res.popularities).keys().sortBy(popSort).slice(0,10).each(function(x) { 
+            var hashes = db.lookup({imdb_id:x},1); db.get(hashes[0].id,function(err,res){console.log(res[0].value.popularity)})
+        }).value());*/
+
         addons.meta.find({ query: { imdb_id: { $in: toGet } }, limit: toGet.length }, function(err, res) {
             process.nextTick(ready); // ensure we don't dead-end (deadlock is not a right term, block is not the right term, terms have to figured out for async code)
 
