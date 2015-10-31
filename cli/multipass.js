@@ -29,9 +29,12 @@ mp.init = function(settings) {
 
 	cfg = require("../lib/cfg");
 
-	if (settings.downloadSources) cfg.downloadSources = settings.downloadSources;
-
-	if (settings.dbPath) cfg.dbPath = settings.dbPath;
+	// sync cfg with settings
+	for (var key in settings) {
+		if (settings.hasOwnProperty(key)) {
+			cfg[key] = settings[key];
+		}
+	}
 
 	db = require("../lib/db");
 
