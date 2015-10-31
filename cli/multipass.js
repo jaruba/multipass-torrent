@@ -47,6 +47,12 @@ mp.init = function(settings) {
 
 	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
 
+	db.evs.on("idxbuild", function(tor, peer, seq) {
+		var updated = tor.sources && Math.max.apply(null, _.values(tor.sources));
+		if (cfg.nonSeededTTL && peer && updated && (Date.now()-updated > cfg.nonSeededTTL) && !db.getMaxPopularity(tor))
+			db.log.del(peer, seq, function() { console.log("removed "+tor.infoHash) });
+	});
+
 }
 
 /* Collect infoHashes from source
@@ -126,13 +132,7 @@ mp.processQueue = async.queue(function(task, _next) {
 			log.hash(task.infoHash, "processed");
 		});
 	});
-}, cfg.processingConcurrency);
-
-db.evs.on("idxbuild", function(tor, peer, seq) {
-	var updated = tor.sources && Math.max.apply(null, _.values(tor.sources));
-	if (cfg.nonSeededTTL && peer && updated && (Date.now()-updated > cfg.nonSeededTTL) && !db.getMaxPopularity(tor))
-		db.log.del(peer, seq, function() { console.log("removed "+tor.infoHash) });
-});
+}, (cfg && cfg.processingConcurrency) ? cfg.processingConcurrency : 6);
 
 /* Emit buffering event
  */

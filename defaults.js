@@ -10,8 +10,6 @@ module.exports = {
 	    'udp://tracker.leechers-paradise.org:6969',
 	    'udp://tracker.pomf.se:80'
 	],
-
-	"processingConcurrency": 6,
 	
 	"minSeedToIndex": 4,
 	"minSeedImportant": 200, // if it's important, we'll try to get the meta from the DHT / peers even when caches fail
