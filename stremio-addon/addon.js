@@ -166,6 +166,8 @@ var service = new Stremio.Server({
     },
     "meta.find": function(args, callback, user) {
         // Call this to wait for meta to be collected
+        if (args.projection && ( args.projection=="full" ) ) return callback(new Error("full projection not supported by mp"));
+        
         if (! meta.col.length) metaPipe.push(updateMeta); 
         metaPipe.push(function(ready) {
             process.nextTick(ready); // ensure we don't lock 
