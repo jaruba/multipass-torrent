@@ -11,14 +11,14 @@ module.exports = {
 	    'udp://tracker.pomf.se:80'
 	],
 
-	"retrieverSources": [
-	    { url: "http://torcache.net/torrent/%s.torrent" },
-	    { url: "http://torrage.com/torrent/%s.torrent" },
-	    { url: "http://yts.to/torrent/download/%s.torrent" }
+	"downloadSources": [
+	    { url: 'http://torcache.net/torrent/%s.torrent' },
+	    { url: 'http://itorrents.org/torrent/%s.torrent' },
+	    { url: 'http://reflektor.karmorra.info/torrent/%s.torrent' }
 	],
 
 	"processingConcurrency": 6,
-	
+
 	"minSeedToIndex": 4,
 	"minSeedImportant": 200, // if it's important, we'll try to get the meta from the DHT / peers even when caches fail
 

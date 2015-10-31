@@ -7,35 +7,65 @@ var async = require("async");
 var Tracker = require("peer-search/tracker");
 var events = require('events');
 
-var cfg = require("../lib/cfg");
+var cfg, db, indexer, importer;
+
 var log = require("../lib/log");
-var db = require("../lib/db");
-var indexer = require("../lib/indexer");
-var importer = require("../lib/importer");
 
 var argv = module.parent ? { } : require("minimist")(process.argv.slice(2));
 
 var mp = new events.EventEmitter();
 var sources = { }, recurring = { };
-mp.db = db; // expose db
 
-/* Config - dependant stuff
- */
-cfg.on("ready", function() {
-	db.listenReplications(cfg.dbId); // start our replication server
-	db.findReplications(cfg.dbId); // replicate to other instances
+mp.init = function(settings) {
 
-	log.important("DB Path "+cfg.dbPath);
-	log.important("we have "+cfg.sources.length+" sources");
+	if (cfg) {
+		log.important('Multipass has already been initiated.');
+		return;
+	}
+
+	// set defaults
+	if (!settings) settings = {};
+	if (typeof settings.replicate === 'undefined') settings.replicate = true;
+
+	cfg = require("../lib/cfg");
+
+	// sync cfg with settings
+	for (var key in settings) {
+		if (settings.hasOwnProperty(key)) {
+			cfg[key] = settings[key];
+		}
+	}
+
+	db = require("../lib/db");
+
+	this.db = db;
+
+	indexer = require("../lib/indexer");
+	importer = require("../lib/importer");
+
+	if (settings.replicate) {
+		db.listenReplications(cfg.dbId); // start our replication server
+		db.findReplications(cfg.dbId); // replicate to other instances
+	}
 
 	if (cfg.sources) cfg.sources.forEach(mp.importQueue.push);
-});
-cfg.on("updated", function() {
-	if (cfg.sources) cfg.sources.forEach(function(source) { if (! recurring[source.url]) mp.importQueue.push(source) });
-});
+
+	db.evs.on("idxbuild", function(tor, peer, seq) {
+		var updated = tor.sources && Math.max.apply(null, _.values(tor.sources));
+		if (cfg.nonSeededTTL && peer && updated && (Date.now()-updated > cfg.nonSeededTTL) && !db.getMaxPopularity(tor))
+			db.log.del(peer, seq, function() { console.log("removed "+tor.infoHash) });
+	});
+
+}
 
 /* Collect infoHashes from source
  */
+
+mp.import = function(link) {
+	sources[link] = { progress: 0, total: 0 };
+	this.importQueue.push(link);
+}
+
 mp.importQueue = async.queue(function(source, next) {
 	source = typeof(source) == "string" ? { url: source } : source;
 
@@ -105,13 +135,7 @@ mp.processQueue = async.queue(function(task, _next) {
 			log.hash(task.infoHash, "processed");
 		});
 	});
-}, cfg.processingConcurrency);
-
-db.evs.on("idxbuild", function(tor, peer, seq) {
-	var updated = tor.sources && Math.max.apply(null, _.values(tor.sources));
-	if (cfg.nonSeededTTL && peer && updated && (Date.now()-updated > cfg.nonSeededTTL) && !db.getMaxPopularity(tor))
-		db.log.del(peer, seq, function() { console.log("removed "+tor.infoHash) });
-});
+}, (cfg && cfg.processingConcurrency) ? cfg.processingConcurrency : 6);
 
 /* Emit buffering event
  */
@@ -123,16 +147,19 @@ function buffering(source, total) {
 	var perc;
 	perc = sources[source.url].progress/sources[source.url].total;
 	perc = (Math.floor(perc * 100) / 100).toFixed(2);
-	mp.emit("buffering", source, perc);
-	if (perc == 1) {
-		mp.emit("finished", source);
-		delete sources[source.url];
+	if (isFinite(perc)) {
+		mp.emit("buffering", source.url, perc);
+		if (perc == 1) {
+			mp.emit("finished", source.url);
+			delete sources[source.url];
+		}
 	}
 }
 
 /* Programatic usage of this
  */
 if (module.parent) return module.exports = mp;
+else mp.init();
 
 /* Log number of torrents we have
  */
