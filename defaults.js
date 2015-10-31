@@ -13,8 +13,8 @@ module.exports = {
 
 	"downloadSources": [
 	    { url: 'http://torcache.net/torrent/%s.torrent' },
-		{ url: 'http://itorrents.org/torrent/%s.torrent' },
-		{ url: 'http://reflektor.karmorra.info/torrent/%s.torrent' }
+	    { url: 'http://itorrents.org/torrent/%s.torrent' },
+	    { url: 'http://reflektor.karmorra.info/torrent/%s.torrent' }
 	],
 
 	"processingConcurrency": 6,
