@@ -14,7 +14,7 @@ module.exports = {
 	"retrieverSources": [
 	    { url: "http://torcache.net/torrent/%s.torrent" },
 	    { url: "http://torrage.com/torrent/%s.torrent" },
-	    { url: "http://yts.to/torrent/download/%s.torrent" }
+	    //{ url: "http://yts.to/torrent/download/%s.torrent" }
 	],
 
 	"processingConcurrency": 6,
