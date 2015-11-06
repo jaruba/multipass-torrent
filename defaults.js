@@ -36,7 +36,7 @@ module.exports = {
 	"cinemeta": "http://stremio-cinemeta.herokuapp.com",
 
 	"stremioSecret": "8417fe936f0374fbd16a699668e8f3c4aa405d9f",
-	"stremioCentral": "http://api8.herokuapp.com",
+	"stremioCentral": "http://api9.strem.io",
 
 	// Tagging system; all tags must be lowercase
 	"tags": {
