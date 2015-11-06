@@ -17,7 +17,8 @@ module.exports = function(stream, source)
         {
             var match = (item.link+"\n"+item.description+"\n"+item["rss:link"]).match(new RegExp("([0-9A-Fa-f]){40}", "g"));
             var hash = (item["rss:torrent"] && item["rss:torrent"]["infohash"]["#"]) 
-                || (item["torrent:infohash"] && item["torrent:infohash"]["#"]) 
+                || (item["torrent:infohash"] && item["torrent:infohash"]["#"])
+                || (item["torrent:infoHash"])
                 || (match && match[0]);
 
             if (! (hash && hash.length == 40)) log.error("xml-rss - invalid hash: "+hash);
