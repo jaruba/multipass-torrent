@@ -1,8 +1,5 @@
 # multipass-torrent
 
-## Replace torrent websites with this: 
-![](https://raw.githubusercontent.com/Ivshti/multipass-www/master/screenshot2.png)
-
 **multipass-torrent** indexes torrents by meta information such as IMDB ID, episode/season, so that it can deliver **beautiful catalogues** automatically.
 
 ## What is it?
