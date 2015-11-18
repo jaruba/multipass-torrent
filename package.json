@@ -1,6 +1,6 @@
 {
   "name": "multipass-torrent",
-  "version": "0.4.7",
+  "version": "0.4.10",
   "description": "Collects torrents from various sources (dump, RSS, HTML pages) and associates the video files within with IMDB ID",
   "main": "cli/multipass.js",
   "scripts": {
@@ -40,7 +40,7 @@
     "lodash": "3.10.x",
     "minimist": "1.x.x",
     "mkdirp": "0.5.x",
-    "multi-master-merge": "Ivshti/multi-master-merge",
+    "multi-master-merge": "2.4.x",
     "nat-pmp": "0.0.x",
     "needle": "0.x.x",
     "node-ssdp": "2.5.x",
