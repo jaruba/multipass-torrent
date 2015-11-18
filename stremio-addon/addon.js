@@ -205,7 +205,7 @@ var service = new Stremio.Server({
             { name: "number of torrents - "+c, count: c, colour: c > 1000 ? "green" : (c > 500 ? "yellow" : "red") }
         ] });
     },
-}, { allow: [cfg.stremioCentral], secret: cfg.stremioSecret }, manifest);
+}, { allow: [cfg.stremioCentral,"http://api8.herokuapp.com","http://api9.strem.io"], secret: cfg.stremioSecret }, manifest);
 
 function listen(port, ip) {
     var server = http.createServer(function (req, res) {
