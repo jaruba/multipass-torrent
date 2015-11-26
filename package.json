@@ -42,6 +42,7 @@
     "minimist": "1.x.x",
     "mkdirp": "0.5.x",
     "multi-master-merge": "2.4.x",
+    "name-to-imdb": "^1.0.1",
     "nat-pmp": "0.0.x",
     "needle": "0.x.x",
     "node-ssdp": "2.5.x",
@@ -52,6 +53,7 @@
     "stremio-addons": "1.15.x",
     "torrent-stream": "^1.0.0",
     "unzip": ">=0.1.9",
+    "video-name-parser": "^1.0.1",
     "xml-stream": ">=0.4.4"
   },
   "devDependencies": {
