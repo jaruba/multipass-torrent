@@ -16,7 +16,11 @@ var db = require("../lib/db");
 var LID = cfg.LID || cfg.dbId.slice(0, 10);
 var metaQueryProps = ["imdb_id", "type", "name", "year", "genre", "director", "dvdRelease", "imdbRating", "poster", "popularities."+LID];
 
-var addons = require("../lib/indexer").addons;
+
+var CINEMETA_URL = process.env.CINEMETA || cfg.cinemeta || "http://stremio-cinemeta.herokuapp.com";
+var addons = new Stremio.Client();
+addons.add(CINEMETA_URL);
+
 var meta = { col: [], updated: 0, have: { } }, getPopularities;
 var metaPipe = new bagpipe(1);
 
