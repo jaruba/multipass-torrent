@@ -80,6 +80,7 @@ function query(args, callback) {
 
         var resolution = null;
         var matches = db.lookup(args.query, 3);
+        console.log(matches)
         async.whilst(
             function() { return matches.length && (!resolution || prio(resolution) < preferred.length) },
             function(callback) {
