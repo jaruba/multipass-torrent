@@ -80,7 +80,6 @@ function query(args, callback) {
 
         var resolution = null;
         var matches = db.lookup(args.query, 3);
-        console.log(matches)
         async.whilst(
             function() { return matches.length && (!resolution || prio(resolution) < preferred.length) },
             function(callback) {
@@ -97,7 +96,9 @@ function query(args, callback) {
                             (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
                     });
 
-                    if (db.isFileBlacklisted(file)) return callback(); // blacklisted tag
+                    // WARNING: we cannot use that, unless we implement it in getPopularities
+                    // otherwise we get inconsistencies b/w what is shown in Discover than what is playable
+                    //if (db.isFileBlacklisted(file)) return callback();
 
                     var res = { torrent: tor, file: file };
                     if (!resolution || prio(res) > prio(resolution)) resolution = res;
