@@ -4,6 +4,7 @@ var _ = require("lodash");
 var async = require("async");
 var sift = require("sift");
 var bagpipe = require("bagpipe");
+var events = require("events");
 
 var cfg = require("../lib/cfg");
 var db = require("../lib/db");
@@ -132,12 +133,16 @@ var manifest = _.merge({
 }, require("./stremio-manifest"), _.pick(require("../package"), "version"), cfg.stremioManifest || {});
 
 var service = new Stremio.Server({
-    "stream.get": function(args, callback, user) {
+    "stream.get": function(args, callback, user) { // OBSOLETE
+        service.events.emit("stream.get", args, callback); 
+
         var error = validate(args);
         if (error) return callback(error);
         query(args, callback);
     },
     "stream.find": function(args, callback, user) {
+        service.events.emit("stream.find", args, callback);
+
         if ( args.items && Array.isArray(args.items)) {
             // OLD FORMAT; TODO: OBSOLETE
             var error = null;
@@ -158,7 +163,9 @@ var service = new Stremio.Server({
             });
         } else return callback({code: 10, message: "unsupported arguments"});
     },
-    "stream.popularities": getPopularities = function(args, callback, user) {
+    "stream.popularities": getPopularities = function(args, callback, user) { // OBSOLETE
+        service.events.emit("stream.popularities", args, callback);
+
         var popularities = { };
         db.indexes.meta.executeOnEveryNode(function(n) {
             // value is equivalent to db.getMaxPopularity
@@ -167,6 +174,8 @@ var service = new Stremio.Server({
         callback(null, { popularities: popularities });
     },
     "meta.find": function(args, callback, user) {
+        service.events.emit("meta.find", args, callback);
+
         // Call this to wait for meta to be collected
         if (args.projection && ( args.projection=="full" ) ) return callback(new Error("full projection not supported by mp"));
         
@@ -193,7 +202,9 @@ var service = new Stremio.Server({
             callback(null, res);
         });
     },
-    "stats.get": function(args, callback, user) { // TODO
+    "stats.get": function(args, callback, user) {
+        service.events.emit("stats.get", args, callback);
+
         var c = db.indexes.seeders.size;
         var items = 0, episodes = 0, movies = 0;
         db.indexes.meta.executeOnEveryNode(function(n) {
@@ -208,6 +219,9 @@ var service = new Stremio.Server({
         ] });
     },
 }, { allow: [cfg.stremioCentral,"http://api8.herokuapp.com","http://api9.strem.io"], secret: cfg.stremioSecret }, manifest);
+
+// Event emitter in case we want to intercept/plug-in to this
+service.events = new events.EventEmitter();
 
 function listen(port, ip) {
     var server = http.createServer(function (req, res) {
