@@ -96,10 +96,6 @@ function query(args, callback) {
                             (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
                     });
 
-                    // WARNING: we cannot use that, unless we implement it in getPopularities
-                    // otherwise we get inconsistencies b/w what is shown in Discover than what is playable
-                    //if (db.isFileBlacklisted(file)) return callback();
-
                     var res = { torrent: tor, file: file };
                     if (!resolution || prio(res) > prio(resolution)) resolution = res;
 
