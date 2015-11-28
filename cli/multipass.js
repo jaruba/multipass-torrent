@@ -43,6 +43,7 @@ mp.importQueue = async.queue(function(source, next) {
 
 	if (source.fn) return source.fn(mp, function() {
 		if (source.interval) recurring[source.url] = setTimeout(function() { mp.importQueue.push(source) }, source.interval); // repeat at interval - re-push
+		next();
 	});
 
 	log.important("importing from "+source.url);
