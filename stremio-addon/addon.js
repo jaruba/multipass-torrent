@@ -225,6 +225,7 @@ service.events = new events.EventEmitter();
 
 function listen(port, ip) {
     var server = http.createServer(function (req, res) {
+	req.on("error", function(e) { console.error(e) });
         service.middleware(req, res, function() { res.end() });
     })
     .on("error", function(e) { console.error("mp server", e) })
