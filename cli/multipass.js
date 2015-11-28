@@ -48,7 +48,7 @@ mp.importQueue = async.queue(mp.import = function(source, next) {
 
 	log.important("importing from "+source.url);
 	importer.collect(source, function(err, status) {
-		if (err) log.error(err);
+		if (err) log.error("importer.collect",err);
 		else {
 			log.important("importing finished from "+source.url+", "+status.found+" infoHashes, "+status.imported+" of them new, through "+status.type+" importer ("+(status.end-status.start)+"ms)");
 			buffering(source, status.found);
