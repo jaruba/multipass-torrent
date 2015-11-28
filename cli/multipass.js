@@ -36,7 +36,7 @@ cfg.on("updated", function() {
 
 /* Collect infoHashes from source
  */
-mp.importQueue = async.queue(function(source, next) {
+mp.importQueue = async.queue(mp.import = function(source, next) {
 	source = typeof(source) == "string" ? { url: source } : source;
 
 	if (argv["disable-collect"]) { log.important("skipping "+source.url+" because of --disable-collect"); return next(); }
