@@ -226,7 +226,9 @@ service.events = new events.EventEmitter();
 function listen(port, ip) {
     var server = http.createServer(function (req, res) {
         service.middleware(req, res, function() { res.end() });
-    }).on("listening", function()
+    })
+    .on("error", function(e) { console.error("mp server", e) })
+    .on("listening", function()
     {
         console.log("Multipass Stremio Addon listening on "+server.address().port);
     });
