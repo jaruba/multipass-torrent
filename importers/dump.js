@@ -47,6 +47,7 @@ module.exports = function(stream, source)
             var infoHash = parts[0].toLowerCase(), uploaders = parseInt(parts[1]), downloaders = parseInt(parts[2]);
             if (uploaders >= source.minSeeders) hashReady(infoHash, { uploaders: uploaders, downloaders: downloaders });
         })
+        .on("error", function(err){ log.error("dump-seeders",err) })
         .on("end", checkEnded())
     });
 
