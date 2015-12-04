@@ -218,7 +218,7 @@ var service = new Stremio.Server({
             { name: "number of torrents - "+c, count: c, colour: c > 1000 ? "green" : (c > 500 ? "yellow" : "red") }
         ] });
     },
-}, { allow: [cfg.stremioCentral,"http://api8.herokuapp.com","http://api9.strem.io"], secret: cfg.stremioSecret }, manifest);
+}, { stremioget: true, allow: [cfg.stremioCentral,"http://api8.herokuapp.com","http://api9.strem.io"], secret: cfg.stremioSecret }, manifest);
 
 // Event emitter in case we want to intercept/plug-in to this
 service.events = new events.EventEmitter();
