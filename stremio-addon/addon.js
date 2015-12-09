@@ -41,6 +41,8 @@ function updateMeta(ready) {
         console.log(_.chain(res.popularities).keys().sortBy(popSort).slice(0,10).each(function(x) { 
             var hashes = db.lookup({imdb_id:x},1); db.get(hashes[0].id,function(err,res){console.log(res[0].value.popularity)})
         }).value());*/
+        
+        if (toGet.length == 0) return process.nextTick(ready);
 
         addons.meta.find({ query: { imdb_id: { $in: toGet } }, limit: toGet.length }, function(err, res) {
             process.nextTick(ready); // ensure we don't dead-end (deadlock is not a right term, block is not the right term, terms have to figured out for async code)
@@ -51,7 +53,7 @@ function updateMeta(ready) {
     });
 };
 
-db.evs.on("idxbuild", _.debounce(function() { metaPipe.push(updateMeta) }, 500));
+db.evs.on("idxbuild", _.debounce(function() { metaPipe.push(updateMeta) }, 1000));
 db.evs.on("idxready", function() { metaPipe.push(updateMeta) });
 
 // Basic validation of args
