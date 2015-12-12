@@ -2,7 +2,7 @@ module.exports = {
 	"logLevel": 1,
 	"trackers": ["udp://open.demonii.com:1337/announce", "udp://tracker.openbittorrent.com:80/announce"],
 	"trackerTimeout": 300, 
-
+	
 	// Different frm trackers - we have to update seed/leech for each torrents for all trackers, but this is for when we do retriever / fetchTorrent
 	"fetchTorrentTrackers": [
 	    'udp://open.demonii.com:1337',
@@ -34,7 +34,8 @@ module.exports = {
 	"excludeNonAscii": true,
 
 	"cinemeta": "http://stremio-cinemeta.herokuapp.com",
-
+	
+	"stremioAddon": 7000,
 	"stremioSecret": "8417fe936f0374fbd16a699668e8f3c4aa405d9f",
 	"stremioCentral": "http://api9.strem.io",
 
