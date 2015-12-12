@@ -14,10 +14,21 @@ It also has a Stremio Addon front-end, allowing for the content you scraped to b
 
 
 ## GUI 
-Multipass has a [web-based user interface](http://github.com/Ivshti/multipass-www), in which you can:
+multipass-torrent is compatible with the stremio addon protocol, so you can use [stremio-addons-client](http://github.com/Ivshti/stremio-addons-client) as a GUI.
 
-1. pick a list of sources which are to be crawled
-2. see a movie / series catalogue of everything indexed 
+The end result looks like this: [screenshot](https://raw.githubusercontent.com/Ivshti/stremio-addons-client/master/screenshots/stremio-addons-client.png).
+
+You should see the multipass streams in the right bar under "**Streams**".
+
+```bash
+# first, start multipass-torrent and keep it running
+
+npm install stremio-addons-client
+cd node_modules/stremio-addons-client
+npm start
+# open browser at http://localhost:9900/#?addonUrl=http%3A%2F%2Flocalhost%3A7000
+# you should see multipass add-on in the Add-ons panel
+```
 
 ## Examples
 ```bash
