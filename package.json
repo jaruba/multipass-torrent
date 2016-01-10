@@ -1,6 +1,6 @@
 {
   "name": "multipass-torrent",
-  "version": "0.5.13",
+  "version": "0.5.14",
   "description": "Collects torrents from various sources (dump, RSS, HTML pages) and associates the video files within with IMDB ID",
   "main": "cli/multipass.js",
   "scripts": {
@@ -50,7 +50,7 @@
     "peer-search": "git://github.com/Ivshti/peer-search",
     "q": "^1.4.1",
     "sift": "^2.0.9",
-    "stremio-addons": "^1.17.10",
+    "stremio-addons": "^1.18.3",
     "torrent-stream": "^1.0.0",
     "unzip": ">=0.1.9",
     "video-name-parser": "^1.0.1",
