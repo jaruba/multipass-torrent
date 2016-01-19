@@ -207,10 +207,10 @@ var service = new Stremio.Server(methods = {
         }, function() {
             db.count(function(err, c) {
                 callback(null, { statsNum: items+" movies and episodes", stats: [
-                    { name: "number of items - "+items, count: items, colour: items > 100 ? "green" : (items > 50 ? "yellow" : "red") },
-                    { name: "number of movies - "+movies, count: movies, colour: movies > 100 ? "green" : (movies > 50 ? "yellow" : "red") },
-                    { name: "number of episodes - "+episodes, count: episodes, colour: episodes > 100 ? "green" : (episodes > 50 ? "yellow" : "red") },
-                    { name: "number of torrents - "+c, count: c, colour: c > 1000 ? "green" : (c > 500 ? "yellow" : "red") }
+                    { name: "number of items - "+items, count: items, colour: items > 20 ? "green" : (items > 10 ? "yellow" : "red") },
+                    { name: "number of movies - "+movies, count: movies, colour: movies > 20 ? "green" : (movies > 10 ? "yellow" : "red") },
+                    { name: "number of episodes - "+episodes, count: episodes, colour: episodes > 20 ? "green" : (episodes > 10 ? "yellow" : "red") },
+                    { name: "number of torrents - "+c, count: c, colour: c > 50 ? "green" : (c > 20 ? "yellow" : "red") }
                 ] });
             });
         });
