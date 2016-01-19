@@ -35,10 +35,6 @@ function updateMeta(ready) {
         };
 
         var toGet = _.chain(popularities).omit(_.keys(meta.have)).keys().sortBy(popSort).value();
-        /* Kind of useful for debugging
-        console.log(_.chain(popularities).keys().sortBy(popSort).slice(0,10).each(function(x) { 
-            var hashes = db.lookup({imdb_id:x},1); db.get(hashes[0].id,function(err,res){console.log(res[0].value.popularity)})
-        }).value());*/
         
         if (toGet.length == 0) return process.nextTick(ready);
 
@@ -80,31 +76,34 @@ function query(args, callback) {
         };
 
         var resolution = null;
-        var matches = db.lookup(args.query, 3);
-        async.whilst(
-            function() { return matches.length && (!resolution || prio(resolution) < preferred.length) },
-            function(callback) {
-                var hash = matches.shift().id;
-                db.get(hash, function(err, res) {
-                    if (err) return callback({ err: err });
+        db.lookup(args.query, 3, function(err, matches) {
+            if (err) return callback(err);
+            
+            async.whilst(
+                function() { return matches.length && (!resolution || prio(resolution) < preferred.length) },
+                function(callback) {
+                    var hash = matches.shift().id;
+                    db.get(hash, function(err, res) {
+                        if (err) return callback({ err: err });
 
-                    var tor = res[0] && res[0].value;
-                    if (! tor) return callback({ err: "hash not found "+hash });
+                        var tor = res[0] && res[0].value;
+                        if (! tor) return callback({ err: "hash not found "+hash });
 
-                    var file = _.find(tor.files, function(f) { 
-                        return f.imdb_id == args.query.imdb_id && 
-                            (args.query.season ? (f.season == args.query.season) : true) &&
-                            (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
+                        var file = _.find(tor.files, function(f) { 
+                            return f.imdb_id == args.query.imdb_id && 
+                                (args.query.season ? (f.season == args.query.season) : true) &&
+                                (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
+                        });
+
+                        var res = { torrent: tor, file: file };
+                        if (!resolution || prio(res) > prio(resolution)) resolution = res;
+
+                        callback();
                     });
-
-                    var res = { torrent: tor, file: file };
-                    if (!resolution || prio(res) > prio(resolution)) resolution = res;
-
-                    callback();
-                });
-            },
-            function() { resolution ? next(resolution.err, resolution.torrent, resolution.file) : next() }
-        );
+                },
+                function() { resolution ? next(resolution.err, resolution.torrent, resolution.file) : next() }
+            );
+        });
     })(function(err, torrent, file) {
         // Output according to Stremio Addon API for stream.get
         // http://strem.io/addons-api
