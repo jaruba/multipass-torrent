@@ -213,6 +213,7 @@ tape("db - db.find works with movies", function(t) {
 
 tape("db - db.find works series", function(t) {
 	var imdb_id = Object.keys(series_ids)[0];
+        if (!series_ids[imdb_id]) { t.error(new Error("internal test error - no series")); return t.end(); }
 	var season = series_ids[imdb_id][0], episode = series_ids[imdb_id][1];
 
 	db.find({ imdb_id: imdb_id, season: season, episode: episode }, 1, function(err, torrents) {
@@ -274,7 +275,9 @@ tape("addon - sample query with a movie", function(t) {
 tape("addon - sample query with a movie - stream.find", function(t) {
 	t.timeoutAfter(3000);
 
-	var imdb_id = _.pairs(movie_ids).sort(function(b,a){ return a[1] - b[1] })[0][0];
+	var imdb_id = _.pairs(movie_ids).sort(function(b,a){ return a[1] - b[1] })[0];
+	if (! imdb_id) { t.error(new Error("internal test error - no movie")); return t.end(); }
+	imdb_id = imdb_id[0];
 
 	addon.stream.find({ query: { imdb_id: imdb_id, type: "movie" } }, function(err, resp) {
 		t.ok(!err, "no error");
@@ -287,6 +290,7 @@ tape("addon - sample query with an episode", function(t) {
 	t.timeoutAfter(3000);
 
 	var imdb_id = Object.keys(series_ids)[0];
+	if (! (imdb_id && series_ids[imdb_id])) { t.error(new Error("internal test error - no series")); return t.end(); }
 	var season = series_ids[imdb_id][0], episode = series_ids[imdb_id][1];
 
 	addon.stream.get({ query: { imdb_id: imdb_id, season: season, episode: episode, type: "series" } }, function(err, resp) {
