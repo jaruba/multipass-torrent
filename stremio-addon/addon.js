@@ -43,7 +43,7 @@ function updateMeta(ready) {
 
             if (err) console.error(err);
             meta.col = _.chain(meta.col).concat(res || []).sortBy(popSort).uniq("imdb_id").each(constructMeta).value();
-            db.evs.emit("catalogue-update", meta.col);
+            db.evs.emit("catalogue-update", meta.col, popularities);
         });
     });
 };
