@@ -6,9 +6,7 @@ var sift = require("sift");
 var bagpipe = require("bagpipe");
 var events = require("events");
 
-var cfg = require("../lib/cfg");
-var db = require("../lib/db");
-var utils = require("../lib/utils");
+module.exports = function(db, utils, cfg) {
 
 // Keeping meta collection up to date; Algo here is
 // async.queue with concurrency = 1 / bagpipe(1) ; we push update requests and collectMeta() calls to it 
@@ -238,5 +236,7 @@ function listen(port, ip) {
     return server.listen(port, ip);
 }
 
-if (module.parent) { module.exports = listen; module.exports.service = service; }
-else listen(process.env.PORT || 7000);
+module.exports.service = service;
+return listen(cfg.stremioAddon || process.env.PORT || 7000);
+
+}
