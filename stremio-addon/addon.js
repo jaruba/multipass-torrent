@@ -18,7 +18,7 @@ var LID = cfg.LID || cfg.dbId.slice(0, 10);
 var metaQueryProps = ["imdb_id", "type", "name", "year", "genre", "director", "dvdRelease", "imdbRating", "poster", "popularities."+LID];
 
 
-var CINEMETA_URL = process.env.CINEMETA || cfg.cinemeta || "http://stremio-cinemeta.herokuapp.com";
+var CINEMETA_URL = process.env.CINEMETA || cfg.cinemeta || "http://cinemeta.strem.io/stremioget";
 var addons = new Stremio.Client();
 addons.add(CINEMETA_URL);
 
