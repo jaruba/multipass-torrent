@@ -238,7 +238,7 @@ var addonPort, addon;
 tape("addon - listening on port", function(t) {
 	t.timeoutAfter(500);
 
-	var server = require("../stremio-addon/addon")(db, utils, cfg).on("listening", function() {
+	var server = require("../stremio-addon/addon")(db, utils, cfg)().on("listening", function() {
 		addonPort = server.address().port;
 		t.end();
 	})

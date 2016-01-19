@@ -153,6 +153,6 @@ db.evs.on("idxready", function() {
 
 /* Stremio Addon interface
  */
-if (cfg.stremioAddon) require("../stremio-addon/addon")(db, utils, cfg);
+if (cfg.stremioAddon) require("../stremio-addon/addon")(db, utils, cfg)(cfg.stremioAddon);
 
 

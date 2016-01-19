@@ -237,6 +237,6 @@ function listen(port, ip) {
 }
 
 module.exports.service = service;
-return listen(cfg.stremioAddon || process.env.PORT || 7000);
+return listen;
 
 }
