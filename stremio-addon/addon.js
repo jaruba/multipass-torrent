@@ -78,7 +78,7 @@ function query(args, callback) {
         var resolution = null;
         db.lookup(args.query, 3, function(err, matches) {
             if (err) return callback(err);
-            
+
             async.whilst(
                 function() { return matches.length && (!resolution || prio(resolution) < preferred.length) },
                 function(callback) {
@@ -131,7 +131,8 @@ var manifest = _.merge({
     filter: _.object([ "sort.popularities."+LID,"query.popularities."+LID ], [{ "$exists": true },{ "$exists": true }])
 }, require("./stremio-manifest"), _.pick(require("../package"), "version"), cfg.stremioManifest || {});
 
-var service = new Stremio.Server({
+var methods;
+var service = new Stremio.Server(methods = {
     "stream.get": function(args, callback, user) { // OBSOLETE
         service.events.emit("stream.get", args, callback); 
 
@@ -232,6 +233,7 @@ function listen(port, ip) {
 }
 
 module.exports.service = service;
+module.exports.methods = methods;
 return listen;
 
 }
