@@ -1,4 +1,4 @@
-var tape = require("tape");
+	var tape = require("tape");
 var async = require("async");
 var _ = require("lodash");
 
@@ -83,11 +83,11 @@ tape("importer with dump source - large with minseeders", function(t) {
 tape("retriever", function(t) {
 	t.timeoutAfter(5000);
 
-	// try with 3 hashes, accept 2/3 success rate - some of them are simply not available
+	// try with 3 hashes, accept 2/6 success rate - some of them are simply not available
 	var results = [];
-	async.each(hashes.slice(0,3), function(hash, callback) {
+	async.each(hashes.slice(0,6), function(hash, callback) {
 		retriever.retrieve(hash, function(err, tor) {
-			if (err) console.error(err);
+			//if (err) console.error(err);
 			if (tor) results.push(tor);
 			callback();
 		});
@@ -112,11 +112,11 @@ tape("retriever - catch errors", function(t) {
 tape("retriever - pass url", function(t) {
 	t.timeoutAfter(3000);
 
-	// try with 3 hashes, accept 2/3 success rate - some of them are simply not available
+	// try with 3 hashes, accept 2/6 success rate - some of them are simply not available
 	var results = [ ];
-	async.each(hashes.slice(0,3), function(hash, callback) {
+	async.each(hashes.slice(0,6), function(hash, callback) {
 		retriever.retrieve(hash, { url: "http://torcache.net/torrent/"+hash.toUpperCase()+".torrent" },function(err, tor) {
-			if (err) console.error(err);
+			//if (err) console.error(err);
 			if (tor) results.push(tor);
 			callback();
 		});
@@ -136,7 +136,7 @@ tape("retriever - fallback to DHT/peers fetching", function(t) {
 	var results = [ ];
 	async.each(hashes.slice(0,3), function(hash, callback) {
 		retriever.retrieve(hash, { important: true, url: "http://notcache.net/"+hash.toUpperCase()+".torrent" }, function(err, tor) {
-			if (err) console.error(err);
+			//if (err) console.error(err);
 			if (tor) results.push(tor);
 			callback();
 		});
@@ -156,8 +156,8 @@ tape("processor - import torrents", function(t) {
 	t.timeoutAfter(40000); // 40s for 50 torrents
 
 	async.each(hashes.slice(0, 50), function(hash, callback) {
-		mp.processQueue.push({ infoHash: hash, source: { url: "http://torrentz.eu" }, callback: function(err, torrent) {
-			if (err) console.error(err);
+		mp.processQueue.push({ infoHash: hash, source: { url: "http://torrentz.eu/search?q=" }, callback: function(err, torrent) {
+			//if (err) console.error(err);
 			//if (err) return callback(err);
 			if (torrent) {
 				successful.push(torrent);
@@ -165,8 +165,8 @@ tape("processor - import torrents", function(t) {
 				var maxSeed = utils.getMaxPopularity(torrent);
 				(torrent.files || []).forEach(function(f) {
 					//console.log(f.imdb_id,f.type)
-					if (maxSeed <= cfg.minSeedToIndex) return; // cleaner?
 					if (f.length < 85*1024*1024) return;
+					if (! f.imdb_id) return;
 					if (f.type == "movie") movie_ids[f.imdb_id] = (movie_ids[f.imdb_id] || 0)+1;
 					if (f.type == "series") series_ids[f.imdb_id] = [f.season,f.episode[0]]; // fill it with season / episode so we can use for testing later
 				});
