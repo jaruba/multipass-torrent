@@ -2,6 +2,7 @@ module.exports = {
 	"logLevel": 1,
 	"trackers": ["udp://tracker.leechers-paradise.org:6969/announce", "udp://tracker.coppersurfer.tk:6969/announce"],
 	"trackerTimeout": 3000, 
+	"fetchMetaTimeout": 25000,
 	
 	// Different frm trackers - we have to update seed/leech for each torrents for all trackers, but this is for when we do retriever / fetchTorrent
 	"fetchTorrentTrackers": ["udp://tracker.leechers-paradise.org:6969/announce", "udp://tracker.coppersurfer.tk:6969/announce"],

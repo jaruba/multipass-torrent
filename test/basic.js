@@ -132,7 +132,7 @@ tape("retriever - pass url", function(t) {
 
 
 tape("retriever - fallback to DHT/peers fetching", function(t) {
-	t.timeoutAfter(20000);
+	t.timeoutAfter(30000);
 
 	// try with 3 hashes, accept 3/3 success rate - all metas should be there with peers
 	var results = [ ];
