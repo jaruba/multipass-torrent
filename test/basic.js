@@ -42,7 +42,7 @@ tape("importer with dump source", function(t) {
 
 	importer.collect({ url: "http://bitsnoop.com/api/latest_tz.php?t=verified", category: ["tv", "movies"], type: "dump" }, function(err, status) {
 		t.ok(!err, "no err from importer.collect");
-		t.ok(hashesDump.length > 5, "hashes collected ("+hashesDump.length+") are more than 5");
+		t.ok(hashesDump.length >= 5, "hashes collected ("+hashesDump.length+") are more than 5");
 		t.ok(status.type == "dump", "we've collected from a dump")
 		t.end();
 
@@ -162,10 +162,13 @@ tape("processor - import torrents", function(t) {
 			//if (err) console.error(err);
 			//if (err) return callback(err);
 			if (torrent) {
+				var maxSeed = utils.getMaxPopularity(torrent);
+
+				t.ok(maxSeed, "popular torrent");
+
 				successful.push(torrent);
 				// Collect those for later tests
-				var maxSeed = utils.getMaxPopularity(torrent);
-				(torrent.files || []).forEach(function(f) {
+				if (maxSeed) (torrent.files || []).forEach(function(f) {
 					//console.log(f.imdb_id,f.type)
 					if (f.length < 85*1024*1024) return;
 					if (! f.imdb_id) return;

@@ -47,7 +47,7 @@
     "needle": "0.x.x",
     "node-ssdp": "2.5.x",
     "parse-torrent": "5.x.x",
-    "peer-search": "git://github.com/Ivshti/peer-search",
+    "peer-search": "0.6.x",
     "q": "^1.4.1",
     "sift": "^2.0.9",
     "stremio-addons": "^1.19.0",

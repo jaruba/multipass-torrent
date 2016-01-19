@@ -1,15 +1,10 @@
 module.exports = {
 	"logLevel": 1,
-	"trackers": ["udp://tracker.leechers-paradise.org:6969", "udp://open.demonii.com:1337/announce", "udp://tracker.openbittorrent.com:80/announce"],
-	"trackerTimeout": 1000, 
+	"trackers": ["udp://tracker.leechers-paradise.org:6969/announce", "udp://tracker.coppersurfer.tk:6969/announce"],
+	"trackerTimeout": 3000, 
 	
 	// Different frm trackers - we have to update seed/leech for each torrents for all trackers, but this is for when we do retriever / fetchTorrent
-	"fetchTorrentTrackers": [
-	    'udp://tracker.leechers-paradise.org:6969',
-	    'udp://open.demonii.com:1337',
-	    'udp://tracker.openbittorrent.com:80',
-	    'udp://tracker.pomf.se:80'
-	],
+	"fetchTorrentTrackers": ["udp://tracker.leechers-paradise.org:6969/announce", "udp://tracker.coppersurfer.tk:6969/announce"],
 
 	"retrieverSources": [
 	    { url: "http://torcache.net/torrent/%s.torrent" },
