@@ -231,6 +231,13 @@ tape("db - db.find works series", function(t) {
 	});
 });
 
+// UNIT TESTS
+// TODO: test db.lookup
+// TODO: test db.forEachMeta
+// TODO: test db.forEachTorrent
+// TODO: test db.count
+// TODO: test db.popularities
+
 /* Addon tests
  */
 var addonPort, addon;
