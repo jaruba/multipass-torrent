@@ -24,7 +24,7 @@ var meta = { col: [], updated: 0, have: { } };
 var metaPipe = new bagpipe(1);
 
 function updateMeta(ready) {
-    db.popularities({ }, function(err, popularities) {
+    db.popularities(function(err, popularities) {
         var popSort = function(x) { return -popularities[x.imdb_id || x] };
         var constructMeta = function(x) {
             x.imdbRating = parseFloat(x.imdbRating);
@@ -165,7 +165,7 @@ var service = new Stremio.Server({
     },
     "stream.popularities": function(args, callback, user) { // OBSOLETE
         service.events.emit("stream.popularities", args, callback);
-        db.popularities(args, function(err, popularities) { callback(err, popularities ? { popularities: popularities } : null) });
+        db.popularities(function(err, popularities) { callback(err, popularities ? { popularities: popularities } : null) });
     },
     "meta.find": function(args, callback, user) {
         service.events.emit("meta.find", args, callback);
@@ -204,7 +204,7 @@ var service = new Stremio.Server({
             if (n.key.indexOf(" ") != -1) episodes++; else movies++;
             items++;
         }, function() {
-            db.size(function(err, c) {
+            db.count(function(err, c) {
                 callback(null, { statsNum: items+" movies and episodes", stats: [
                     { name: "number of items - "+items, count: items, colour: items > 100 ? "green" : (items > 50 ? "yellow" : "red") },
                     { name: "number of movies - "+movies, count: movies, colour: movies > 100 ? "green" : (movies > 50 ? "yellow" : "red") },

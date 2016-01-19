@@ -259,9 +259,29 @@ tape("addon - initializes properly", function(t) {
 	});
 });
 
+tape("addon - stats.get", function(t) {
+	t.timeoutAfter(1000);
+
+	addon.call("stats.get", { }, function(err, resp) {
+		t.ok(!err, "no error");
+		t.ok(resp && resp.statsNum, "has statsNum");
+		t.ok(resp && Array.isArray(resp.stats), "has stats");
+		t.end();
+	});
+});
+
+tape("addon - stream.popularities", function(t) {
+	t.timeoutAfter(1000);
+
+	addon.call("stream.popularities", {  }, function(err, resp) {
+		t.ok(!err, "no error");
+		t.ok(resp && resp.popularities && Object.keys(resp.popularities).length, "has popularities");
+		t.end();
+	});
+});
 
 tape("addon - sample query with a movie", function(t) {
-	t.timeoutAfter(3000);
+	t.timeoutAfter(1000);
 
 	var imdb_id = Object.keys(movie_ids)[0];
 
