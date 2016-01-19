@@ -8,6 +8,7 @@ var cfg = require("../lib/cfg");
 cfg.dbPath = require("path").join(require("os").tmpdir(), Date.now()+"");
 var log = require("../lib/log");
 var db = require("../lib/db");
+var utils = require("../lib/utils");
 var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 var retriever = require("../lib/retriever");
@@ -161,7 +162,7 @@ tape("processor - import torrent", function(t) {
 			if (torrent) {
 				successful.push(torrent);
 				// Collect those for later tests
-				var maxSeed = db.getMaxPopularity(torrent);
+				var maxSeed = utils.getMaxPopularity(torrent);
 				(torrent.files || []).forEach(function(f) {
 					//console.log(f.imdb_id,f.type)
 					if (maxSeed <= cfg.minSeedToIndex) return; // cleaner?

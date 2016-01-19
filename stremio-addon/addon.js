@@ -8,7 +8,7 @@ var events = require("events");
 
 var cfg = require("../lib/cfg");
 var db = require("../lib/db");
-
+var utils = require("../lib/utils");
 
 // Keeping meta collection up to date; Algo here is
 // async.queue with concurrency = 1 / bagpipe(1) ; we push update requests and collectMeta() calls to it 
@@ -77,7 +77,7 @@ function query(args, callback) {
         var preferred = args.preferred || [];
         var prio = function(resolution) {
             return preferred.map(function(pref) { 
-                return db.getAvailForTorrent(resolution.torrent) >= pref.min_avail && resolution.file.tag.indexOf(pref.tag)!=-1
+                return utils.getAvailForTorrent(resolution.torrent) >= pref.min_avail && resolution.file.tag.indexOf(pref.tag)!=-1
             }).reduce(function(a,b) { return a+b }, 0);
         };
 
@@ -112,12 +112,12 @@ function query(args, callback) {
         // http://strem.io/addons-api
         callback(err, torrent ? _.extend({ 
             infoHash: torrent.infoHash.toLowerCase(), 
-            uploaders: db.getMaxPopularity(torrent), // optional
+            uploaders: utils.getMaxPopularity(torrent), // optional
             downloaders: Math.max.apply(Math, _.values(torrent.popularity).map(function(x) { return x[1] }).concat(0)), // optional
             //map: torrent.files,
             //pieceLength: torrent.pieceLength,
-            availability: db.getAvailForTorrent(torrent),
-            sources: db.getSourcesForTorrent(torrent), // optional but preferred
+            availability: utils.getAvailForTorrent(torrent),
+            sources: utils.getSourcesForTorrent(torrent), // optional but preferred
             runtime: Date.now()-start // optional
         }, file ? { 
             mapIdx: file.idx,
@@ -170,7 +170,7 @@ var service = new Stremio.Server({
 
         var popularities = { };
         db.indexes.meta.executeOnEveryNode(function(n) {
-            // value is equivalent to db.getMaxPopularity
+            // value is equivalent to utils.getMaxPopularity
             if (n.key) popularities[n.key.split(" ")[0]] = Math.max.apply(null, n.data.map(function(k) { return db.indexes.seeders.get(k) })) || 0;
         });
         callback(null, { popularities: popularities });

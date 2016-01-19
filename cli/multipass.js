@@ -13,6 +13,7 @@ var db = require("../lib/db");
 var replication = require("../lib/replication");
 var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
+var utils = require("../lib/utils");
 
 var argv = module.parent ? { } : require("minimist")(process.argv.slice(2));
 
@@ -88,7 +89,7 @@ mp.processQueue = async.queue(function(task, _next) {
 		// Pass a merge of existing torrent objects as a base for indexing		
 		var noChanges;
 		task.torrent = res && res.length && indexer.merge(res.sort(function(a, b) { return a.seq - b.seq }).map(function(x) { return x.value }));
-		task.important = db.getMaxPopularity(torrent) > cfg.minSeedImportant;
+		task.important = task.torrent && (utils.getMaxPopularity(task.torrent) > cfg.minSeedImportant);
 		async.auto({
 			index: function(cb) { indexer.index(task, { }, function(err, tor, nochanges) { noChanges = nochanges; cb(err, tor) }) },
 			seedleech: function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - cfg.popularityTTL)) ? cb() : indexer.seedleech(task.infoHash, cb) }
@@ -115,7 +116,7 @@ mp.processQueue = async.queue(function(task, _next) {
 
 db.evs.on("idxbuild", function(tor, peer, seq) {
 	var updated = tor.sources && Math.max.apply(null, _.values(tor.sources));
-	if (cfg.nonSeededTTL && peer && updated && (Date.now()-updated > cfg.nonSeededTTL) && !db.getMaxPopularity(tor))
+	if (cfg.nonSeededTTL && peer && updated && (Date.now()-updated > cfg.nonSeededTTL) && !utils.getMaxPopularity(tor))
 		db.log.del(peer, seq, function() { console.log("removed "+tor.infoHash) });
 });
 
