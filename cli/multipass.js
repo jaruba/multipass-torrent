@@ -10,6 +10,7 @@ var events = require('events');
 var cfg = require("../lib/cfg");
 var log = require("../lib/log");
 var db = require("../lib/db");
+var replication = require("../lib/replication");
 var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 
@@ -22,8 +23,11 @@ mp.db = db; // expose db
 /* Config - dependant stuff
  */
 cfg.on("ready", function() {
-	db.listenReplications(cfg.dbId); // start our replication server
-	db.findReplications(cfg.dbId); // replicate to other instances
+	// If DB supports replication (multi-master-merge)
+	if (db.sync) {
+		replication.listenReplications(cfg.dbId); // start our replication server
+		replication.findReplications(cfg.dbId); // replicate to other instances
+	}
 
 	log.important("DB Path "+cfg.dbPath);
 	log.important("we have "+cfg.sources.length+" sources");
