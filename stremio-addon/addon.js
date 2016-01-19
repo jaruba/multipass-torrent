@@ -20,23 +20,23 @@ var CINEMETA_URL = process.env.CINEMETA || cfg.cinemeta || "http://cinemeta.stre
 var addons = new Stremio.Client();
 addons.add(CINEMETA_URL);
 
-var meta = { col: [], updated: 0, have: { } }, getPopularities;
+var meta = { col: [], updated: 0, have: { } };
 var metaPipe = new bagpipe(1);
 
 function updateMeta(ready) {
-    getPopularities({ }, function(err, res) {
-        var popSort = function(x) { return -res.popularities[x.imdb_id || x] };
+    db.popularities({ }, function(err, popularities) {
+        var popSort = function(x) { return -popularities[x.imdb_id || x] };
         var constructMeta = function(x) {
             x.imdbRating = parseFloat(x.imdbRating);
             x.popularities = { }; // reset that - don't know if it brings any benefits
-            x.popularities[LID] = res.popularities[x.imdb_id] || 0;
+            x.popularities[LID] = popularities[x.imdb_id] || 0;
             // figure out year? since for series it's like "2011-2015" we can sort by the first field, but we can't replace the value
             meta.have[x.imdb_id] = 1;
         };
 
-        var toGet = _.chain(res.popularities).omit(_.keys(meta.have)).keys().sortBy(popSort).value();
+        var toGet = _.chain(popularities).omit(_.keys(meta.have)).keys().sortBy(popSort).value();
         /* Kind of useful for debugging
-        console.log(_.chain(res.popularities).keys().sortBy(popSort).slice(0,10).each(function(x) { 
+        console.log(_.chain(popularities).keys().sortBy(popSort).slice(0,10).each(function(x) { 
             var hashes = db.lookup({imdb_id:x},1); db.get(hashes[0].id,function(err,res){console.log(res[0].value.popularity)})
         }).value());*/
         
@@ -163,16 +163,9 @@ var service = new Stremio.Server({
             });
         } else return callback({code: 10, message: "unsupported arguments"});
     },
-    "stream.popularities": getPopularities = function(args, callback, user) { // OBSOLETE
+    "stream.popularities": function(args, callback, user) { // OBSOLETE
         service.events.emit("stream.popularities", args, callback);
-
-        var popularities = { };
-        db.forEachMeta(function(n) {
-            // value is equivalent to utils.getMaxPopularity
-            if (n.key) popularities[n.key.split(" ")[0]] = Math.max.apply(null, n.data.map(function(k) { return db.indexes.seeders.get(k) })) || 0;
-        }, function() {
-            callback(null, { popularities: popularities });
-        });
+        db.popularities(args, function(err, popularities) { callback(err, popularities ? { popularities: popularities } : null) });
     },
     "meta.find": function(args, callback, user) {
         service.events.emit("meta.find", args, callback);
