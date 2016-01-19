@@ -88,6 +88,7 @@ mp.processQueue = async.queue(function(task, _next) {
 		// Pass a merge of existing torrent objects as a base for indexing		
 		var noChanges;
 		task.torrent = res && res.length && indexer.merge(res.sort(function(a, b) { return a.seq - b.seq }).map(function(x) { return x.value }));
+		task.important = db.getMaxPopularity(torrent) > cfg.minSeedImportant;
 		async.auto({
 			index: function(cb) { indexer.index(task, { }, function(err, tor, nochanges) { noChanges = nochanges; cb(err, tor) }) },
 			seedleech: function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - cfg.popularityTTL)) ? cb() : indexer.seedleech(task.infoHash, cb) }
