@@ -167,11 +167,12 @@ var service = new Stremio.Server({
         service.events.emit("stream.popularities", args, callback);
 
         var popularities = { };
-        db.indexes.meta.executeOnEveryNode(function(n) {
+        db.forEachMeta(function(n) {
             // value is equivalent to utils.getMaxPopularity
             if (n.key) popularities[n.key.split(" ")[0]] = Math.max.apply(null, n.data.map(function(k) { return db.indexes.seeders.get(k) })) || 0;
+        }, function() {
+            callback(null, { popularities: popularities });
         });
-        callback(null, { popularities: popularities });
     },
     "meta.find": function(args, callback, user) {
         service.events.emit("meta.find", args, callback);
@@ -205,18 +206,20 @@ var service = new Stremio.Server({
     "stats.get": function(args, callback, user) {
         service.events.emit("stats.get", args, callback);
 
-        var c = db.indexes.seeders.size;
         var items = 0, episodes = 0, movies = 0;
-        db.indexes.meta.executeOnEveryNode(function(n) {
+        db.forEachMeta(function(n) {
             if (n.key.indexOf(" ") != -1) episodes++; else movies++;
             items++;
+        }, function() {
+            db.size(function(err, c) {
+                callback(null, { statsNum: items+" movies and episodes", stats: [
+                    { name: "number of items - "+items, count: items, colour: items > 100 ? "green" : (items > 50 ? "yellow" : "red") },
+                    { name: "number of movies - "+movies, count: movies, colour: movies > 100 ? "green" : (movies > 50 ? "yellow" : "red") },
+                    { name: "number of episodes - "+episodes, count: episodes, colour: episodes > 100 ? "green" : (episodes > 50 ? "yellow" : "red") },
+                    { name: "number of torrents - "+c, count: c, colour: c > 1000 ? "green" : (c > 500 ? "yellow" : "red") }
+                ] });
+            });
         });
-        callback(null, { statsNum: items+" movies and episodes", stats: [
-            { name: "number of items - "+items, count: items, colour: items > 100 ? "green" : (items > 50 ? "yellow" : "red") },
-            { name: "number of movies - "+movies, count: movies, colour: movies > 100 ? "green" : (movies > 50 ? "yellow" : "red") },
-            { name: "number of episodes - "+episodes, count: episodes, colour: episodes > 100 ? "green" : (episodes > 50 ? "yellow" : "red") },
-            { name: "number of torrents - "+c, count: c, colour: c > 1000 ? "green" : (c > 500 ? "yellow" : "red") }
-        ] });
     },
 }, { stremioget: true, allow: [cfg.stremioCentral,"http://api8.herokuapp.com","http://api9.strem.io"], secret: cfg.stremioSecret }, manifest);
 
