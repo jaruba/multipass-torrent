@@ -1,13 +1,13 @@
 module.exports = {
 	"logLevel": 1,
-	"trackers": ["udp://open.demonii.com:1337/announce", "udp://tracker.openbittorrent.com:80/announce"],
-	"trackerTimeout": 300, 
+	"trackers": ["udp://tracker.leechers-paradise.org:6969", "udp://open.demonii.com:1337/announce", "udp://tracker.openbittorrent.com:80/announce"],
+	"trackerTimeout": 1000, 
 	
 	// Different frm trackers - we have to update seed/leech for each torrents for all trackers, but this is for when we do retriever / fetchTorrent
 	"fetchTorrentTrackers": [
+	    'udp://tracker.leechers-paradise.org:6969',
 	    'udp://open.demonii.com:1337',
 	    'udp://tracker.openbittorrent.com:80',
-	    'udp://tracker.leechers-paradise.org:6969',
 	    'udp://tracker.pomf.se:80'
 	],
 
@@ -33,7 +33,7 @@ module.exports = {
 	"excludeTorrents": null,
 	"excludeNonAscii": true,
 
-	"cinemeta": "http://stremio-cinemeta.herokuapp.com",
+	"cinemeta": "http://cinemeta.strem.io/stremioget",
 	
 	"stremioAddon": 7000,
 	"stremioSecret": "8417fe936f0374fbd16a699668e8f3c4aa405d9f",

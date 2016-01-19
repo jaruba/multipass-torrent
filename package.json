@@ -50,7 +50,7 @@
     "peer-search": "git://github.com/Ivshti/peer-search",
     "q": "^1.4.1",
     "sift": "^2.0.9",
-    "stremio-addons": "^1.18.3",
+    "stremio-addons": "^1.19.0",
     "torrent-stream": "^1.0.0",
     "unzip": ">=0.1.9",
     "video-name-parser": "^1.0.1",
