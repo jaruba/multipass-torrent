@@ -13,6 +13,8 @@ var indexer = require("../lib/indexer");
 var importer = require("../lib/importer");
 var retriever = require("../lib/retriever");
 
+cfg.logLevel = 0;
+
 var hashes = [ ]; // global so we can reuse it
 var movie_ids =  { }; var series_ids = { }; // also global, so we can reuse those 
 

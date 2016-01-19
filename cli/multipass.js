@@ -95,13 +95,14 @@ mp.processQueue = async.queue(function(task, _next) {
 			seedleech: function(cb) { (task.torrent && task.torrent.popularityUpdated > (Date.now() - cfg.popularityTTL)) ? cb() : indexer.seedleech(task.infoHash, cb) }
 		}, function(err, indexing) {
 			if (err) {
-				if (task.callback) task.callback(err); log.error(task.infoHash, err);
+				if (task.callback) task.callback(err); log.error("processQueue", task.infoHash, err);
 				return next();
 			}
 
 			// Note that this is a _.merge, popularity is not overriden
 			var torrent = _.merge(indexing.index, indexing.seedleech ? { popularity: indexing.seedleech, popularityUpdated: Date.now() } : { });
-			if ( ! (res.length == 1 && noChanges)) db.merge(torrent.infoHash, res, torrent);
+			// Don't save if we don't have changes and we've got only 1 revision
+			if (! (res.length == 1 && noChanges)) db.merge(torrent.infoHash, res, torrent);
 			
 			mp.emit("found", task.source.url, torrent);
 			
