@@ -66,7 +66,7 @@ function query(args, callback) {
 
     (function(next) { 
         if (args.infoHash) return db.get(args.infoHash, function(err, res) { next(err, res && res[0] && res[0].value) });
-        if (! args.query) return callback(new Error("must specify query or infoHash"));
+        if (! args.query) return next(new Error("must specify query or infoHash"));
 
         //var preferred = _.uniq(PREFERRED.concat(args.preferred || []), function(x) { return x.tag });
         var preferred = args.preferred || [];
@@ -78,7 +78,7 @@ function query(args, callback) {
 
         var resolution = null;
         db.lookup(args.query, 3, function(err, matches) {
-            if (err) return callback(err);
+            if (err) return next(err);
 
             async.whilst(
                 function() { return matches.length && (!resolution || prio(resolution) < preferred.length) },
@@ -102,7 +102,7 @@ function query(args, callback) {
                         callback();
                     });
                 },
-                function() { resolution ? next(resolution.err, resolution.torrent, resolution.file) : next() }
+                function(err) { resolution ? next(resolution.err, resolution.torrent, resolution.file) : next(err) }
             );
         });
     })(function(err, torrent, file) {
