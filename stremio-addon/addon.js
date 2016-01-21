@@ -144,18 +144,7 @@ var service = new Stremio.Server(methods = {
     "stream.find": function(args, callback, user) {
         service.events.emit("stream.find", args, callback);
 
-        if ( args.items && Array.isArray(args.items)) {
-            // OLD FORMAT; TODO: OBSOLETE
-            var error = null;
-            args.items.forEach(function(x) { error = error || validate(x) });
-            if (error) return callback(error);
-
-            async.map(args.items, query, function(err, items) { 
-                callback(err, items ? { items: items.map(function(x) { 
-                    return x ? { availability: x.availability, tag: x.tag } : null // TODO: send back number of candidates under _candidates
-                }) } : null);
-            });
-        } else if (args.query) {
+        if (args.query) {
             // New format ; same as stream.get, even returns the full result; no point to slim it down, takes same time
             var error = validate(args);
             if (error) return callback(error);
