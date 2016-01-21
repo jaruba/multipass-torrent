@@ -41,7 +41,7 @@ function updateMeta(ready) {
         addons.meta.find({ query: { imdb_id: { $in: toGet } }, limit: toGet.length }, function(err, res) {
             process.nextTick(ready); // ensure we don't dead-end (deadlock is not a right term, block is not the right term, terms have to figured out for async code)
 
-            if (err) console.error(err);
+            if (err) console.error("meta.find from "+CINEMETA_URL, err);
             meta.col = _.chain(meta.col).concat(res || []).sortBy(popSort).uniq("imdb_id").each(constructMeta).value();
             db.evs.emit("catalogue-update", meta.col, popularities);
         });
