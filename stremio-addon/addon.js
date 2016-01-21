@@ -48,7 +48,7 @@ function updateMeta(ready) {
     });
 };
 
-db.evs.on("idxbuild", _.debounce(function() { metaPipe.push(updateMeta) }, 1000));
+db.evs.on("idxbuild", _.debounce(function() { if (! metaPipe.queue.length) metaPipe.push(updateMeta) }, 1000));
 db.evs.on("idxready", function() { metaPipe.push(updateMeta) });
 
 // Basic validation of args
