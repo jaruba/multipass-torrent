@@ -42,6 +42,7 @@ function updateMeta(ready) {
             process.nextTick(ready); // ensure we don't dead-end (deadlock is not a right term, block is not the right term, terms have to figured out for async code)
 
             if (err) console.error("meta.find from "+CINEMETA_URL, err);
+            meta.ready = true;
             meta.col = _.chain(meta.col).concat(res || []).sortBy(popSort).uniq("imdb_id").each(constructMeta).value();
             db.evs.emit("catalogue-update", meta.col, popularities);
         });
@@ -162,10 +163,9 @@ var service = new Stremio.Server(methods = {
 
         // Call this to wait for meta to be collected
         if (args.projection && ( args.projection=="full" ) ) return callback(new Error("full projection not supported by mp"));
-        
-        if (! meta.col.length) metaPipe.push(updateMeta); 
-        metaPipe.push(function(ready) {
-            process.nextTick(ready); // ensure we don't lock 
+         
+        (meta.ready ? function(n) { n() } : metaPipe.push)(function(ready) {
+            if (typeof(ready) == "function") process.nextTick(ready); // ensure we don't lock 
 
             args.query = _.pick.apply(null, [args.query || { }].concat(metaQueryProps));
             args.sort = _.pick.apply(null, [args.sort || { }].concat(metaQueryProps));
