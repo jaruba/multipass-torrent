@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "async": "0.2.9",
-    "bagpipe": "^0.3.5",
+    "bagpipe": "Ivshti/bagpipe",
     "bencode": "^0.7.0",
     "binary-search-tree": "0.2.x",
     "bittorrent-dht": "3.x.x",
