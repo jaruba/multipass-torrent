@@ -151,7 +151,12 @@ var service = new Stremio.Server(methods = {
             var error = validate(args);
             if (error) return callback(error);
             async.map([ _.extend({ preferred: [{ tag: "hd", min_avail: 2 }] }, args), args ], query, function(err, res) {
-                callback(err, res ? _.chain(res).filter(function(x) { return x }).uniq(function(x) { return x.infoHash }).value() : undefined);
+                if (err) return callback(err);
+                if (! res) return callback(null, res);
+
+                var results = _.chain(res).filter(function(x) { return x }).uniq(function(x) { return x.infoHash }).value();
+                service.events.emit("stream.find.res", results);
+                callback(null, results);
             });
         } else return callback({code: 10, message: "unsupported arguments"});
     },
