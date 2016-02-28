@@ -116,6 +116,7 @@ function query(args, callback) {
             //map: torrent.files,
             //pieceLength: torrent.pieceLength,
             availability: utils.getAvailForTorrent(torrent),
+            isFree: true,
             sources: utils.getSourcesForTorrent(torrent), // optional but preferred
             runtime: Date.now()-start // optional
         }, file ? { 
