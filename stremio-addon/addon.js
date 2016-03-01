@@ -170,7 +170,7 @@ var service = new Stremio.Server(methods = {
         // Call this to wait for meta to be collected
         if (args.projection && ( args.projection=="full" ) ) return callback(new Error("full projection not supported by mp"));
          
-        (meta.ready ? function(n) { n() } : metaPipe.push)(function(ready) {
+        (meta.ready ? function(n) { n() } : metaPipe.push.bind(metaPipe))(function(ready) {
             if (typeof(ready) == "function") process.nextTick(ready); // ensure we don't lock 
 
             args.query = _.pick.apply(null, [args.query || { }].concat(metaQueryProps));
