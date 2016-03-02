@@ -30,6 +30,7 @@ function updateMeta(ready) {
             x.imdbRating = parseFloat(x.imdbRating);
             x.popularities = { }; // reset that - don't know if it brings any benefits
             x.popularities[LID] = popularities[x.imdb_id] || 0;
+            x.isPeered = !!popularities[x.imdb_id];
             // figure out year? since for series it's like "2011-2015" we can sort by the first field, but we can't replace the value
             meta.have[x.imdb_id] = 1;
         };
@@ -130,8 +131,7 @@ var manifest = _.merge({
     // this should be always overridable by stremio-manifest
     stremio_LID: LID,
     // set filter so that we intercept meta.find from cinemeta
-    // WARNING: this won't work because mpath doesn't support going into keys that contain dots, since it always thinks of it as a delimiter
-    filter: _.object([ "sort.popularities."+LID,"query.popularities."+LID ], [{ "$exists": true },{ "$exists": true }])
+    filter: _.object([ "sort.popularities."+LID, "query.popularities."+LID, "projection.imdb_id", "popular", "query.type" ], [{ "$exists": true },{ "$exists": true }, {"$exists":true}, {"$exists":true}, { $in: ["movie", "series"] }])
 }, require("./stremio-manifest"), _.pick(require("../package"), "version"), cfg.stremioManifest || {});
 
 var methods;
@@ -167,6 +167,15 @@ var service = new Stremio.Server(methods = {
     "meta.find": function(args, callback, user) {
         service.events.emit("meta.find", args, callback);
 
+        var firstSort = Object.keys(args.sort || { })[0];
+        if (firstSort !== "popularities."+LID) {
+            addons.meta.find(args, function(err, res) {
+                //if (res) res.forEach(function(x) { x.isPeered = false });
+                callback(err, res);
+            });
+            return;
+        }
+
         // Call this to wait for meta to be collected
         if (args.projection && ( args.projection=="full" ) ) return callback(new Error("full projection not supported by mp"));
          
@@ -189,6 +198,7 @@ var service = new Stremio.Server(methods = {
                 .slice(args.skip || 0, Math.min(400, args.limit))
                 .map(function(x) { return projFn ? projFn(x, proj) : x })
                 .value();
+            
             service.events.emit("meta.find.res", res);
             callback(null, res);
         });
