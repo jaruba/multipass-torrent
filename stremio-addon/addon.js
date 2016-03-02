@@ -127,11 +127,18 @@ function query(args, callback) {
     });
 };
 
+var FILTER = _.object([ "sort.popularities."+LID,"query.popularities."+LID ], [{ "$exists": true },{ "$exists": true }]);
+var FILTER_OVERRIDE_CINEMETA = _.extend(FILTER, { 
+    "projection.imdb_id": {"$exists":true}, 
+    "popular": {"$exists":true}, 
+    "query.type": { $in: ["movie", "series"] },
+});
+
 var manifest = _.merge({ 
     // this should be always overridable by stremio-manifest
     stremio_LID: LID,
     // set filter so that we intercept meta.find from cinemeta
-    filter: _.object([ "sort.popularities."+LID, "query.popularities."+LID, "projection.imdb_id", "popular", "query.type" ], [{ "$exists": true },{ "$exists": true }, {"$exists":true}, {"$exists":true}, { $in: ["movie", "series"] }])
+    filter: FILTER_OVERRIDE_CINEMETA,
 }, require("./stremio-manifest"), _.pick(require("../package"), "version"), cfg.stremioManifest || {});
 
 var methods;
@@ -170,7 +177,7 @@ var service = new Stremio.Server(methods = {
         var firstSort = Object.keys(args.sort || { })[0];
         if (firstSort !== "popularities."+LID) {
             addons.meta.find(args, function(err, res) {
-                //if (res) res.forEach(function(x) { x.isPeered = false });
+                if (res) res.forEach(function(x) { x.isPeered = false });
                 callback(err, res);
             });
             return;
