@@ -23,8 +23,12 @@ addons.add(CINEMETA_URL);
 var meta = { col: [], updated: 0, have: { } };
 var metaPipe = new bagpipe(1);
 
+var lastPopularities;
+
 function updateMeta(ready) {
     db.popularities(function(err, popularities) {
+        lastPopularities = popularities;
+
         var popSort = function(x) { return -popularities[x.imdb_id || x] };
         var constructMeta = function(x) {
             x.imdbRating = parseFloat(x.imdbRating);
@@ -177,7 +181,7 @@ var service = new Stremio.Server(methods = {
         var firstSort = Object.keys(args.sort || { })[0];
         if (firstSort !== "popularities."+LID) {
             addons.meta.find(args, function(err, res) {
-                if (res) res.forEach(function(x) { x.isPeered = false });
+                if (res && lastPopularities) res.forEach(function(x) { x.isPeered = !!lastPopularities[x.imdb_id] });
                 callback(err, res);
             });
             return;
