@@ -189,6 +189,7 @@ var service = new Stremio.Server(methods = {
                 .slice(args.skip || 0, Math.min(400, args.limit))
                 .map(function(x) { return projFn ? projFn(x, proj) : x })
                 .value();
+            service.events.emit("meta.find.res", res);
             callback(null, res);
         });
     },
