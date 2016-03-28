@@ -78,7 +78,7 @@ function query(args, callback) {
         var preferred = args.preferred || [];
         var prio = function(resolution) {
             return preferred.map(function(pref) { 
-                return utils.getAvailForTorrent(resolution.torrent) >= pref.min_avail && resolution.file.tag.indexOf(pref.tag)!=-1
+                return utils.getAvailForTorrent(resolution.torrent) >= pref.min_avail && resolution.file && resolution.file.tag.indexOf(pref.tag)!=-1
             }).reduce(function(a,b) { return a+b }, 0);
         };
 
@@ -101,7 +101,9 @@ function query(args, callback) {
                                 (args.query.season ? (f.season == args.query.season) : true) &&
                                 (args.query.episode ? ((f.episode || []).indexOf(args.query.episode) != -1) : true)
                         });
-
+			
+			// TODO: error when no file is found?
+			
                         var res = { torrent: tor, file: file };
                         if (!resolution || prio(res) > prio(resolution)) resolution = res;
 
