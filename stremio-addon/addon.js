@@ -210,11 +210,11 @@ var service = new Stremio.Server(methods = {
 
             var res = _.chain(meta.col)
                 .filter(args.query ? sift(args.query) : _.constant(true))
-                .sortByOrder(_.keys(args.sort), _.values(args.sort).map(function(x) { return x>0 ? "asc" : "desc" }))
+                //.sortByOrder(_.keys(args.sort), _.values(args.sort).map(function(x) { return x>0 ? "asc" : "desc" }))
                 .slice(args.skip || 0, Math.min(400, args.limit))
                 .map(function(x) { return projFn ? projFn(x, proj) : x })
                 .value();
-            
+
             service.events.emit("meta.find.res", res);
             callback(null, res);
         });
