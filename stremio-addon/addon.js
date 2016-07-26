@@ -39,13 +39,16 @@ function updateMeta(ready) {
             meta.have[x.imdb_id] = 1;
         };
 
-        var toGet = _.chain(popularities).omit(_.keys(meta.have)).keys().sortBy(popSort).value();
-        
+        var toGet = [];
+        Object.keys(popularities).forEach(function(k) { if (! meta.have[k]) toGet.push(k) });
+        toGet = toGet.filter(function(x) { return x && x.match("^tt") });
+        toGet = toGet.sort(function(a, b) { return (popularities[b] || 0) - (popularities[a] || 0) });
+        toGet = toGet.slice(0, 500);
+
         if (toGet.length == 0) return process.nextTick(ready);
 
         addons.meta.find({ query: { imdb_id: { $in: toGet } }, limit: toGet.length }, function(err, res) {
             process.nextTick(ready); // ensure we don't dead-end (deadlock is not a right term, block is not the right term, terms have to figured out for async code)
-
             if (err) console.error("meta.find from "+CINEMETA_URL, err);
             meta.ready = true;
             meta.col = _.chain(meta.col).concat(res || []).sortBy(popSort).uniq("imdb_id").each(constructMeta).value();
