@@ -8,9 +8,9 @@ module.exports = {
 	"fetchTorrentTrackers": ["udp://tracker.leechers-paradise.org:6969/announce", "udp://tracker.coppersurfer.tk:6969/announce"],
 
 	"retrieverSources": [
+	    { url: "http://itorrents.org/torrent/%s.torrent" },
 	    { url: "http://torcache.net/torrent/%s.torrent" },
 	    { url: "http://torrage.com/torrent/%s.torrent" },
-	    //{ url: "http://yts.to/torrent/download/%s.torrent" }
 	],
 
 	"processingConcurrency": 6,
